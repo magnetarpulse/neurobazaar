@@ -3,6 +3,7 @@
 
 Authors and Contributors:
 - Alexandru Iulian Orhean 2024 (aorhean@depaul.edu)  
+-Nimisha Vidyadhar Bhoir 2024 (nbhoir@depaul.edu)
 
 Interactive Visualization Platform for Machine Learning and Data Science Datasets.
 

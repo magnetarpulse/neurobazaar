@@ -37,7 +37,7 @@ To load/activate the Python Virtual Environment in Windows 10 CMD use the follow
 
 To install the required Python packages inside the loaded/activated virtual enviroment run the following command:
 ```
-
+python -m pip install -r requirements.txt
 ```
 
 ## How to Build and Run

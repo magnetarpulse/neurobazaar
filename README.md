@@ -2,6 +2,8 @@
 **Jarvis College of Computing and Digital Media - DePaul University**  
 
 Authors and Contributors:
+- Alexandru Iulian Orhean 2024 (aorhean@depaul.edu)  
+- Vivek Shravan Gupta 2024 (vgupta16@depaul.edu)
 - Alexandru Iulian Orhean 2024 (aorhean@depaul.edu) 
 - Rushikesh Rajendra Suryawanshi 2024 (rsuryawa@depaul.edu) 
 

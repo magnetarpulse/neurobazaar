@@ -25,6 +25,8 @@ To create the Python Virtual Environment in Windows 10 use the following command
 ```
 py -3.11 -m venv .venv
 ```
+Mac os  command: python3.11 -m venv .venv  
+
 
 To load/activate the Python Virtual Environment in Windows 10 Powershell use the following command:
 ```
@@ -35,9 +37,12 @@ To load/activate the Python Virtual Environment in Windows 10 CMD use the follow
 ```
 .venv/Scripts/activate.bat
 ```
+To load/activate the Python Virtual Environment in Mac OS use the following command: 
+source .venv/bin/activate  
+
 
 ### Install the Python Required Packages
-
+For Mac os as well as Windows OS
 To install the required Python packages inside the loaded/activated virtual enviroment run the following command:
 ```
 python -m pip install -r requirements.txt

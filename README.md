@@ -17,7 +17,6 @@ In order to run the Neurobazaar Platform you need to have at least Python **3.11
 
 For Windows 10 this software has been tested with Python **3.11.5**.
 
-For Mac OS
 ### Set up the Python Virtual Environment
 
 All of the required Python packages are installed in a Python Virtual Environment.

@@ -5,3 +5,4 @@ dataset
 database 
 home/__pycache__
 home/migrations/
+HelloWorld/__pycache__  

@@ -3,6 +3,5 @@
 db.sqlite3
 dataset
 database 
-home/__pycache__
-home/migrations/
-HelloWorld/__pycache__  
+**/__pycache__
+**/migrations

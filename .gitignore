@@ -3,3 +3,5 @@
 db.sqlite3
 dataset
 database 
+home/__pycache__
+home/migrations/

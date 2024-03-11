@@ -66,7 +66,7 @@ for MacOS
 pip3 install django  
 ```
 
-###Check django version: 
+## Check django version: 
 ```
 python -m django –version (Windows)
 ```

@@ -55,4 +55,30 @@ To install the required Python packages inside the loaded/activated virtual envi
 python -m pip install -r requirements.txt
 ```
 
-## How to Build and Run
+
+### How to install Django on cmd or Terminal
+for Windows: 
+```
+pip install django  
+```
+for MacOS
+```
+pip3 install django  
+```
+
+###Check django version: 
+```
+python -m django –version (Windows)
+```
+
+```
+python -m django –version  (MacOS)
+```
+
+## How to Build and Run Django application
+```
+python manage.py runserver   ---> for Windows
+```
+```
+python3 manage.py runserver   ---> for MacOS
+```

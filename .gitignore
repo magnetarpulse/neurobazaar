@@ -1,3 +1,7 @@
 .venv
+.idea
+db.sqlite3
 dataset
-database
+database 
+**/__pycache__
+**/migrations

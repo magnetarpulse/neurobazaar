@@ -2,42 +2,58 @@
 **Jarvis College of Computing and Digital Media - DePaul University**  
 
 Authors and Contributors:
-- Alexandru Iulian Orhean 2024 (aorhean@depaul.edu)  
+- Alexandru Iulian Orhean (aorhean@depaul.edu)  
 
-Interactive Visualization Platform for Machine Learning and Data Science Datasets.
+Scalable Interactive Visualization Platform for Machine Learning and Data Science.
 
 ## Requirements and Setup
 
-### Install Python
+### Development Environment and Python
 
-In order to run the Neurobazaar Platform you need to have at least Python **3.11** installed on your computer.
+This software has been tested on:
+- Windows 10/11 (Python **3.11**)
+- Ubuntu 22.04 LTS (Python **3.11**).
 
-For Windows 10 this software has been tested with Python **3.11.5**.
+### Python Virtual Environment
 
-### Set up the Python Virtual Environment
+This project uses the Python virtual enviroment to configure software depdendecies.
 
-All of the required Python packages are installed in a Python Virtual Environment.
+#### Windows 10/11
 
-To create the Python Virtual Environment in Windows 10 use the following command (you only need to create it once):
+Create the Python Virtual Environment:
 ```
 py -3.11 -m venv .venv
 ```
 
-To load/activate the Python Virtual Environment in Windows 10 Powershell use the following command:
+Load/activate the Python Virtual Environment in Powershell:
 ```
 .venv/Scripts/Activate.ps1
 ```
 
-To load/activate the Python Virtual Environment in Windows 10 CMD use the following command:
+Load/activate the Python Virtual Environment in CMD:
 ```
 .venv/Scripts/activate.bat
 ```
 
-### Install the Python Required Packages
+#### Ubuntu 22.04 LTS (includes WSL2)
 
-To install the required Python packages inside the loaded/activated virtual enviroment run the following command:
+Create the Python Virtual Environment:
+```
+python3.11 -m venv .venv
 ```
 
+Load/activate the Python Virtual Environment:
+```
+source .venv/bin/activate
+```
+
+### Install the Python Required Packages
+
+Install the required Python packages inside the loaded/activated virtual enviroment:
+```
+python -m pip install -r requirements.txt
 ```
 
 ## How to Build and Run
+
+

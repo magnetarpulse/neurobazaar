@@ -11,9 +11,9 @@ Interactive Visualization Platform for Machine Learning and Data Science Dataset
 
 ### Install Python
 
-In order to run the Neurobazaar Platform you need to have at least Python **3.9.5** installed on your computer.
+In order to run the Neurobazaar Platform you need to have at least Python **3.11** installed on your computer.
 
-This software has been tested and run with Python 3.9.5 on Windows 10 and Ubuntu 22.04 LTS.
+This software has been tested and run with Python 3.11 on Windows 10 and Ubuntu 22.04 LTS.
 
 ### Set up the Python Virtual Environment
 
@@ -72,8 +72,5 @@ python -m django –version  (MacOS)
 
 ## How to Build and Run Django application
 ```
-python manage.py runserver   ---> for Windows
-```
-```
-python3 manage.py runserver   ---> for MacOS
+python manage.py runserver   
 ```

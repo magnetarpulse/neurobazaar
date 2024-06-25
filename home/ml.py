@@ -19,6 +19,10 @@ def process_pca(request):
         username = request.user.username
         workspace_dir = os.path.join(settings.MEDIA_ROOT, 'workspace', username)
 
+        # Create the workspace directory if it doesn't exist
+        if not os.path.exists(workspace_dir):
+            os.makedirs(workspace_dir)
+
         # Check if the latest workspace directory exists
         latest_workspace_dir = max([d for d in os.listdir(workspace_dir) if os.path.isdir(os.path.join(workspace_dir, d))], key=lambda x: int(x.split('_')[1]), default=None)
 

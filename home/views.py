@@ -21,14 +21,12 @@ def index(request):
     username = None
     if request.user.is_authenticated:
         username = request.user.username
-    print("LOGINSESSIONID:", request.session.session_key)
     return render(request, 'index.html', {'username': username})
 
 def loginUser(request):
     if request.method=='POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        print(username, password)
 
         user = authenticate(username=username, password=password)
         
@@ -131,11 +129,6 @@ def delete_file(filename, folder, username):
 
 @login_required
 def datasets(request):
-    if 'DATASETSESSIONID' not in request.session:
-        # Create a new session ID (DATASETSESSIONID) if it's the user's first visit to the dataset page after logging in
-        request.session['DATASETSESSIONID'] = str(uuid.uuid4())
-    print("LOGINSESSIONID:", request.session.session_key)
-    print("DATASETSESSIONID:", request.session.get('DATASETSESSIONID'))
     username = request.user.username
     user_datasets_dir = os.path.join(settings.MEDIA_ROOT, 'datasets', username)
     os.makedirs(user_datasets_dir, exist_ok=True)  # Create user's directory if not exists
@@ -219,15 +212,6 @@ def update_reaction(request):
     if request.method == 'POST':
         file = request.POST.get('file')
         reaction = request.POST.get('reaction')
-        
-        # Update likes or dislikes for the file (you'll need to implement this logic)
-        # Example:
-        # file_object = YourFileModel.objects.get(name=file)
-        # if reaction == 'like':
-        #     file_object.likes += 1
-        # elif reaction == 'dislike':
-        #     file_object.dislikes += 1
-        # file_object.save()
 
         # For demonstration purposes, just returning a success message and updated counts
         num_likes = 0  # Replace with actual number of likes for the file
@@ -243,11 +227,6 @@ def update_reaction(request):
 
 @login_required
 def upload(request):
-    if 'RUNSERVICESSESSIONID' not in request.session:
-        # Create a new session ID (RUNSERVICESSESSIONID) if it's the user's first visit to the run services page after logging in
-        request.session['RUNSERVICESSESSIONID'] = str(uuid.uuid4())
-    print("LOGINSESSIONID:", request.session.session_key)
-    print("RUNSERVICESSESSIONID:", request.session.get('RUNSERVICESSESSIONID'))
     username = request.user.username
     uploaded_file_name = None  # Placeholder for uploaded file name
     column_names = None  # Placeholder for column names
@@ -257,6 +236,11 @@ def upload(request):
         if uploaded_file:
             # Find the next available workspace number
             user_workspace_dir = os.path.join(settings.MEDIA_ROOT, 'workspace', username)
+
+            # Check if the user's workspace directory exists
+            if not os.path.exists(user_workspace_dir):
+                os.makedirs(user_workspace_dir, exist_ok=True)
+
             existing_workspaces = os.listdir(user_workspace_dir)
             if existing_workspaces:
                 # Extract the numbers from workspace names and find the maximum

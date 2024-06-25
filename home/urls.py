@@ -14,7 +14,6 @@ urlpatterns = [
     path('update_reaction/', views.update_reaction, name='update_reaction'),
     path('process_pca/', ml.process_pca, name='process_pca'),
     path('serve_pca_plot/<str:username>/<int:workspace_number>/', views.serve_pca_plot, name='serve_pca_plot'),
-    # path('workspace/<str:username>/<int:workspace_number>/<str:filename>/', views.serve_workspace_image, name='serve_workspace_image'),
 
 
 ]

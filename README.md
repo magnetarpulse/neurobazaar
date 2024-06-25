@@ -56,4 +56,12 @@ python -m pip install -r requirements.txt
 
 ## How to Build and Run
 
+Migrate the database:
+```
+python manage.py migrate
+```
 
+Start server:
+```
+python manage.py runserver
+```

@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block title %}Upload Data & Model{% endblock title %}
+{% block nav3%} d-none {% endblock nav3 %}
+{% block body %}
+
+<!-- Masthead-->
+<header class="masthead" style="background: linear-gradient(90deg, #0000FF, #000080, #FFDB58, #0000FF);">
+    <div class="container">
+        <div class="masthead-heading">Upload Your Dataset & Model Below</div>
+    </div>
+</header>
+
+<!-- Upload Data & Model Section -->
+<section id="upload" class="page-section bg-light">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Upload Your Data & Model</h2>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <h4 class="mb-3">Upload Data</h4>
+                <form id="uploadForm" action="" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <input type="file" class="form-control" id="dataFile" name="dataFile">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </form>
+                {% if uploaded_file_name %}
+                <p>Uploaded file: {{ uploaded_file_name }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Choose Model Type Section -->
+<section id="choose-model" class="page-section ">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Choose Model Type</h2>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-20 text-center">
+                <div id="modelType" name="modelType">
+                    <button class="btn btn-outline-primary ml-model" data-color="primary" style="margin:10px" data-model="pca" value="pca">Principal Component Analysis</button>
+                    <button class="btn btn-outline-danger ml-model" data-color="danger" style="margin:10px" data-model="svm" value="svm">Support Vector Machine</button>
+                    <button class="btn btn-outline-success ml-model" data-color="success" style="margin:20px" data-model="rf" value="rf">Random Forest</button>
+                    <button class="btn btn-outline-warning ml-model" data-color="warning" style="margin:20px" data-model="lr" value="lr">Logistic Regression</button>
+                    <button class="btn btn-outline-info ml-model" data-color="info" style="margin:20px" data-model="knn" value="knn">K-Nearest Neighbors</button>
+                    <button class="btn btn-outline-primary ml-model" data-color="primary" style="margin:20px" data-model="nn" value="nn">Neural Network</button>
+                    <button class="btn btn-outline-danger ml-model" data-color="danger" style="margin:20px" data-model="dt" value="dt">Decision Tree</button>
+                    <button class="btn btn-outline-success ml-model" data-color="success" style="margin:20px" data-model="gb" value="gb">Gradient Boosting</button>
+                    <button class="btn btn-outline-warning ml-model" data-color="warning" style="margin:20px" data-model="xgb" value="xgb">XGBoost</button>
+                    <button class="btn btn-outline-info ml-model" data-color="info" style="margin:20px" data-model="lgbm" value="lgbm">LightGBM</button>
+                    <button class="btn btn-outline-primary ml-model" data-color="primary" style="margin:20px" data-model="catboost" value="catboost">CatBoost</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Choose PCA Section -->
+<section id="choose-pca" class="page-section bg-light" style="display: none;">
+    <div class="container">
+        <form id="pcaForm" action="{% url 'process_pca' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="uploaded_file_name" value="{{ uploaded_file_name }}">
+            {% if column_names %}
+            <h4>Choose PCA Features to be Included:</h4>
+            <div class="row justify-content-center">
+                <div class="col-md-20 text-center" id="pcaFeatures">
+                    {% for column_name in column_names %}
+                    <input type="checkbox" name="selected_columns" id="{{ column_name }}" value="{{ column_name }}">
+                    <label for="{{ column_name }}">{{ column_name }}</label>
+                    <br>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="row justify-content-center mt-3">
+                <div class="col-md-6 text-center">
+                    <button type="submit" class="btn btn-primary">Submit PCA</button>
+                </div>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</section>
+
+<!-- Footer-->
+<footer class="footer py-4" style="background-color: #0057B7;color: white;">
+    <div class="container" >
+        <div class="row align-items-center">
+            <div class="col-lg-4 text-lg-start">Copyright &copy; Data Scientist Hub 2024</div>
+            <div class="col-lg-4 my-3 my-lg-0">
+                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a class="text-decoration-none me-3" href="#!" style="color: white !important;">Privacy Policy</a>
+                <a class="text-decoration-none" href="#!" style="color: white !important;">Terms of Use</a>
+            </div>            
+        </div>
+    </div>
+</footer>
+
+
+<script>
+    // Handle PCA button click
+    $('.ml-model').on('click', function() {
+        var selectedModel = $(this).data('model');
+        if (selectedModel === 'pca') {
+            $('#choose-pca').show();
+        } else {
+            $('#choose-pca').hide();
+        }
+    });
+
+    // Handle PCA column button click
+    $(document).on('click', '.pca-column', function() {
+        var columnName = $(this).data('column');
+        var selectedColumns = $('.pca-column.selected');
+
+        // If already two columns selected, deselect the first one
+        if (selectedColumns.length === 2 && !$(this).hasClass('selected')) {
+            selectedColumns.first().removeClass('selected');
+        }
+
+        // Toggle selected state for the clicked column
+        $(this).toggleClass('selected');
+
+        // Toggle button class to indicate selection
+        $(this).toggleClass('btn-outline-primary btn-primary');
+    });
+</script>
+
+{% endblock body %}

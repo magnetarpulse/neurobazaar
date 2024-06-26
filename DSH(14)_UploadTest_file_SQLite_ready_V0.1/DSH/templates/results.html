@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Results{% endblock title %}
+
+{% block nav3%} d-none {% endblock nav3 %}
+
+
+{% block body %}
+
+    <!-- Masthead-->
+    <header class="masthead">
+       <div class="container">
+            <div class="masthead-heading">See The Results Below</div>
+        </div> 
+    </header>
+    <!-- Results Section -->
+<section id="results" class="page-section">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Results</h2>
+        </div>
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="workspaceTabs" role="tablist">
+            <!-- Add workspace button -->
+            <li class="nav-item">
+                <button class="btn btn-link nav-link add-workspace" type="button">Add Workspace</button>
+            </li>
+            <!-- Dynamic workspace tabs -->
+            {% for workspace in existing_workspaces %}
+            <li class="nav-item">
+                <a class="nav-link{% if forloop.first %} active{% endif %}" id="workspace{{ workspace.workspace_number }}-tab" data-bs-toggle="tab" href="#workspace{{ workspace.workspace_number }}" role="tab" aria-controls="workspace{{ workspace.workspace_number }}" aria-selected="{{ forloop.first }}">{{ workspace.name }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+        <br>
+        <br>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <!-- Dynamic workspace content -->
+            {% for workspace in existing_workspaces %}
+            <div class="tab-pane fade{% if forloop.first %} show active{% endif %}" id="workspace{{ workspace.workspace_number }}" role="tabpanel">
+                <div class="container">
+                    <div class="row">
+                        <!-- Graphical Results -->
+                        <div class="col-lg-6">
+                            <h4>Graphical Results</h4>
+                            {% if workspace.pca_plot %}
+                                <div class="card">
+                                    <div class="card-body">
+                                        <!-- Output the constructed image path for debugging -->
+                                        {% comment %} <p>Image Path: {{ workspace.pca_plot }}</p> {% endcomment %}
+                                        <img src="{% url 'serve_pca_plot' username=username workspace_number=workspace.workspace_number %}" alt="PCA Plot">
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p>No PCA plot available for this workspace.</p>
+                            {% endif %}
+                        </div>
+                        <!-- Tabular Results -->
+                        <div class="col-lg-6">
+                        <h4>Tabular Results</h4>
+                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <!-- Dynamic table headers -->
+                                        {% for header in workspace.table_headers %}
+                                        <th>{{ header }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic table data -->
+                                    {% for row in workspace.tabular_data %}
+                                    <tr>
+                                        {% for item in row %}
+                                        <td>{{ item }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Footer-->
+<footer class="footer py-4" style="background-color: #0057B7;color: white;">
+    <div class="container" >
+        <div class="row align-items-center">
+            <div class="col-lg-4 text-lg-start">Copyright &copy; Data Scientist Hub 2024</div>
+            <div class="col-lg-4 my-3 my-lg-0">
+                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a class="text-decoration-none me-3" href="#!" style="color: white !important;">Privacy Policy</a>
+                <a class="text-decoration-none" href="#!" style="color: white !important;">Terms of Use</a>
+            </div>            
+        </div>
+    </div>
+</footer>
+
+<!-- Script to handle workspace functionality -->
+<script>
+    $(document).ready(function(){
+        // Add workspace button click event
+        $('.add-workspace').click(function(){
+            var numTabs = $('#workspaceTabs').children().length - 1; // Exclude add workspace button
+            var newWorkspaceNum = numTabs + 1;
+            var newWorkspaceId = 'workspace' + newWorkspaceNum;
+            var newWorkspaceTab = $('<li class="nav-item"><a class="nav-link" id="' + newWorkspaceId + '-tab" data-bs-toggle="tab" href="#' + newWorkspaceId + '" role="tab" aria-controls="' + newWorkspaceId + '" aria-selected="false">Workspace ' + newWorkspaceNum + '<button class="btn-close close-workspace" type="button" aria-label="Close"></button></a></li>');
+            var newWorkspacePane = $('<div class="tab-pane fade" id="' + newWorkspaceId + '" role="tabpanel"></div>');
+            
+            // Append new workspace tab and pane
+            $('#workspaceTabs').append(newWorkspaceTab);
+            $('.tab-content').append(newWorkspacePane);
+
+            // Activate new workspace tab
+            $('#' + newWorkspaceId + '-tab').tab('show');
+        });
+
+        // Close workspace button click event
+        $(document).on('click', '.close-workspace', function(){
+            var workspaceId = $(this).closest('a').attr('href');
+            $(workspaceId).remove();
+            $(this).closest('li').remove();
+            $('#workspaceTabs a:last').tab('show');
+        });
+    });
+</script>
+   
+    <style>
+        .card {
+            overflow: hidden; /* Hide any content that overflows the card */
+        }
+    
+        .card-body {
+            padding: 0; /* Remove padding to ensure the image fits properly */
+        }
+    
+        .card-body img {
+            width: 100%; /* Ensure the image fills the entire width of the card */
+            height: auto; /* Maintain aspect ratio */
+            display: block; /* Remove any spacing below the image */
+        }
+    </style>
+
+    <script>
+        // JavaScript to handle the slider value change and update the table
+        const rangeInput = document.getElementById('rangeInput');
+        const valueOutput = document.getElementById('valueOutput');
+        const tableData = document.querySelectorAll('#tableBody tr td:nth-child(n+3)');
+    
+        function updateTableValues() {
+            const sliderValue = rangeInput.value;
+            valueOutput.textContent = sliderValue;
+    
+            // Update table values based on the slider value
+            tableData.forEach(cell => {
+                cell.textContent = parseInt(cell.textContent) + parseInt(sliderValue);
+            });
+        }
+    
+        // Event listener for slider input
+        rangeInput.addEventListener('input', updateTableValues);
+    
+        // Initial update of table values
+        updateTableValues();
+    </script>
+{% endblock body %}
+
+
+
+
+
+<div class="row mt-4">
+    <div class="col-lg-10 offset-lg-1">
+        <h4>Adjust Values</h4>
+        <input type="range" class="form-range" id="rangeInput" min="0" max="100" step="1" value="50">
+        <div id="valueOutput"></div>
+    </div>
+</div>

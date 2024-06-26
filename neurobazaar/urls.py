@@ -1,4 +1,4 @@
-"""DSH URL Configuration
+"""neurobazaar URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.11/topics/http/urls/
@@ -16,9 +16,9 @@ Including another URLconf
 from django.urls import include, path, re_path as url
 from django.contrib import admin
 
-admin.site.site_header = 'DSH Administration'
-admin.site.site_title = 'DSH Administration Portal'
-admin.site.index_title = 'Welcome to DSH Administration Portal'
+admin.site.site_header = 'Neurobazaar Administration'
+admin.site.site_title = 'Neurobazaar Administration Portal'
+admin.site.index_title = 'Welcome to Neurobazaar Administration Portal'
 
 urlpatterns = [
     path('', include('home.urls')),

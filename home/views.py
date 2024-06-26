@@ -2,7 +2,7 @@ import os
 from django.http import FileResponse, HttpResponseNotFound
 from django.conf import settings
 from django.shortcuts import render, HttpResponse, redirect
-from DSH.settings import BASE_DIR
+from neurobazaar.settings import BASE_DIR
 from home.models import User
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm

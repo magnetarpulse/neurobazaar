@@ -3,41 +3,64 @@
 
 Authors and Contributors:
 - Alexandru Iulian Orhean 2024 (aorhean@depaul.edu)  
+- Vivek Shravan Gupta 2024 (vgupta16@depaul.edu)  
 
 Interactive Visualization Platform for Machine Learning and Data Science Datasets.
 
 ## Requirements and Setup
 
-### Install Python
+### System Requirements
 
 In order to run the Neurobazaar Platform you need to have at least Python **3.11** installed on your computer.
 
-For Windows 10 this software has been tested with Python **3.11.5**.
+This software has been developed and tested with Python **3.11** on:
+- Windows 10
+- Ubuntu 22.04 LTS
 
-### Set up the Python Virtual Environment
+### Python Virtual Environment Setup
 
-All of the required Python packages are installed in a Python Virtual Environment.
+All of the required Python packages are installed in a Python Virtual Environment. The first step is to create the virtual environment and the second step is to load/activate the environment. The first step has to be run only once.
 
-To create the Python Virtual Environment in Windows 10 use the following command (you only need to create it once):
+Create the Python Virtual Environment on Windows 10:
 ```
 py -3.11 -m venv .venv
 ```
 
-To load/activate the Python Virtual Environment in Windows 10 Powershell use the following command:
+Create the Python Virtual Environment on Ubuntu 22.04 LTS or Mac OS 14:  
+```
+python3.11 -m venv .venv  
+```
+
+Load/activate the Python Virtual Environment in Windows 10 Powershell:
 ```
 .venv/Scripts/Activate.ps1
 ```
 
-To load/activate the Python Virtual Environment in Windows 10 CMD use the following command:
+Load/activate the Python Virtual Environment in Windows 10 CMD:
 ```
 .venv/Scripts/activate.bat
 ```
 
-### Install the Python Required Packages
-
-To install the required Python packages inside the loaded/activated virtual enviroment run the following command:
+Load/activate the Python Virtual Environment in Ubuntu 22.04 LTS or Mac OS 14: 
+```
+source .venv/bin/activate
 ```
 
+### Install the Python Dependencies/Packages
+
+Install the dependecies/packages on the loaded/activated virtual environment:
+```
+python -m pip install -r requirements.txt
 ```
 
 ## How to Build and Run
+
+Migrate the Django database (only required to run once):
+```
+python manage.py migrate
+```
+
+Start the Django server:
+```
+python manage.py runserver   
+```

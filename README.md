@@ -23,7 +23,7 @@ You need to install the following packages:
 ```
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt update
-sudo apt install g++-12 python3.11 python3.11-venv libpython3.11-dev build-essential cmake cmake-curses-gui mesa-common-dev mesa-utils libosmesa6-dev freeglut3-dev ninja-build 
+sudo apt install python3.11 python3.11-venv libpython3.11-dev build-essential g++-12 cmake cmake-curses-gui ninja-build mesa-common-dev mesa-utils libosmesa6-dev freeglut3-dev 
 sudo update-alternatives --remove-all gcc
 sudo update-alternatives --remove-all g++
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 110
@@ -38,7 +38,7 @@ All of the required Python packages are installed in a Python Virtual Environmen
 
 Create the Python Virtual Environment on Ubuntu 22.04 LTS:  
 ```
-python3.11 -m venv .venv  
+python3.11 -m venv .venv
 ```
 
 Load/activate the Python Virtual Environment in Ubuntu 22.04 LTS: 
@@ -54,7 +54,7 @@ Before you can build VTK, you need to initalize the VTK submodule.
 git submodule init
 git submodule update
 mkdir -p vtk/build
-cmake -GNinja -DCMAKE_INSTALL_PREFIX=.venv -DVTK_WRAP_PYTHON=ON -DVTK_SMP_IMPLEMENTATION_TYPE=STDThread -DVTK_USE_COCOA=OFF -DVTK_USE_X=OFF -DVTK_USE_WIN32_OPENGL=OFF -DVTK_OPENGL_HAS_OSMESA=ON -DVTK_OPENGL_USE_EGL=OFF -DVTK_DEFAULT_RENDER_WINDOW_OFFSCREEN=ON -DVTK_DEFAULT_RENDER_WINDOW_HEADLESS=ON -DVTK_GROUP_ENABLE_Web:STRING=WANT -DPYTHON_INCLUDE_DIR=/usr/include/python3.11/ -DPYTHON_LIBRARY=/usr/lib/python3.11/ -S vtk/ -B vtk/build/
+cmake -GNinja -DCMAKE_INSTALL_PREFIX=.venv -DVTK_WRAP_PYTHON=ON -DVTK_SMP_IMPLEMENTATION_TYPE=STDThread -DVTK_USE_COCOA=OFF -DVTK_USE_X=OFF -DVTK_USE_WIN32_OPENGL=OFF -DVTK_OPENGL_HAS_OSMESA=ON -DVTK_OPENGL_USE_EGL=OFF -DVTK_DEFAULT_RENDER_WINDOW_OFFSCREEN=ON -DVTK_DEFAULT_RENDER_WINDOW_HEADLESS=ON -DVTK_GROUP_ENABLE_Web:STRING=WANT -S vtk/ -B vtk/build/
 cmake --build vtk/build
 cmake --build vtk/build --target install
 ```

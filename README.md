@@ -3,7 +3,7 @@
 
 Authors and Contributors:
 - Alexandru Iulian Orhean 2024 (aorhean@depaul.edu)  
-- Huy Quoc Nguyen 2024 (hnguye83@depaul.edu)
+- Huy Quoc Nguyen 2024 (hnguye83@depaul.edu)  
 - Vivek Shravan Gupta 2024 (vgupta16@depaul.edu)  
 
 Interactive Visualization Platform for Machine Learning and Data Science Datasets.

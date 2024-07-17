@@ -3,3 +3,11 @@
 .idea
 db.sqlite3
 vtk/build
+requirements_for_tests.txt
+vtk
+vue-client
+server-client
+new-venv
+test-files
+client
+home

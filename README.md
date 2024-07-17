@@ -59,6 +59,14 @@ cmake --build vtk/build
 cmake --build vtk/build --target install
 ```
 
+### Install Node and NPM
+
+You will also need to install Node.js and npm.
+
+```
+sudo apt install nodejs npm
+```
+
 ### Install the Python Dependencies/Packages
 
 Install the dependecies/packages on the loaded/activated virtual environment:

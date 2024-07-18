@@ -23,17 +23,37 @@ wsClient.getRemote().Trame.getState().then((s) => {
     viewId.value = s.state.viewId;
     // Initial load of column_options
     column_options.value = s.state.column_options || [];
-    console.log("Initial column options from server state:", column_options.value);
+    //console.log("Initial column options from server state:", column_options.value);
+    bins.value = s.state.bins || 5;
+    console.log("Initial bins from server state:", bins.value);
 });
 
-watch(
+/*watch(
     bins,
     (value) => {
         wsClient.getRemote().Trame.updateState([
             { key: "bins", value }
         ]);
     }
-)
+)*/
+
+watch(
+    bins,
+    async (newVal, oldVal) => {
+        console.log("bins changed from", oldVal, "to", newVal);
+        const s = await wsClient.getRemote().Trame.getState();
+        if (s.state.bins !== newVal) {
+            console.log("Updating state...");
+            await wsClient.getRemote().Trame.updateState([
+                { key: "bins", value: newVal }
+            ]);
+            console.log("State updated with new bins value:", newVal);
+        } else {
+            console.log("No need to update state. Bins value is the same.");
+        }
+    },
+    { deep: true }
+);
 
 // TODO: Someone else, who is more knowledgeable and experienced in JavaScript and or Vue.js should review the response from Copilot, and make sure what copilot is saying is correct.
 // If copilot's response is incorrect, please tell me (Huy Nguyen) and provide the correct response, so that I can update the server-side code accordingly.
@@ -103,11 +123,11 @@ watch(
 watch(
     () => column_options,
     async (newVal, oldVal) => {
-        console.log("column_options changed from", oldVal, "to", newVal);
+        //console.log("column_options changed from", oldVal, "to", newVal);
         const s = await wsClient.getRemote().Trame.getState();
-        console.log("Resolved new state:", s);
+        //console.log("Resolved new state:", s);
         column_options.value = s.state.column_options || [];
-        console.log("Updated column options from server state:", column_options.value);
+        //console.log("Updated column options from server state:", column_options.value);
     },
     { deep: true }
 )

@@ -22,7 +22,7 @@ source .venv/bin/activate
 
 You will need to build the client before you can possibly continue. I have listed the commands to build the client.
 ```
-cd vue-client-for-server
+cd enter/path/to/client-server/vue-client-for-server
 npm install
 npm run build
 ```
@@ -32,13 +32,13 @@ You should start the server before starting the client. I have listed the comman
 
 ```
 cd enter/path/to/client-server/server
-python server_test_app.py
+python updated_server_test_app.py
 ```
 
 or if you do not want the server to open your broswer, as it is not necessary:
 ```
 cd enter/path/to/client-server/server
-python server_test_app.py --server
+python updated_server_test_app.py --server
 ```
 
 ### Start the client

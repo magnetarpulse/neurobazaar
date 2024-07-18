@@ -55,6 +55,11 @@ python -m pip install -r requirements.txt
 
 ## How to Build and Run
 
+Make Migration for the Django database (only required to run once):
+```
+python manage.py makemigrations home
+```
+
 Migrate the Django database (only required to run once):
 ```
 python manage.py migrate

@@ -60,11 +60,30 @@ cmake --build build --target install
 ```
 
 ### Install Node and NPM
+To be running the client of the visualizaiton service of the Neurobazaar, you will need to have **Node version > 20.0.0** and **NPM>8.0.0**.
 
 You will also need to install Node.js and npm.
 
+You can verify your Node and NPM version by doing
+```
+node --version
+npm --version
+```
+
 ```
 sudo apt install nodejs npm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+```
+
+**YOU THEN SHOULD CLOSE YOUR TERMINAL OR EXITING FROM YOUR REMOTE MACHINE IF YOU ARE USING A REMOTE MACHINE**
+```
+nvm install node
+nvm use node
+```
+You should now have the latest node and npm version installed on your machine. You can verify if you have correctly installed the node and npm version using the following command.
+```
+node --version
+npm --version
 ```
 
 ### Install the Python Dependencies/Packages

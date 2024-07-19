@@ -23,6 +23,8 @@ You need to install the following packages:
 ```
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt update
+sudo apt upgrade
+sudo reboot
 sudo apt install python3.11 python3.11-venv libpython3.11-dev build-essential g++-12 cmake cmake-curses-gui ninja-build mesa-common-dev mesa-utils libosmesa6-dev freeglut3-dev 
 sudo update-alternatives --remove-all gcc
 sudo update-alternatives --remove-all g++
@@ -60,30 +62,44 @@ cmake --build build --target install
 ```
 
 ### Install Node and NPM
-To be running the client of the visualizaiton service of the Neurobazaar, you will need to have **Node version > 20.0.0** and **NPM>8.0.0**.
+To be running the client of the visualizaiton service(s) of the Neurobazaar, you will need to have **Node version > 20.0.0** and **NPM>8.0.0**.
 
-You will also need to install Node.js and npm.
+You can check if you have the installed Node and NPM version by the using the following commands. If nothing was returned, then you do not have Node or NPM installed. If the command does return a version, but the version does not meet the requirments ( **Node version > 20.0.0** and **NPM>8.0.0**) then I would reccomended updating or follow the steps below.
 
-You can verify your Node and NPM version by doing
 ```
 node --version
 npm --version
 ```
+or
+
+```
+node -v
+npm -v
+```
+
+**To install Node.js and NPM or update Node.js and NPM followin the following commands**
 
 ```
 sudo apt install nodejs npm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
 ```
 
-**YOU THEN SHOULD CLOSE YOUR TERMINAL OR EXITING FROM YOUR REMOTE MACHINE IF YOU ARE USING A REMOTE MACHINE**
+**You then need to clos your command-line interface or exit from your remote machine if you are using a remote machine. Then reopen your command-line interface/remote machine.** 
+
 ```
 nvm install node
 nvm use node
 ```
-You should now have the latest node and npm version installed on your machine. You can verify if you have correctly installed the node and npm version using the following command.
+You should now have the latest node and npm version installed on your machine. You can verify if you have correctly installed the node and npm version using the following commands
 ```
 node --version
 npm --version
+```
+or
+
+```
+node -v
+npm -v
 ```
 
 ### Install the Python Dependencies/Packages

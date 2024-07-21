@@ -1,12 +1,53 @@
+# needed for the launcher to work
 import argparse
+
+# needed for trame to work
 from trame.app import get_server
 from trame.ui.vuetify import SinglePageLayout
 from trame.widgets import vtk, vuetify
+
+# the backend of trame to use, which is VTK
 import vtk as standard_vtk
+
+# needed to work with data manipulation (too slow for large datasets)
 import numpy as np
+
+# ideally used for large datasets instead of numpy
+import dask
+
+# needed to read CSV files
 import pandas as pd
+
+# needed to work with Dask DataFrames, which is a parallelized version of Pandas and used to read the CSV file for large datasets
+import dask.dataframe as dd
+
+# needed to work with file input
 from io import BytesIO
+
+# needed to do benchmarking
 import time
+
+# needed to increase recursion limit for large datasets
+import sys
+
+# for debugging purposes
+import logging
+
+# needed to work with temporary files (for file input using dask)
+import tempfile
+import os
+
+# -----------------------------------------------------------------------------
+# Increase recursion limit for large datasets
+# -----------------------------------------------------------------------------
+
+sys.setrecursionlimit(10000)
+
+# -----------------------------------------------------------------------------
+# Logging setup (for debugging)
+# -----------------------------------------------------------------------------
+
+#logging.basicConfig(level=logging.DEBUG)
 
 # -----------------------------------------------------------------------------
 # Trame setup
@@ -96,21 +137,50 @@ def update_histogram(bins, **kwargs):
 
 @state.change("file_input")
 def on_file_input_change(file_input, **kwargs):
+    print("on_file_input_change invoked") # for debugging purposes
     if file_input:
+        tmp_path = None
         try:
-            # Load the CSV data from the 'content' key
             content = file_input['content']
-            df = pd.read_csv(BytesIO(content))
+            #print(f"Content type: {type(content)}") # for debugging purposes
+            #print(f"Content preview: {content[:500]}")  # for debugging purposes
+
+            # Write content to a temporary file
+            # This is important because dask will not work with BytesIO
+            # dask will encounter a recursion error when reading from BytesIO:
+            # An error occurred: An error occurred while calling the read_csv method registered to the pandas backend.
+            # Original Message: maximum recursion depth exceeded while calling a Python object
+            # We workaround this by writing the content to a temporary file and reading from it using dask
+            with tempfile.NamedTemporaryFile(delete=False, mode='wb') as tmp:
+                start_time_of_writing_to_temporary_file = time.time()
+                tmp.write(content)
+                tmp_path = tmp.name
+                end_time_of_writing_to_temporary_file = time.time()
+                print(f"Writing to temporary file took {end_time_of_writing_to_temporary_file - start_time_of_writing_to_temporary_file} seconds")
+
+            print(f"Temporary file path: {tmp_path}")
+            start_time_for_dask_to_read_csv = time.time()
+            df_dask = dd.read_csv(tmp_path)
+            end_time_for_dask_to_read_csv = time.time()
+            print("Dask read_csv succeeded")
+            print(f"Reading CSV file using Dask took {end_time_for_dask_to_read_csv - start_time_for_dask_to_read_csv} seconds")
+            combined_time = (end_time_of_writing_to_temporary_file - start_time_of_writing_to_temporary_file) + (end_time_for_dask_to_read_csv - start_time_for_dask_to_read_csv)
+            print(f"Over all time it took using dask took {combined_time} seconds")
 
             # Update the dropdown options with the DataFrame columns
-            state.column_options = df.columns.tolist()
+            state.column_options = df_dask.columns.tolist()
 
             # Select the first column by default
             state.selected_column = state.column_options[0]
 
             # Select the column to use
             global np_data
-            np_data = df[state.selected_column].values
+            
+            # Dask uses lazy evaluation, which means that computations are not executed immediately when they are declared. 
+            # Instead, Dask builds up a task graph of computations to be done, and the actual computations are not performed until you explicitly ask for the result using the .compute() method.
+            # The .compute() method is essentially converting the Dask array to a NumPy array and performing all the necessary computations.
+            # Find more about the method here: https://docs.dask.org/en/stable/generated/dask.dataframe.DataFrame.compute.html
+            np_data = df_dask[state.selected_column].values.compute()  # compute() to materialize values
 
             # Update the histogram with the new data
             update_histogram(state.bins)
@@ -118,7 +188,13 @@ def on_file_input_change(file_input, **kwargs):
             print(f"KeyError: {e} - Check the structure of file_input and the CSV file.")
         except Exception as e:
             print(f"An error occurred: {e}")
+        finally:
+            # Ensure the temporary file is deleted
+            if tmp_path and os.path.exists(tmp_path):
+                os.remove(tmp_path)
+                print(f"Temporary file {tmp_path} deleted.")
 
+            
 # -----------------------------------------------------------------------------
 # State change handler for selected column
 # -----------------------------------------------------------------------------
@@ -127,9 +203,11 @@ def on_file_input_change(file_input, **kwargs):
 def on_selected_column_change(selected_column, **kwargs):
     if state.file_input and selected_column:
         try:
+            # TODO: Replace pandas with dask
             # Load the CSV data from the 'content' key
             content = state.file_input['content']
             df = pd.read_csv(BytesIO(content))
+            #df = dd.read_csv(BytesIO(content))
 
             # Select the column to use
             global np_data

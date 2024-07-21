@@ -33,7 +33,7 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 120
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 110
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 120
 ```
-I would reccomended upgrade the packages and then doing a reboot. Here is you can do it:
+I would reccomended upgrade the packages and then doing a reboot. Here is how you can do it:
 ```
 sudo apt upgrade
 sudo reboot

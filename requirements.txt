@@ -10,3 +10,4 @@ trame-matplotlib
 trame-server
 trame-vtk
 trame-vuetify
+dask[complete]

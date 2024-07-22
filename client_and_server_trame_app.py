@@ -10,6 +10,16 @@ from trame.widgets import vtk, vuetify
 import vtk as standard_vtk
 
 # Needed to work with data manipulation, too slow for large (byte size and row/column size) datasets.
+# Edit: My original statement/assumpution was half correct and half incorrect.
+# Indeed, for larger datatsets (byte size and row/column size) Dask is faster than NumPy.
+
+# But it is not because NumPy is slower computing the data, actually it is faster than Dask for small datasets.
+# Instead the reason why NumPy is slower or cannot handle large datasets is because it loads the entire dataset into memory.
+# This is not a problem for small datasets, but for large datasets it is a problem.
+# Dask on the other hand, does not load the entire dataset into memory, instead it loads the dataset in chunks.
+# This makes Dask slower for smaller datasets in comparison to NumPy, because the operations are not done in memory.
+# However, Dask can handle larger datasets because it does not load the entire dataset into memory and therefore "faster" than NumPy who cannot handle large datasets.
+# A more accurate description of the situation is that NumPy is faster than Dask for small datasets, but Dask is able to handle larger datasets while NumPy cannot.
 import numpy as np
 
 # Ideally used for large (byte size and row/column size) datasets instead of numpy.
@@ -18,13 +28,20 @@ import dask
 # Needed to read CSV files.
 import pandas as pd
 
+# This is needed to get the available memory of the system.
+# This is used because we want to know how much memory is available to us and if NumPy or Dask can handle the dataset.
+import psutil
+
 # Needed if you want to use Dask DataFrame, which is a parallelized version of Pandas and used to read the CSV file for large (byte size and row/column size) datasets.
 # From my experiments with Dask DataFrame, it is much faster than Pandas for all datasets types (byte size and row/column size).
 # I still need to do more experiments to see if it is faster than Pandas for larger (byte size and row/column size) datasets.
 import dask.dataframe as dd
 
+#
+import dask.array as da
+
 # Needed to work with file inputs.
-# Honestly, I am not sure if this is needed anymore since I am using Dask DataFrames to read the CSV file.
+# Honestly, I am not sure if this is needed anymore since I am using Dask DataFrame to read the CSV file.
 # And we are not using pandas to read the CSV file anymore.
 from io import BytesIO
 
@@ -101,7 +118,86 @@ state, ctrl = server.state, server.controller
 # I am including inital data for easy verification of the code (such as interactivity of the slider), in production, there will be no inital data.
 np_data = np.random.normal(size=1000)
 bins = np.linspace(-3, 3, 20)
-hist, bin_edges = np.histogram(np_data, bins)
+#hist, bin_edges = np.histogram(np_data, bins)
+
+# Get available memory
+available_memory = psutil.virtual_memory().available
+print(f"Available memory: {available_memory}") # For debugging purposes.
+    
+# Convert to bytes
+available_memory_bytes = available_memory * (1024 ** 2)
+print(f"Available memory in bytes: {available_memory_bytes}") # For debugging purposes.
+    
+# Set a threshold for memory usage, say 80%
+memory_usage_threshold = 0.8 * available_memory_bytes
+print(f"Memory usage threshold: {memory_usage_threshold}") # For debugging purposes.
+    
+data_size = np_data.size * np_data.itemsize  # size in bytes
+#data_size = np_data.size
+    
+if data_size < 5_000_000:
+    # Use NumPy for small datasets, it is faster than Dask for small datasets.
+    computation_type = "NumPy"
+    numpy_start_time = time.time()
+    hist, bin_edges = np.histogram(np_data, bins)
+    numpy_end_time = time.time() #
+    print(f"Calculating the histogram using {computation_type} took {numpy_end_time - numpy_start_time} seconds") # For testing performance (latency), this measure how long it takes to calculate the histogram.
+else:
+    computation_type = "Dask"
+        
+    # Assuming np_data is a NumPy array, convert it to a Dask array
+    star_time_to_change_np_data_to_dask_data = time.time() # For testing performance (latency), this measure how long it takes to change the NumPy array to a Dask array.
+    dask_data = da.from_array(np_data, chunks='auto')
+    end_time_to_change_np_data_to_dask_data = time.time() # For testing performance (latency), this measure how long it takes to change the NumPy array to a Dask array.
+    print(f"Changing NumPy array to Dask array took {end_time_to_change_np_data_to_dask_data - star_time_to_change_np_data_to_dask_data} seconds") # For testing performance (latency), this measure how long it takes to change the NumPy array to a Dask array.
+        
+    # Calculate the minimum and maximum values of the data
+    start_time_to_calculate_min_and_max = time.time() # For testing performance (latency), this measure how long it takes to calculate the minimum and maximum values of the data.
+    data_min, data_max = dask_data.min().compute(), dask_data.max().compute()
+    end_time_to_calculate_min_and_max = time.time() # For testing performance (latency), this measure how long it takes to calculate the minimum and maximum values of the data.
+    print(f"Calculating the minimum and maximum values of the data took {end_time_to_calculate_min_and_max - start_time_to_calculate_min_and_max} seconds") # For testing performance (latency), this measure how long it takes to calculate the minimum and maximum values of the data.
+        
+    with dask.config.set(scheduler='threads'):
+        # Different types of schedulers: https://docs.dask.org/en/latest/scheduling.html and https://docs.dask.org/en/stable/scheduling.html
+        # Scheduler Overview: https://docs.dask.org/en/latest/scheduler-overview.html and https://docs.dask.org/en/stable/scheduler-overview.html
+        # Explanations of the different kinds of schedulers:
+        ''' 
+            1. single-threaded:
+                This like having one chef in the kitchen who does all the cooking tasks one by one. 
+                They can only do one thing at a time, so if they're chopping vegetables, they can't be stirring the soup. 
+                It's simple and there's no confusion about who does what, but it might not be very efficient if there are many tasks to do.
+                
+            2. threads:
+                This is like having multiple chefs in the kitchen who can work on different tasks at the same time.
+                One chef could be chopping vegetables while another is stirring the soup. 
+                This can be more efficient than a single chef, but it requires careful coordination to make sure the chefs don't get in each other's way. 
+                For example, two chefs trying to use the same chopping board at the same time.
+                In programming, the scenario "two chefs trying to use the same chopping board at the same time" is analogous to a situation where two threads are trying to access or modify the same shared resource simultaneously.
+                This is generally significantly faster than the single-threaded scheduler, as more workers (chefs) are available to perform the computations concurrently than if a single worker (chef) was to perform all the computations sequentially.
+            
+            3. processes:
+                Tis like having multiple kitchens, each with its own chef. 
+                Each chef can work independently without worrying about the others, but it takes more resources (space, equipment, etc.) to set up multiple kitchens. 
+                Also, if one chef needs to pass a bowl of chopped vegetables to another chef in a different kitchen, it's more complicated than passing it to a chef in the same kitchen.
+                This would be the ideal scenario for a situation where you have multiple CPUs or cores available and you want to take advantage of parallel processing.
+                In the context of cloud computing, the term "nodes" often refers to the individual servers or machines that make up the cloud infrastructure. 
+                These nodes can be located in different parts of the world, but they are all connected through the Internet and can be used to store, manage, and process data. 
+                This is similar to having multiple "kitchens" in the analogy, where each kitchen has its own chef and equipment.
+                When we say that processes can be used in cloud computing where you have many nodes available for processing, we're referring to the idea of distributing the computation across multiple nodes. 
+                Each node can run one or more processes, and these processes can operate independently without interfering with each other, similar to how each chef in a separate kitchen can work independently.
+                This distributed processing can significantly speed up computation, especially for large-scale tasks. 
+                For example, if you're processing a large dataset, you can split the dataset into smaller chunks and have each node process a different chunk. 
+                This is known as data parallelism.
+                However, it's important to note that communication between processes on different nodes can be more complex than communication within the same node. 
+                This is similar to how passing a bowl of chopped vegetables to another chef in a different kitchen is more complicated than passing it to a chef in the same kitchen. 
+                In the context of cloud computing, this inter-node communication often involves transferring data over the network, which can be slower than communication within the same node.
+                This is similar to the threads scheduler, but instead of having multiple threads in the same kitchen, you have multiple kitchens with their own chefs.
+        '''
+        # Calculate histogram with range specified
+        start_time_to_calculate_histogram = time.time() # For testing performance (latency), this measure how long it takes to calculate the histogram.
+        hist, bin_edges = da.histogram(dask_data, bins=bins, range=(data_min, data_max))
+        end_time_to_calculate_histogram = time.time() # For testing performance (latency), this measure how long it takes to calculate the histogram.
+        print(f"Calculating the histogram using {computation_type} took {end_time_to_calculate_histogram - start_time_to_calculate_histogram} seconds") # For testing performance (latency), this measure how long it takes to calculate the histogram.
 
 # Create a vtkTable
 table = standard_vtk.vtkTable()
@@ -177,7 +273,86 @@ def update_histogram(bins, **kwargs):
     # That includes the inital histogram generated from the CSV file.
     start_time = time.time() # For testing performance (latency), this is what matters!
     bins = int(bins)
-    hist, bin_edges = np.histogram(np_data, bins)
+    
+    # Get available memory
+    available_memory = psutil.virtual_memory().available
+    print(f"Available memory: {available_memory}") # For debugging purposes.
+    
+    # Convert to bytes
+    available_memory_bytes = available_memory * (1024 ** 2)
+    print(f"Available memory in bytes: {available_memory_bytes}") # For debugging purposes.
+    
+    # Set a threshold for memory usage, say 80%
+    memory_usage_threshold = 0.8 * available_memory_bytes
+    print(f"Memory usage threshold: {memory_usage_threshold}") # For debugging purposes.
+    
+    data_size = np_data.size * np_data.itemsize  # size in bytes
+    #data_size = np_data.size
+    
+    if data_size < 5_000_000:
+        # Use NumPy for small datasets, it is faster than Dask for small datasets.
+        computation_type = "NumPy"
+        numpy_start_time = time.time()
+        hist, bin_edges = np.histogram(np_data, bins)
+        numpy_end_time = time.time() #
+        print(f"Calculating the histogram using {computation_type} took {numpy_end_time - numpy_start_time} seconds") # For testing performance (latency), this measure how long it takes to calculate the histogram.
+    else:
+        computation_type = "Dask"
+        
+        # Assuming np_data is a NumPy array, convert it to a Dask array
+        star_time_to_change_np_data_to_dask_data = time.time() # For testing performance (latency), this measure how long it takes to change the NumPy array to a Dask array.
+        dask_data = da.from_array(np_data, chunks='auto')
+        end_time_to_change_np_data_to_dask_data = time.time() # For testing performance (latency), this measure how long it takes to change the NumPy array to a Dask array.
+        print(f"Changing NumPy array to Dask array took {end_time_to_change_np_data_to_dask_data - star_time_to_change_np_data_to_dask_data} seconds") # For testing performance (latency), this measure how long it takes to change the NumPy array to a Dask array.
+        
+        # Calculate the minimum and maximum values of the data
+        start_time_to_calculate_min_and_max = time.time() # For testing performance (latency), this measure how long it takes to calculate the minimum and maximum values of the data.
+        data_min, data_max = dask_data.min().compute(), dask_data.max().compute()
+        end_time_to_calculate_min_and_max = time.time() # For testing performance (latency), this measure how long it takes to calculate the minimum and maximum values of the data.
+        print(f"Calculating the minimum and maximum values of the data took {end_time_to_calculate_min_and_max - start_time_to_calculate_min_and_max} seconds") # For testing performance (latency), this measure how long it takes to calculate the minimum and maximum values of the data.
+        
+        with dask.config.set(scheduler='threads'):
+            # Different types of schedulers: https://docs.dask.org/en/latest/scheduling.html and https://docs.dask.org/en/stable/scheduling.html
+            # Scheduler Overview: https://docs.dask.org/en/latest/scheduler-overview.html and https://docs.dask.org/en/stable/scheduler-overview.html
+            # Explanations of the different kinds of schedulers:
+            ''' 
+                1. single-threaded:
+                    This like having one chef in the kitchen who does all the cooking tasks one by one. 
+                    They can only do one thing at a time, so if they're chopping vegetables, they can't be stirring the soup. 
+                    It's simple and there's no confusion about who does what, but it might not be very efficient if there are many tasks to do.
+                    
+                2. threads:
+                    This is like having multiple chefs in the kitchen who can work on different tasks at the same time.
+                    One chef could be chopping vegetables while another is stirring the soup. 
+                    This can be more efficient than a single chef, but it requires careful coordination to make sure the chefs don't get in each other's way. 
+                    For example, two chefs trying to use the same chopping board at the same time.
+                    In programming, the scenario "two chefs trying to use the same chopping board at the same time" is analogous to a situation where two threads are trying to access or modify the same shared resource simultaneously.
+                    This is generally significantly faster than the single-threaded scheduler, as more workers (chefs) are available to perform the computations concurrently than if a single worker (chef) was to perform all the computations sequentially.
+                
+                3. processes:
+                    Tis like having multiple kitchens, each with its own chef. 
+                    Each chef can work independently without worrying about the others, but it takes more resources (space, equipment, etc.) to set up multiple kitchens. 
+                    Also, if one chef needs to pass a bowl of chopped vegetables to another chef in a different kitchen, it's more complicated than passing it to a chef in the same kitchen.
+                    This would be the ideal scenario for a situation where you have multiple CPUs or cores available and you want to take advantage of parallel processing.
+                    In the context of cloud computing, the term "nodes" often refers to the individual servers or machines that make up the cloud infrastructure. 
+                    These nodes can be located in different parts of the world, but they are all connected through the Internet and can be used to store, manage, and process data. 
+                    This is similar to having multiple "kitchens" in the analogy, where each kitchen has its own chef and equipment.
+                    When we say that processes can be used in cloud computing where you have many nodes available for processing, we're referring to the idea of distributing the computation across multiple nodes. 
+                    Each node can run one or more processes, and these processes can operate independently without interfering with each other, similar to how each chef in a separate kitchen can work independently.
+                    This distributed processing can significantly speed up computation, especially for large-scale tasks. 
+                    For example, if you're processing a large dataset, you can split the dataset into smaller chunks and have each node process a different chunk. 
+                    This is known as data parallelism.
+                    However, it's important to note that communication between processes on different nodes can be more complex than communication within the same node. 
+                    This is similar to how passing a bowl of chopped vegetables to another chef in a different kitchen is more complicated than passing it to a chef in the same kitchen. 
+                    In the context of cloud computing, this inter-node communication often involves transferring data over the network, which can be slower than communication within the same node.
+                    This is similar to the threads scheduler, but instead of having multiple threads in the same kitchen, you have multiple kitchens with their own chefs.
+            '''
+            # Calculate histogram with range specified
+            start_time_to_calculate_histogram = time.time() # For testing performance (latency), this measure how long it takes to calculate the histogram.
+            hist, bin_edges = da.histogram(dask_data, bins=bins, range=(data_min, data_max))
+            end_time_to_calculate_histogram = time.time() # For testing performance (latency), this measure how long it takes to calculate the histogram.
+            print(f"Calculating the histogram using {computation_type} took {end_time_to_calculate_histogram - start_time_to_calculate_histogram} seconds") # For testing performance (latency), this measure how long it takes to calculate the histogram.
+    
     arrX.Reset()
     arrY.Reset()
     for i in range(len(hist)):

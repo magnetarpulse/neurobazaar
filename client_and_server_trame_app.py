@@ -176,7 +176,7 @@ else:
                 This is generally significantly faster than the single-threaded scheduler, as more workers (chefs) are available to perform the computations concurrently than if a single worker (chef) was to perform all the computations sequentially.
             
             3. processes:
-                Tis like having multiple kitchens, each with its own chef. 
+                This like having multiple kitchens, each with its own chef. 
                 Each chef can work independently without worrying about the others, but it takes more resources (space, equipment, etc.) to set up multiple kitchens. 
                 Also, if one chef needs to pass a bowl of chopped vegetables to another chef in a different kitchen, it's more complicated than passing it to a chef in the same kitchen.
                 This would be the ideal scenario for a situation where you have multiple CPUs or cores available and you want to take advantage of parallel processing.
@@ -330,7 +330,7 @@ def update_histogram(bins, **kwargs):
                     This is generally significantly faster than the single-threaded scheduler, as more workers (chefs) are available to perform the computations concurrently than if a single worker (chef) was to perform all the computations sequentially.
                 
                 3. processes:
-                    Tis like having multiple kitchens, each with its own chef. 
+                    This like having multiple kitchens, each with its own chef. 
                     Each chef can work independently without worrying about the others, but it takes more resources (space, equipment, etc.) to set up multiple kitchens. 
                     Also, if one chef needs to pass a bowl of chopped vegetables to another chef in a different kitchen, it's more complicated than passing it to a chef in the same kitchen.
                     This would be the ideal scenario for a situation where you have multiple CPUs or cores available and you want to take advantage of parallel processing.

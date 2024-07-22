@@ -200,41 +200,62 @@ else:
         print(f"Calculating the histogram using {computation_type} took {end_time_to_calculate_histogram - start_time_to_calculate_histogram} seconds") # For testing performance (latency), this measure how long it takes to calculate the histogram.
 
 # Create a vtkTable
+start_time_to_create_vtk_table = time.time() # For testing performance (latency), this measure how long it takes to create the vtkTable.
 table = standard_vtk.vtkTable()
+end_time_to_create_vtk_table = time.time() # For testing performance (latency), this measure how long it takes to create the vtkTable.
+print(f"Creating the vtkTable took {end_time_to_create_vtk_table - start_time_to_create_vtk_table} seconds") # For testing performance (latency), this measure how long it takes to create the vtkTable.
 
 # Create vtkFloatArray for X and Y axes
+start_time_to_create_vtkFloatArray = time.time() # For testing performance (latency), this measure how long it takes to create the vtkFloatArray for X and Y axes.
 arrX = standard_vtk.vtkFloatArray()
 arrX.SetName("X Axis")
 arrY = standard_vtk.vtkFloatArray()
 arrY.SetName("Frequency")
+end_time_to_create_vtkFloatArray = time.time() # For testing performance (latency), this measure how long it takes to create the vtkFloatArray for X and Y axes.
+print(f"Creating the vtkFloatArray for X and Y axes took {end_time_to_create_vtkFloatArray - start_time_to_create_vtkFloatArray} seconds") # For testing performance (latency), this measure how long it takes to create the vtkFloatArray.
 
 # Populate vtkFloatArray(s) with data
 for i in range(len(hist)):
+    start_time_to_populate_vtkFloatArray_with_data = time.time() # For testing performance (latency), this measure how long it takes to populate the vtkFloatArray with data.
     arrX.InsertNextValue(bin_edges[i])
     arrY.InsertNextValue(hist[i])
+    end_time_to_populate_vtkFloatArray_with_data = time.time() # For testing performance (latency), this measure how long it takes to populate the vtkFloatArray.
+    print(f"Populating the vtkFloatArray(s) with data took {end_time_to_populate_vtkFloatArray_with_data - start_time_to_populate_vtkFloatArray_with_data} seconds") # For testing performance (latency), this measure how long it takes to populate the vtkFloatArray with data.
 
 # Add vtkFloatArray(s) to vtkTable
+start_time_adding_vtkFloatArray_to_vtkTable = time.time() # For testing performance (latency), this measure how long it takes to add the vtkFloatArray(s) to the vtkTable.
 table.AddColumn(arrX)
 table.AddColumn(arrY)
+end_time_adding_vtkFloatArray_to_vtkTable = time.time() # For testing performance (latency), this measure how long it takes to add the vtkFloatArray(s) to the vtkTable.
+print(f"Adding the vtkFloatArray to the vtkTable took {end_time_adding_vtkFloatArray_to_vtkTable - start_time_adding_vtkFloatArray_to_vtkTable} seconds") # For testing performance (latency), this measure how long it takes to add the vtkFloatArray to the vtkTable.
 
 # Create vtkPlotBar and set data
+start_time_create_vtkPlotBar_and_set_data = time.time() # For testing performance (latency), this measure how long it takes to create the vtkPlotBar and set the data.
 plot = standard_vtk.vtkPlotBar()
 plot.SetInputData(table)
 plot.SetInputArray(0, "X Axis")
 plot.SetInputArray(1, "Frequency")
 plot.SetColor(0, 0, 0, 255)
+end_time_create_vtkPlotBar_and_set_data = time.time() # For testing performance (latency), this measure how long it takes to create the vtkPlotBar and set the data.
+print(f"Creating the vtkPlotBar and setting the data took {end_time_create_vtkPlotBar_and_set_data - start_time_create_vtkPlotBar_and_set_data} seconds") # For testing performance (latency), this measure how long it takes to create the vtkPlotBar and set the data.
 
 # Create vtkChartXY and add plot
+start_time_to_create_vtkChartXY_and_add_plot = time.time() # For testing performance (latency), this measure how long it takes to create the vtkChartXY and add the plot.
 chart = standard_vtk.vtkChartXY()
 chart.SetBarWidthFraction(1.0)
 chart.GetAxis(0).SetTitle("Frequency")
 chart.GetAxis(1).SetTitle("Feature")
 chart.AddPlot(plot)
+end_time_to_create_vtkChartXY_and_add_plot = time.time() # For testing performance (latency), this measure how long it takes to create the vtkChartXY and add the plot.
+print(f"Creating the vtkChartXY and adding the plot took {end_time_to_create_vtkChartXY_and_add_plot - start_time_to_create_vtkChartXY_and_add_plot} seconds") # For testing performance (latency), this measure how long it takes to create the vtkChartXY and add the plot.
 
-# Create vtkContextView and add chart
+# Create vtkContextView and add chart and get render window
+start_time_to_create_vtkContextView_and_add_chart_and_get_render_window = time.time() # For testing performance (latency), this measure how long it takes to create the vtkContextView and add the chart and get the render window.
 view = standard_vtk.vtkContextView()
 view.GetScene().AddItem(chart)
 view.GetRenderWindow().SetSize(800, 600)
+end_time_to_create_vtkContextView_and_add_chart_and_get_render_window = time.time() # For testing performance (latency), this measure how long it takes to create the vtkContextView and add the chart and get the render window.
+print(f"Creating the vtkContextView, adding the chart, and getting the render window took {end_time_to_create_vtkContextView_and_add_chart_and_get_render_window - start_time_to_create_vtkContextView_and_add_chart_and_get_render_window} seconds") # For testing performance (latency), this measure how long it takes to create the vtkContextView, add the chart, and get the render window.
 
 # For testing performance:
 # The end time for the creation of the histogram (actually the render window).
@@ -353,15 +374,36 @@ def update_histogram(bins, **kwargs):
             end_time_to_calculate_histogram = time.time() # For testing performance (latency), this measure how long it takes to calculate the histogram.
             print(f"Calculating the histogram using {computation_type} took {end_time_to_calculate_histogram - start_time_to_calculate_histogram} seconds") # For testing performance (latency), this measure how long it takes to calculate the histogram.
     
+    start_time_to_reset_vtkFloatArray_of_X_and_Y_axes = time.time() # For testing performance (latency), this measure how long it takes to reset the vtkFloatArray of X and Y axes.
+    
+    # Reset vtkFloatArray of X and Y axes
     arrX.Reset()
     arrY.Reset()
+    end_time_to_reset_vtkFloatArray_of_X_and_Y_axes = time.time() # For testing performance (latency), this measure how long it takes to reset the vtkFloatArray of X and Y axes.
+    print(f"Resetting the vtkFloatArray of X and Y axes took {end_time_to_reset_vtkFloatArray_of_X_and_Y_axes - start_time_to_reset_vtkFloatArray_of_X_and_Y_axes} seconds") # For testing performance (latency), this measure how long it takes to reset the vtkFloatArray of X and Y axes.
+    
+    # Populate vtkFloatArray(s) with data
     for i in range(len(hist)):
+        start_time_to_populate_vtkFloatArray_with_data = time.time() # For testing performance (latency), this measure how long it takes to populate the vtkFloatArray with data.
         arrX.InsertNextValue(bin_edges[i])
         arrY.InsertNextValue(hist[i])
+        end_time_to_populate_vtkFloatArray_with_data = time.time() # For testing performance (latency), this measure how long it takes to populate the vtkFloatArray with data.
+        print(f"Populating the vtkFloatArray with data took {end_time_to_populate_vtkFloatArray_with_data - start_time_to_populate_vtkFloatArray_with_data} seconds") # For testing performance (latency), this measure how long it takes to populate the vtkFloatArray with data.
+    
+    # The table.Modified() method is used to notify the observers that the table has been modified.
+    start_time_table_modified = time.time() # For testing performance (latency), this measure how long it takes to notify the observers that the table has been modified.
     table.Modified()
+    end_time_table_modified = time.time() # For testing performance (latency), this measure how long it takes to notify the observers that the table has been modified.
+    print(f"Notifying the observers that the table has been modified took {end_time_table_modified - start_time_table_modified} seconds") # For testing performance (latency), this measure how long it takes to notify the observers that the table has been modified.
+    
+    # Updating the view, the render window, and the histogram
+    start_time_to_update_view_render_window_and_histogram = time.time() # For testing performance (latency), this measure how long it takes to update the view, the render window, and the histogram.
     ctrl.view_update()
+    end_time_to_update_view_render_window_and_histogram = time.time() # For testing performance (latency), this measure how long it takes to update the view, the render window, and the histogram.
+    print(f"Updating the view, the render window, and the histogram took {end_time_to_update_view_render_window_and_histogram - start_time_to_update_view_render_window_and_histogram} seconds") # For testing performance (latency), this measure how long it takes to update the view, the render window, and the histogram.
+    
     end_time = time.time() # For testing performance, this is what matters!
-    print(f"Histogram update took {end_time - start_time} seconds") # For testing performance (latency), this is what matters!
+    print(f"Histogram update (overall) took {end_time - start_time} seconds") # For testing performance (latency), this is what matters!
 
 # -----------------------------------------------------------------------------
 # State change handler for file input

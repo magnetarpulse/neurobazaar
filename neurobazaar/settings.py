@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+# from .datastore_manager import getDataStoreManager
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,7 +27,6 @@ SECRET_KEY = '&g8%=&x32rr#kxt_h0fb6thxezqm5e52$bm2r%5$b#b8^qvr=*'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -82,6 +82,16 @@ DATABASES = {
 }
 
 
+# datastoremanager = getDataStoreManager()
+# # Join the BASE_DIR with 'DataStore' to form the path to the directory
+# default_datastore_path = os.path.join(BASE_DIR, 'DataStore')
+
+# # Check if the directory exists and create it if it doesn't
+# if not os.path.exists(default_datastore_path):
+#     os.makedirs(default_datastore_path)
+# defaultDatastoreID = datastoremanager.addFSDataStore(default_datastore_path)
+
+
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
@@ -129,7 +139,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
-    os.path.join(BASE_DIR, "workspace"),
 ]
 
-LOGIN_URL = '/login'
+LOGIN_URL = '/login_register'

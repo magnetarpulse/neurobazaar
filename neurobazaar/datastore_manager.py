@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+
 import os
 from pymongo import MongoClient
 import gridfs
@@ -9,55 +9,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 from home.models import LocalFileSystem, MongoDB
 datastore_manager = None
 
-class AbstractDatastore(ABC):
-    @abstractmethod
-    def connect(self):
-        pass
 
-    @abstractmethod
-    def disconnect(self):
-        pass
-
-    @abstractmethod
-    def putDataset(self, dataset_content):
-        pass
-
-    @abstractmethod
-    def delDataset(self, dataset_id):
-        pass
-
-    @abstractmethod
-    def getDataset(self, dataset_id):
-        pass
-
-class FSDatastore(AbstractDatastore):
-    def __init__(self, path):
-        self.path = path
-    
-    def connect(self):
-        print(f"Connecting to filesystem")
-
-    def disconnect(self):
-        print(f"Disconnecting from filesystem")
-        
-    def putDataset(self, dataset_id, dataset):
-        file_path = os.path.join(self.path, dataset_id)
-        with open(file_path, 'wb+') as destination:
-            for chunk in dataset.chunks():
-                destination.write(chunk)
-    
-    def delDataset(self, dataset_id):
-        file_path = os.path.join(self.path, dataset_id)
-        if file_path and os.path.exists(file_path):
-            os.remove(file_path)
-            del self.datasets[dataset_id]
-            return True
-        return False
-    
-    def getDataset(self, dataset_id):
-        file_path = os.path.join(self.path, dataset_id)
-        with open(file_path, 'rb') as file:
-            return file.read()
 
 class MongoDBDatastore(AbstractDatastore):
     def __init__(self, uri, database_name):

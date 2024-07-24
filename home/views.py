@@ -1,15 +1,16 @@
-import uuid
 from django.shortcuts import render, redirect
-from home.models import User
+from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import logout, authenticate, login
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from home.models import Datasets,DataStores,LocalFileSystem
-import os
 
-from neurobazaar.datastore_manager import getDataStoreManager
+from home.models import User, Datasets, Datastores, LocalFSDatastores, MongoDBDatastores
+
+from neurobazaar.services.datastorage.datastore_manager import getDataStoreManager
+
+import os
+import uuid
 
 
 # Create your views here.
@@ -24,7 +25,7 @@ def logoutUser(request):
     return redirect('/login_register')
 
 def datastore(request):
-    if not DataStores.objects.exists():
+    if not Datastores.objects.exists():
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         # Join the BASE_DIR with 'DataStore' to form the path to the directory
         default_datastore_path = os.path.join(BASE_DIR, 'DataStore')

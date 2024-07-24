@@ -4,7 +4,7 @@ from django.core.files.uploadedfile import UploadedFile
 import os
 import uuid
 
-class FSDatastore(AbstractDatastore):
+class LocalFSDatastore(AbstractDatastore):
     def __init__(self, storeDirPath: str):
         super().__init__(DatastoreType.LocalFSDatastore)
         self._storeDirPath = storeDirPath

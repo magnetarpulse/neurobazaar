@@ -27,6 +27,7 @@ class Datasets(models.Model):
 class Datastores(models.Model):
     UUID = models.CharField(max_length=100, null=True)
     Name = models.CharField(max_length=255)
+    Type = models.CharField(max_length=255)
     Created = models.DateField(auto_now_add=True)
     Accessed = models.DateField(auto_now=True)
     Modified = models.DateField(auto_now=True)

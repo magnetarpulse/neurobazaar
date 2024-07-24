@@ -22,3 +22,4 @@ def create_default_datastore(sender, instance, created, **kwargs):
     else:
         manager = getDataStoreManager()
         manager.refresh()
+    # connect all records from the model

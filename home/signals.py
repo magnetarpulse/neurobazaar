@@ -13,6 +13,7 @@ def create_default_datastore(sender, instance, created, **kwargs):
         datastoreUUID = uuid.uuid4()
         LocalFSDatastores.objects.create(UUID=datastoreUUID,
                                          Name="default",
+                                         Type="localfs",
                                          Directory_Path=DATASTORE['default']['PATH'])
         manager = getDataStoreManager()
         manager.refresh()

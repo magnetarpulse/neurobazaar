@@ -81,16 +81,13 @@ DATABASES = {
     }
 }
 
+# Datastore
 
-# datastoremanager = getDataStoreManager()
-# # Join the BASE_DIR with 'DataStore' to form the path to the directory
-# default_datastore_path = os.path.join(BASE_DIR, 'DataStore')
-
-# # Check if the directory exists and create it if it doesn't
-# if not os.path.exists(default_datastore_path):
-#     os.makedirs(default_datastore_path)
-# defaultDatastoreID = datastoremanager.addFSDataStore(default_datastore_path)
-
+DATASTORE = {
+    'default': {
+        'PATH': os.path.join(BASE_DIR, 'datastore')
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

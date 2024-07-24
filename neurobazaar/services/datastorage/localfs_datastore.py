@@ -8,9 +8,9 @@ class LocalFSDatastore(AbstractDatastore):
     def __init__(self, storeDirPath: str):
         super().__init__(DatastoreType.LocalFSDatastore)
         self._storeDirPath = storeDirPath
-        # TO-DO check to see if the directory exists
-        # If the directory does not exists try to create it
-        # If creation fails, throw an exception
+        
+        if not os.path.exists(storeDirPath):
+            os.makedirs(storeDirPath)
     
     def putDataset(self, uploadedFile: UploadedFile) -> str:
         datasetUUID = str(uuid.uuid4())

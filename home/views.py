@@ -25,23 +25,6 @@ def logoutUser(request):
     return redirect('/login_register')
 
 def datastore(request):
-    if not Datastores.objects.exists():
-        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        # Join the BASE_DIR with 'DataStore' to form the path to the directory
-        default_datastore_path = os.path.join(BASE_DIR, 'DataStore')
-
-        # Check if the directory exists and create it if it doesn't
-        if not os.path.exists(default_datastore_path):
-            os.makedirs(default_datastore_path)
-
-        manager = getDataStoreManager()
-        default_datastore_id = manager.addFSDataStore(default_datastore_path)
-        LocalFileSystem.objects.create(
-            DataStore_ID=str(default_datastore_id),
-            DataStore_Name='Default',
-            Destination_Path=default_datastore_path
-        )
-    
     # Handle form submissions for adding or removing datastores
     if request.method == 'POST':
         if 'add_datastore' in request.POST:

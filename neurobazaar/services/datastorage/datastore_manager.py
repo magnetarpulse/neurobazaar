@@ -12,7 +12,6 @@ def getDataStoreManager():
     global datastore_manager
     if datastore_manager is None:
         datastore_manager = DatastoreManager()
-        datastore_manager.refresh()
 
     return datastore_manager
 

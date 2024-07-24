@@ -33,7 +33,7 @@ def datastore(request):
                 path = request.POST.get('destination_path')
                 manager = getDataStoreManager()
                 datastore_id = manager.addFSDataStore(path)
-                new_local_fs = LocalFileSystem(
+                new_local_fs = LocalFSDatastores(
                     DataStore_ID=str(datastore_id),  
                     DataStore_Name="filesystem",
                     Destination_Path=path 
@@ -51,9 +51,9 @@ def datastore(request):
         elif 'remove_datastore' in request.POST:
             datastore_id = request.POST.get('datastore_id')
             manager.removeDataStore(datastore_id)
-            DataStores.objects.filter(DataStore_ID=datastore_id).delete()
+            Datastores.objects.filter(DataStore_ID=datastore_id).delete()
 
-    datastores = DataStores.objects.all()
+    datastores = Datastores.objects.all()
     return render(request, 'datastore.html', {'datastores': datastores})
     
 def login_register(request):

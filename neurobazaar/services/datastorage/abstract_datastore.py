@@ -1,22 +1,29 @@
 from abc import ABC, abstractmethod
+import enum
+import threading
+import functools
+
+from django.core.files.uploadedfile import UploadedFile
+
+class DatastoreType(enum.Enum):
+    LocalFSDatastore = 1
+    MongoDBDatastore = 2
 
 class AbstractDatastore(ABC):
-    @abstractmethod
-    def connect(self):
-        pass
+    def __init__(self, type: DatastoreType):
+        self._type = type
+    
+    def getDatastoreType(self) -> DatastoreType:
+        return self._type
 
     @abstractmethod
-    def disconnect(self):
-        pass
-
-    @abstractmethod
-    def putDataset(self, dataset_content):
+    def putDataset(self, uploadedFile: UploadedFile) -> str:
         pass
     
     @abstractmethod
-    def getDataset(self, dataset_id):
+    def getDataset(self, datasetUUID: str):
         pass
 
     @abstractmethod
-    def delDataset(self, dataset_id):
+    def delDataset(self, datasetUUID : str):
         pass

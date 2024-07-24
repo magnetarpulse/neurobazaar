@@ -25,9 +25,9 @@ class Datasets(models.Model):
     def __str__(self):
         return self.dname
     
-class DataStores(models.Model):
-    DataStore_ID = models.CharField(max_length=100, null=True)
-    DataStore_Name = models.CharField(max_length=255)
+class Datastores(models.Model):
+    Datastore_ID = models.CharField(max_length=100, null=True)
+    Datastore_Name = models.CharField(max_length=255)
     Date_Created = models.DateField(auto_now_add=True)
     Date_Accessed = models.DateField(auto_now=True)
     Date_Modified = models.DateField(auto_now=True)
@@ -35,13 +35,13 @@ class DataStores(models.Model):
     def __str__(self):
         return self.DataStore_Name
     
-class LocalFileSystem(DataStores):
-    Destination_Path = models.TextField()
+class LocalFSDatastores(Datastores):
+    Store_Directory_Path = models.TextField()
     
     def __str__(self):
         return self.Destination_Path
 
-class MongoDB(DataStores):
+class MongoDBDatastores(Datastores):
     Host = models.CharField(max_length=255)
     Port = models.IntegerField()
     Username = models.CharField(max_length=255)

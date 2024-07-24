@@ -1,54 +1,38 @@
+from home.models import LocalFSDatastores, MongoDBDatastores
 
-import os
-from pymongo import MongoClient
-import gridfs
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-from home.models import LocalFileSystem, MongoDB
 datastore_manager = None
 
+def getDataStoreManager():
+    global datastore_manager
+    if datastore_manager is None:
+        datastore_manager = DatastoreManager()
+        datastore_manager.refresh()
 
-
-class MongoDBDatastore(AbstractDatastore):
-    def __init__(self, uri, database_name):
-        self.client = MongoClient(uri)
-        self.db = self.client[database_name]
-        self.fs = gridfs.GridFS(self.db)
-    
-    def connect(self):
-        print("Connecting to MongoDB")
-    
-    def disconnect(self):
-        # Close the MongoDB connection
-        self.client.close()
-        print("Disconnected from MongoDB")
-        
-    def putDataset(self, dataset_id, dataset):
-        # Store the dataset in GridFS; dataset should be a bytes-like object
-        file_id = self.fs.put(dataset, filename=dataset_id)
-        return str(file_id)  # Return the GridFS file ID as a string
-    
-    def delDataset(self, dataset_id):
-        # Delete the dataset based on the filename
-        file = self.fs.find_one({'filename': dataset_id})
-        if file:
-            self.fs.delete(file._id)
-            return True
-        return False
-    
-    def getDataset(self, dataset_id):
-        # Retrieve the dataset from GridFS
-        file = self.fs.find_one({'filename': dataset_id})
-        if file:
-            return file.read()
-        return None
+    return datastore_manager
 
 class DatastoreManager:
-    def __init__(self) -> None:
-        self.datastores = {}
-        self.next_id = 1
+    def __init__(self):
+        self._datastores = {}
+        
+    def refresh(self):
+        self.refreshLocalFSDatastores()
+        self.refreshMongoDBDatastores()
+    
+    def refreshLocalFSDatastores(self):
+        records = LocalFSDatastores.objects.all()
+        
+        # Create objects that exist in the model but not in the runtime
+        for record in records:
+            if record.Datastore_ID not in self._datastores:
+                self.addLocalFSDatastore(record.Store_Directory_Path)
+
+        records = {(record.Datastore_ID, record) for record in records}
+        # Remove objects that exist in the runtime but not in the model
+        for datastoreID in self._datastores:
+            
+    
+    def refreshMongoDBDatastores(self):
+        pass
     
     def addDataStore(self, DataStoreID : str, DataStore : AbstractDatastore) -> None:
         self.datastores[DataStoreID] = DataStore
@@ -63,7 +47,7 @@ class DatastoreManager:
     def removeDataStore(self, DataStoreID : str) -> None:
         self.datastores.pop(DataStoreID)
         
-    def addFSDataStore(self, DataStorePath : str) -> str:
+    def addLocalFSDatastore(self, DataStorePath : str) -> str:
         DataStoreID = self.next_id
         fs_datastore = FSDatastore(DataStorePath)
         self.addDataStore(DataStoreID, fs_datastore)
@@ -108,12 +92,3 @@ class DatastoreManager:
             uri = f"mongodb://{mdb.Username}:{mdb.Password}@{mdb.Host}:{mdb.Port}"
             mongodb_datastore = MongoDBDatastore(uri, mdb.Database)
             self.datastores[mdb.DataStore_ID] = mongodb_datastore
-
-def getDataStoreManager():
-    global datastore_manager
-    if datastore_manager is None:
-        datastore_manager = DatastoreManager()
-        datastore_manager.load_datastores()
-        print("\n",datastore_manager.datastores)
-
-    return datastore_manager

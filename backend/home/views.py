@@ -1,9 +1,13 @@
-from django.shortcuts import render, redirect
+import os
+import csv
+from django.conf import settings
+from django.shortcuts import render, HttpResponse, redirect
 from home.models import User
 from django.contrib.auth.models import User
 from django.contrib.auth import logout, authenticate, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.files.storage import FileSystemStorage
 from django.utils import timezone
 from home.models import Metadata
 
@@ -172,3 +176,7 @@ def workspaces(request):
     }
 
     return render(request, 'workspaces.html', context)
+
+
+def vv(request):
+    return render(request, 'vv.html')

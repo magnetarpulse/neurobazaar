@@ -65,7 +65,18 @@ Migrate the Django database (only required to run once):
 python manage.py migrate
 ```
 
-Start the Django server:
+Start the Vue & Vite server(In different terminal):
+```
+cd trame  
+```
+```
+npm run dev
+```
+
+Start the Django server(In different terminal):
+```
+cd backend   
+```
 ```
 python manage.py runserver   
 ```

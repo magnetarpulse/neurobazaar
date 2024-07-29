@@ -57,6 +57,9 @@ python -m pip install -r requirements.txt
 
 Make Migration for the Django database (only required to run once):
 ```
+cd backend   
+```
+```
 python manage.py makemigrations home
 ```
 
@@ -68,6 +71,9 @@ python manage.py migrate
 Start the Vue & Vite server(In different terminal):
 ```
 cd trame  
+```
+```
+npm install(once at the beginning)  
 ```
 ```
 npm run dev

@@ -1,0 +1,24 @@
+{% load django_vite %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    {% vite_hmr_client %}
+    {% vite_asset 'main.js' %}
+    
+    <title>Vue</title>
+  </head>
+  <body style="margin: 0; padding: 0;">
+    <div id="app"></div>
+
+    <script>
+      window.onload = function() {
+        var appDiv = document.getElementById('app');
+        console.log("app div exists: ", !!appDiv);
+      };
+    </script>
+  </body>
+</html>

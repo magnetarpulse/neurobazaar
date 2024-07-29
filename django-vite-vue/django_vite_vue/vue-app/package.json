@@ -1,0 +1,27 @@
+{
+    "name": "vue-client",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "start": "http-server . -p 5556",
+        "serve": "vite",
+        "debug": "vite --debug"
+    },
+    "dependencies": {
+        "@kitware/vtk.js": "^30.4.1",
+        "vite-plugin-vuetify": "^2.0.3",
+        "vue": "^3.3.4",
+        "vue-vtk-js": "^3.1.7",
+        "vuetify": "^3.6.12",
+        "wslink": "^2.0.1"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^5.0.5",
+        "http-server": "^14.1.1",
+        "vite": "^5.3.3"
+    }
+}

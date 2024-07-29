@@ -72,8 +72,9 @@ Start the Vue & Vite server(In different terminal):
 ```
 cd trame  
 ```
+Install npm (once at the beginning)
 ```
-npm install(once at the beginning)  
+npm install
 ```
 ```
 npm run dev

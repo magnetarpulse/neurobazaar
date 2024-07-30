@@ -17,61 +17,86 @@
         <div class="text-center">
             <h2 class="section-heading text-uppercase">DataStore Configuration</h2>
         </div>
-        <form id="databaseForm" method="post">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="database">Add Datastore :</label>
-                <select class="form-control" id="database" name="database" onchange="showForm()">
-                    <option value="default">Select a Database</option>
-                    <option value="filesystem">FileSystem</option>
-                    <option value="mongodb">MongoDB</option>
-                </select>
-            </div>
+        <br> <br>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="section-heading text-uppercase mb-0">DataStores</h3>
+            <button id="addDatastoreButton" class="btn btn-primary">Add Datastore</button>
+        </div> 
+        
+        <div id="datastoreFormPopup" class="hidden">
+            <form id="databaseForm" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="database">Add Datastore :</label>
+                    <select class="form-control" id="database" name="database" onchange="showForm()">
+                        <option value="default">Select a Datastore</option>
+                        <option value="filesystem">FileSystem</option>
+                        <option value="mongodb">MongoDB</option>
+                    </select>
+                </div>
 
-            <!-- FileSystem Configuration -->
-            <div id="filesystemForm" class="hidden">
-                <h4>FileSystem Configuration</h4>
-                <div class="mb-3">
-                    <label for="destination_path">Destination Path:</label>
-                    <input type="text" class="form-control" id="destination_path" name="destination_path">
+                <!-- FileSystem Configuration -->
+                <div id="filesystemForm" class="hidden">
+                    <h4>FileSystem Configuration</h4>
+                    <div class="mb-3">
+                        <label for="datastore_name">Datastore Name:</label>
+                        <input type="text" class="form-control" id="datastore_name" name="datastore_name">
+                        <label for="destination_path">Destination Path:</label>
+                        <input type="text" class="form-control" id="destination_path" name="destination_path">
+                    </div>
+                    <button type="submit" class="btn btn-primary" name="add_datastore">Add FileSystem</button>
                 </div>
-                <button type="submit" class="btn btn-primary" name="add_datastore">Add FileSystem</button>
-            </div>
 
-            <!-- MongoDB Configuration -->
-            <div id="mongodbForm" class="hidden">
-                <h4>MongoDB Configuration</h4>
-                <div class="mb-3">
-                    <label for="client_mongo">Client:</label>
-                    <input type="text" class="form-control" id="client_mongo" name="client_mongo">
+                <!-- MongoDB Configuration -->
+                <div id="mongodbForm" class="hidden">
+                    <h4>MongoDB Configuration</h4>
+                    <div class="mb-3">
+                        <label for="client_mongo">Client:</label>
+                        <input type="text" class="form-control" id="client_mongo" name="client_mongo">
+                    </div>
+                    <div class="mb-3">
+                        <label for="db_mongo">DB:</label>
+                        <input type="text" class="form-control" id="db_mongo" name="db_mongo">
+                    </div>
+                    <div class="mb-3">
+                        <label for="table_mongo">Table:</label>
+                        <input type="text" class="form-control" id="table_mongo" name="table_mongo">
+                    </div>
+                    <button type="submit" class="btn btn-primary" name="add_datastore">Add MongoDB</button>
                 </div>
-                <div class="mb-3">
-                    <label for="db_mongo">DB:</label>
-                    <input type="text" class="form-control" id="db_mongo" name="db_mongo">
-                </div>
-                <div class="mb-3">
-                    <label for="table_mongo">Table:</label>
-                    <input type="text" class="form-control" id="table_mongo" name="table_mongo">
-                </div>
-                <button type="submit" class="btn btn-primary" name="add_datastore">Add MongoDB</button>
-            </div>
-        </form>
+            </form>
+        </div>
 
         <!-- Existing DataStores -->
-        <h3 class="mt-5">Existing DataStores</h3>
-        <div class="list-group">
-            {% for datastore in datastores %}
-            <div class="list-group-item">
-                {{ datastore.DataStore_Name }} - {{ datastore.Destination_Path }}
-                <!-- Add a form for removing a DataStore -->
-                <form method="post" action="" style="display: inline;">
-                    {% csrf_token %}
-                    <input type="hidden" name="datastore_id" value="{{ datastore.DataStore_ID }}">
-                    <button type="submit" class="btn btn-danger" name="remove_datastore">Remove</button>
-                </form>
-            </div>
-            {% endfor %}
-        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Datastore ID</th>
+                    <th>Datastore Name</th>
+                    <th>Datastore Type</th>
+                    <th>Date Created</th>
+                    <th>Remove Datastore</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for datastore in datastores %}
+                <tr>
+                    <td>{{ datastore.UUID }}</td>
+                    <td>{{ datastore.Name }}</td>
+                    <td>{{ datastore.Type }}</td>
+                    <td>{{ datastore.Created }}</td>
+                    <td>
+                        <!-- Add a form for removing a DataStore -->
+                        <form method="post" action="" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="datastore_id" value="{{ datastore.UUID }}">
+                            <button type="submit" class="btn btn-danger" id="remove_datastore" name="remove_datastore">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </section>
 
@@ -130,9 +155,83 @@
     .hidden {
         display: none;
     }
+
+    .popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+
+    .popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+
+    .d-flex {
+        display: flex;
+    }
+
+    .justify-content-between {
+        justify-content: space-between;
+    }
+
+    .align-items-center {
+        align-items: center;
+    }
+
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        color: #212529;
+        border-collapse: collapse;
+    }
+
+    .table th, .table td {
+        padding: 0.75rem;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .table thead th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table tbody + tbody {
+        border-top: 2px solid #dee2e6;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
 </style>
 
 <script>
+    document.getElementById('addDatastoreButton').addEventListener('click', function() {
+        document.getElementById('datastoreFormPopup').classList.remove('hidden');
+        document.getElementById('datastoreFormPopup').classList.add('popup');
+        const overlay = document.createElement('div');
+        overlay.classList.add('popup-overlay');
+        overlay.id = 'popupOverlay';
+        document.body.appendChild(overlay);
+
+        overlay.addEventListener('click', function() {
+            document.getElementById('datastoreFormPopup').classList.add('hidden');
+            document.getElementById('datastoreFormPopup').classList.remove('popup');
+            document.body.removeChild(overlay);
+        });
+    });
+
     function showForm() {
         var database = document.getElementById('database').value;
         document.getElementById('filesystemForm').classList.add('hidden');

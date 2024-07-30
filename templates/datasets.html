@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}Datasets{% endblock title %}
-{% block nav3 %} d-none {% endblock nav3 %}
+{% block nav4 %} d-none {% endblock nav4 %}
 {% block body %}
 
 <!-- Masthead-->
@@ -43,7 +43,7 @@
                         <label class="m-2" for="datastore">Datastore:</label>
                         <select class="btn btn-outline-primary dropdown-toggle" name="datastore" id="datastore" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {% for datastore in datastores %}
-                                <option class="dropdown-item" value="{{ datastore.DataStore_ID }}">{{ datastore.DataStore_Name }}</option>
+                                <option class="dropdown-item" value="{{ datastore.UUID }}">{{ datastore.Name }} | {{datastore.Type}}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -68,125 +68,55 @@
 <!-- Datasets Section -->
 <section class="page-section bg-light" id="portfolio">
     <div class="container">
-
-        <!-- Favourites Subgroup -->
-        <div id="favourites" style="display:none;">
-            <!-- Include favourite divs here -->
-            {% for file in favorite_datasets %}
-            <div class="portfolio-item" id="portfolioItem1">
-                <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal1">
-                    <img class="img-fluid" src="/static/assets/img/d1.jpg" alt="..." />
-                </a>
-                <div class="portfolio-caption">
-                    <div class="portfolio-caption-heading">{{ file.dname }}</div>
-                    <div class="portfolio-caption-subheading text-muted">{{ file.description }}</div>
-                    <!-- Buttons -->
-                    <div class="d-flex align-items-center mt-2">
-                        <!-- Download Button -->
-                        <form action="{% url 'datasets' %}" method="post">
-                            {% csrf_token %}
-                            <button type="submit" class="delete-button btn btn-outline-info mx-4">
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                        </form>
-                        <!-- Delete Button -->
-                        <form action="{% url 'datasets' %}" method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="delete_file" value="{{ file.id }}">
-                            <button type="submit" class="delete-button btn btn-outline-dark me-3">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
+        <!-- Dataset Table -->
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Datasets</h2>
         </div>
-
-        <!-- Private Subgroup -->
-        <div id="private" style="display:none;">
-            <!-- Include private divs here -->
-            {% for file in private_datasets %}
-            <div class="portfolio-item" id="portfolioItem4">
-                <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal4">
-                    <img class="img-fluid" src="/static/assets/img/d3.jpg" alt="..." />
-                </a>
-                <div class="portfolio-caption">
-                    <div class="portfolio-caption-heading">{{ file.dname }}</div>
-                    <div class="portfolio-caption-subheading text-muted">{{ file.description }}</div>
-                    <!-- Buttons -->
-                    <div class="d-flex align-items-center mt-2">
-                        <!-- Favourite Button -->
-                        <form action="{% url 'datasets' %}" method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="copy_to_favorites" value="{{ file.id }}">
-                            <button type="submit" class="favourite-button btn btn-outline-warning me-3">
-                                <i class="fas fa-star"></i> Favourite
-                            </button>
-                        </form>                        
-                        <!-- Download Button -->
-                        <form action="{% url 'datasets' %}" method="post">
-                            {% csrf_token %}
-                            <button type="submit" class="delete-button btn btn-outline-info me-3">
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                        </form>
-                        <!-- Delete Button -->
-                        <form action="{% url 'datasets' %}" method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="delete_file" value="{{ file.id }}">
-                            <button type="submit" class="delete-button btn btn-outline-dark me-3">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-
-        <!-- Public Subgroup -->
-        <div id="public">
-            <!-- Include public divs here -->
-            {% for file in public_datasets %}
-            <div class="portfolio-item" id="portfolioItem{{ forloop.counter }}">
-                <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal{{ forloop.counter }}">
-                    <img class="img-fluid" src="/static/assets/img/d2.jpg" alt="..." />
-                </a>
-                <div class="portfolio-caption">
-                    <div class="portfolio-caption-heading">{{ file.dname }}</div>
-                    <div class="portfolio-caption-subheading text-muted">{{ file.description }}</div>
-                    <!-- Buttons -->
-                    <div class="d-flex align-items-center mt-2">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 20%;">Dataset Name</th>
+                    <th class="text-center" style="width: 60%;">Description</th>
+                    <th class="text-center" style="width: 20%;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in public_datasets %}
+                <tr>
+                    <td class="text-center">{{ file.dname }}</td>
+                    <td class="text-center">{{ file.description }}</td>
+                    <td class="text-center">
                         <!-- Like Button -->
                         <button class="like-button btn btn-outline-success me-1" onclick="likeFile('{{ file.id }}')">
-                            <i class="fas fa-thumbs-up"></i> Like <div class="num-likes">{{ file.likes }}</div>
+                            <i class="fas fa-thumbs-up"></i>
                         </button>
                         <!-- Dislike Button -->
                         <button class="dislike-button btn btn-outline-danger me-1" onclick="dislikeFile('{{ file.id }}')">
-                            <i class="fas fa-thumbs-down"></i> Dislike <div class="num-dislikes">{{ file.dislikes }}</div>
+                            <i class="fas fa-thumbs-down"></i>
                         </button>
-                        <form action="{% url 'datasets' %}" method="post">
+                        <!-- Favourite Button -->
+                        <form action="{% url 'datasets' %}" method="post" class="d-inline">
                             {% csrf_token %}
                             <input type="hidden" name="copy_to_favorites" value="{{ file.id }}">
                             <button type="submit" class="favourite-button btn btn-outline-warning me-3">
-                                <i class="fas fa-star"></i> Favourite
-                            </button>
-                        </form>                        
-                        <!-- Download Button -->
-                        <form action="{% url 'datasets' %}" method="post">
-                            {% csrf_token %}
-                            <button type="submit" class="delete-button btn btn-outline-info me-1">
-                                <i class="fas fa-download"></i> Download
+                                <i class="fas fa-star"></i>
                             </button>
                         </form>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+                        <!-- Download Button -->
+                        <form action="{% url 'datasets' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-button btn btn-outline-info me-1">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </section>
+
 
 <!-- Footer-->
 <footer class="footer py-4">
@@ -287,6 +217,37 @@
         document.getElementById(subgroup + 'Btn').classList.add('active');
     }
 </script>
+{% if messages %}
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadModalLabel">Upload Complete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        $('#uploadModal').modal('show');
+    });
+</script>
+<script>
+    $(document).ready(function(){
+        $(".close").click(function(){
+            $("#uploadModal").modal('hide');
+        });
+    });
+    </script>
+{% endif %}
 
 
 {% endblock body %}

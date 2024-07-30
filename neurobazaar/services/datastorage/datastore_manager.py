@@ -4,6 +4,7 @@ from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
 from neurobazaar.services.datastorage.mongodb_datastore import MongoDBDatastore
 
 import threading
+import functools
 
 datastore_manager = None
 
@@ -11,7 +12,7 @@ def getDataStoreManager():
     global datastore_manager
     if datastore_manager is None:
         datastore_manager = DatastoreManager()
-
+        datastore_manager.refresh()
     return datastore_manager
 
 def synchronized(func):
@@ -29,24 +30,24 @@ class DatastoreManager:
     
     @synchronized
     def refresh(self):
+        print("Refreshing datastores...")
         self.refreshLocalFSDatastores()
         self.refreshMongoDBDatastores()
+        print(f"Datastores after refresh: {self._datastores}")
     
     def refreshLocalFSDatastores(self):
         records = {record.UUID: record for record in LocalFSDatastores.objects.all()}
+        print(f"LocalFSDatastores records: {records}")
         
         # Create objects that exist in the model but not in the runtime
         for datastoreUUID, record in records.items():
             if datastoreUUID not in self._datastores:
                 self.addLocalFSDatastore(datastoreUUID, record.Directory_Path)
-                record.Connected = True
-                record.save()
 
-        # Remove objects that exist in the runtime but not in the model
-        datastores = list(self._datastores.keys())
-        for datastoreUUID in datastores:
-            if datastoreUUID not in records:
-                del self._datastores[datastoreUUID]
+        # # Remove objects that exist in the runtime but not in the model
+        # for datastoreUUID in list(self._datastores.keys()):
+        #     if datastoreUUID not in records:
+        #         del self._datastores[datastoreUUID]
     
     def refreshMongoDBDatastores(self):
         records = {record.UUID: record for record in MongoDBDatastores.objects.all()}
@@ -60,19 +61,18 @@ class DatastoreManager:
                                          record.Host,
                                          record.Port,
                                          record.Database)
-                record.Connected = True
-                record.save()
 
-        # Remove objects that exist in the runtime but not in the model
-        datastores = list(self._datastores.keys())
-        for datastoreUUID in datastores:
-            if datastoreUUID not in records:
-                del self._datastores[datastoreUUID]
+        # # Remove objects that exist in the runtime but not in the model
+        # for datastoreUUID in list(self._datastores.keys()):
+        #     if datastoreUUID not in records:
+        #         del self._datastores[datastoreUUID]
         
     def addLocalFSDatastore(self, datastoreUUID: str, storeDirPath: str):
+        print(f"\n\nAdding datastore with UUID: {datastoreUUID}")
         datastore = LocalFSDatastore(storeDirPath)
         self._datastores[datastoreUUID] = datastore
-    
+        print(f"Current datastores: {self._datastores}\n\n")
+        
     def addMongoDBDatastore(self,
                             datastoreUUID: str,
                             username: str,
@@ -80,11 +80,25 @@ class DatastoreManager:
                             host: str,
                             port: str,
                             database: str):
+        print(f"Adding MongoDB datastore with UUID: {datastoreUUID}")
         datastore = MongoDBDatastore(username, password, host, port, database)
         self._datastores[datastoreUUID] = datastore
+        print(f"MongoDB datastore added: {datastoreUUID}")
     
     def getDatastore(self, dataStoreUUID : str) -> AbstractDatastore:
         if dataStoreUUID in self._datastores:
+            self.refresh()
+            print(f"\n\nGetting datastore with UUID: {dataStoreUUID}")
             return self._datastores[dataStoreUUID]
         else:
+            print(f"\n\nDatastore with UUID: {dataStoreUUID} not found\n\n")
+            print(f"Current datastores: {self._datastores}\n\n")
             return None
+        
+    def removeDataStore(self, datastoreUUID: str):
+        if datastoreUUID in self._datastores:
+            del self._datastores[datastoreUUID]
+            print(f"Datastore with UUID: {datastoreUUID} removed")
+        else:
+            print(f"Datastore with UUID: {datastoreUUID} not found")
+        print(f"Current datastores: {self._datastores}")

@@ -13,3 +13,4 @@ trame-vuetify
 dask[complete]
 numba
 django-vite
+fast-histogram

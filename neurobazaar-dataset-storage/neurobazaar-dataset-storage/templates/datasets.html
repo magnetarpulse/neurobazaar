@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+
+{% block title %}Datasets{% endblock title %}
+{% block nav4 %} d-none {% endblock nav4 %}
+{% block body %}
+
+<!-- Masthead-->
+<header class="masthead">
+    <div class="container">
+        <div class="masthead-heading">See Datasets Below</div>
+    </div>
+</header>
+
+<!-- Upload Datasets -->
+<section id="uploaddataset" class="page-section bg-light">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Upload Your Datasets</h2>
+            <p></p>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <h4 class="mb-3">Upload Datasets</h4>
+                <div class="portfolio-caption-subheading text-muted">Note : Files Once Uploaded to the Public Repository Cannot be Removed</div>
+                <br>
+                <form action="{% url 'datasets' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <input type="file" class="form-control" id="dname" name="dname">
+                    </div>
+                    <div class="mb-3">
+                        <label class="m-2" for="description">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="m-2" for="repo">Repository:</label>
+                        <select class="btn btn-outline-primary dropdown-toggle" name="repo" id="repo" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <option class="dropdown-item" value="public" selected>Public</option>
+                            <option class="dropdown-item" value="private">Private</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="m-2" for="datastore">Datastore:</label>
+                        <select class="btn btn-outline-primary dropdown-toggle" name="datastore" id="datastore" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {% for datastore in datastores %}
+                                <option class="dropdown-item" value="{{ datastore.UUID }}">{{ datastore.Name }} | {{datastore.Type}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Subgroup Buttons -->
+<div class="container mt-4 mb-4">
+    <div class="row justify-content-center">
+        <div class="col-md-20 text-center">
+            <button id="publicBtn" class="btn btn-outline-primary mx-2 active" onclick="showSubgroup('public')">Public</button>
+            <button id="privateBtn" class="btn btn-outline-primary mx-2" onclick="showSubgroup('private')">Private</button>
+            <button id="favouritesBtn" class="btn btn-outline-primary mx-2" onclick="showSubgroup('favourites')">Favourites</button>
+        </div>
+    </div>
+</div>
+
+<!-- Datasets Section -->
+<section class="page-section bg-light" id="portfolio">
+    <div class="container">
+        <!-- Dataset Table -->
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Datasets</h2>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 20%;">Dataset Name</th>
+                    <th class="text-center" style="width: 60%;">Description</th>
+                    <th class="text-center" style="width: 20%;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in public_datasets %}
+                <tr>
+                    <td class="text-center">{{ file.dname }}</td>
+                    <td class="text-center">{{ file.description }}</td>
+                    <td class="text-center">
+                        <!-- Like Button -->
+                        <button class="like-button btn btn-outline-success me-1" onclick="likeFile('{{ file.id }}')">
+                            <i class="fas fa-thumbs-up"></i>
+                        </button>
+                        <!-- Dislike Button -->
+                        <button class="dislike-button btn btn-outline-danger me-1" onclick="dislikeFile('{{ file.id }}')">
+                            <i class="fas fa-thumbs-down"></i>
+                        </button>
+                        <!-- Favourite Button -->
+                        <form action="{% url 'datasets' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="copy_to_favorites" value="{{ file.id }}">
+                            <button type="submit" class="favourite-button btn btn-outline-warning me-3">
+                                <i class="fas fa-star"></i>
+                            </button>
+                        </form>
+                        <!-- Download Button -->
+                        <form action="{% url 'datasets' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-button btn btn-outline-info me-1">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+
+<!-- Footer-->
+<footer class="footer py-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-4 text-lg-start">Copyright &copy; Neurobazaar 2024</div>
+            <div class="col-lg-4 my-3 my-lg-0">
+                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a class="link-dark text-decoration-none me-3" href="#!">Privacy Policy</a>
+                <a class="link-dark text-decoration-none" href="#!">Terms of Use</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    /* Add this style to align buttons */
+    .use-button {
+        margin-right: 10px; /* Adjust as needed */
+    }
+</style>
+
+<style>
+    .portfolio-item {
+        display: inline-block; /* Display inline-block so they align horizontally */
+        margin: 10px; /* Add margin for spacing between items */
+        padding: 15px; /* Add padding for spacing within items */
+        vertical-align: top; /* Align to the top of the container */
+        position: relative; /* Position relative for absolute positioning of buttons */
+    }
+    
+    .heart-button {
+        position: absolute;
+        top: 10px;
+        left: 10px; /* Adjusted to be on the top left corner */
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #000;
+    }
+    
+    .cross-button {
+        position: absolute;
+        top: 10px;
+        right: 10px; /* Kept on the top right corner */
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #000;
+    }
+</style>
+
+<script>
+    function showSubgroup(subgroup) {
+        document.getElementById('favourites').style.display = 'none';
+        document.getElementById('private').style.display = 'none';
+        document.getElementById('public').style.display = 'none';
+        
+        document.getElementById(subgroup).style.display = 'block';
+    }
+</script>
+
+<script>
+    function toggleFavorite(divId) {
+        var portfolioItem = document.getElementById(divId);
+        portfolioItem.classList.toggle('favorite'); // Apply favorite class to mark as favorite
+    }
+
+    function closeDiv(divId) {
+        var portfolioItem = document.getElementById(divId);
+        portfolioItem.style.display = 'none'; // Hide the div
+    }
+</script>
+
+<script>
+    // Initialize the default active button
+    document.getElementById('publicBtn').classList.add('active');
+
+    function showSubgroup(subgroup) {
+        // Hide all subgroups
+        document.getElementById('favourites').style.display = 'none';
+        document.getElementById('private').style.display = 'none';
+        document.getElementById('public').style.display = 'none';
+
+        // Remove active class from all buttons
+        document.getElementById('favouritesBtn').classList.remove('active');
+        document.getElementById('privateBtn').classList.remove('active');
+        document.getElementById('publicBtn').classList.remove('active');
+
+        // Display the selected subgroup
+        document.getElementById(subgroup).style.display = 'block';
+
+        // Add active class to the corresponding button
+        document.getElementById(subgroup + 'Btn').classList.add('active');
+    }
+</script>
+{% if messages %}
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadModalLabel">Upload Complete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        $('#uploadModal').modal('show');
+    });
+</script>
+<script>
+    $(document).ready(function(){
+        $(".close").click(function(){
+            $("#uploadModal").modal('hide');
+        });
+    });
+    </script>
+{% endif %}
+
+
+{% endblock body %}

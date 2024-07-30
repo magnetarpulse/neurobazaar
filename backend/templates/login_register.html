@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block nav %} d-none {% endblock %}
+{% block nav1 %} d-none {% endblock %}
+{% block nav2 %} d-none {% endblock %}
+{% block nav3 %} d-none {% endblock %}
+{% block nav4 %} d-none {% endblock %}
+
+{% block log %} d-none {% endblock %}
+{% block log1 %} d-none {% endblock %}
+
+{% block title %}Login or Register{% endblock %}
+
+{% block body %}
+
+<style>
+    html,
+    body {
+        height: 100%;
+    }
+
+    body {
+        background: url("/static/assets/img/login.jpg");
+        display: flex;
+        align-items: center;
+        justify-content: center; /* Center horizontally */
+        padding-top: 40px;
+        padding-bottom: 40px;
+        background-color: #f5f5f5;
+    }
+
+    .form-signin {
+        background-color: #f5f8fa;
+        opacity: 0.80;
+        width: 100%;
+        max-width: 330px;
+        padding: 15px;
+    }
+
+    .form-signin .checkbox {
+        font-weight: 400;
+    }
+
+    .form-signin .form-control {
+        margin: 16px 3px;
+        position: relative;
+        box-sizing: border-box;
+        height: auto;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .form-signin .form-floating:focus-within {
+        z-index: 2;
+    }
+
+    .form-signin input[type="email"] {
+        margin-bottom: -1px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    .form-signin input[type="password"] {
+        margin-bottom: 10px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+    .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+    }
+
+    @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+            font-size: 3.5rem;
+        }
+    }
+</style>
+
+<div id="login-form" class="form-signin {% if login_form_visible %} d-block {% else %} d-none {% endif %}">
+    <h1 class="h3 mb-3 fw-normal">LOGIN</h1>
+    <form method="post" action="{% url 'login_register' %}">
+        {% csrf_token %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div class="form-floating">
+            <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+            <label for="username">Username</label>
+        </div>
+        <div class="form-floating">
+            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+            <label for="password">Password</label>
+        </div>
+        <button type="submit" name="login_submit" class="w-100 btn btn-lg btn-primary mt-3">Log In</button>
+    </form>
+    <div class="mt-3">
+        Don't have an account? <button id="show-register" type="button" class="btn btn-link">Sign Up</button>
+    </div>
+</div>
+
+<div id="register-form" class="form-signin {% if register_form_visible %} d-block {% else %} d-none {% endif %}">
+    <h1 class="h3 mb-3 fw-normal">REGISTER</h1>
+    <form method="post" action="{% url 'login_register' %}">
+        {% csrf_token %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div class="form-floating">
+            <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+            <label for="username">Username</label>
+        </div>
+        <div class="form-floating">
+            <input type="password" class="form-control" id="password1" name="password1" placeholder="Password" required>
+            <label for="password1">Password</label>
+        </div>
+
+        <label id="emailHelp" class="form-text" style="text-align: left">Your password can’t be too similar to your
+            other personal
+            information.<br>
+            Your password must contain at least 8 characters.<br>
+            Your password can’t be a commonly used password.<br>
+            Your password can’t be entirely numeric
+        </label>
+
+        <div class="form-floating">
+            <input type="password" class="form-control" id="password2" name="password2" placeholder="Re-enter Password" required>
+            <label for="password2">Re-enter Password</label>
+        </div>
+        <button type="submit" name="register_submit" class="w-100 btn btn-lg btn-primary mt-3">Register</button>
+    </form>
+    <div class="mt-3">
+        Already have an account? <button id="show-login" type="button" class="btn btn-link">Log In</button>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#show-login').click(function () {
+            $('#login-form').removeClass('d-none');
+            $('#register-form').addClass('d-none');
+        });
+
+        $('#show-register').click(function () {
+            $('#register-form').removeClass('d-none');
+            $('#login-form').addClass('d-none');
+        });
+    });
+</script>
+
+{% endblock %}

@@ -73,6 +73,10 @@ Start the Trame server(In different terminal):
 python server.py --server 
 ```
 
+Start Trame server(In different terminal):
+```
+python server.py --server
+```
 
 Start the Vue & Vite server(In different terminal):
 ```

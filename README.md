@@ -68,13 +68,22 @@ Migrate the Django database (only required to run once):
 python manage.py migrate
 ```
 
+Start the Trame server(In different terminal):
+```
+python server.py --server 
+```
+
+
 Start the Vue & Vite server(In different terminal):
 ```
-cd trame  
+cd vue-app
 ```
 Install npm (once at the beginning)
 ```
 npm install
+```
+```
+npm run build
 ```
 ```
 npm run dev

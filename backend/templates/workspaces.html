@@ -2,6 +2,7 @@
 {% block title %}Workspaces{% endblock title %}
 {% block nav3 %} d-none {% endblock nav3 %}
 {% block body %}
+{% load django_vite %}
 
 <!-- Masthead-->
 <header class="masthead">
@@ -17,7 +18,6 @@
         <div class="text-center">
             <h2 class="section-heading text-uppercase">Workspaces</h2>
         </div>
-
 
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" id="workspaceTabs" role="tablist">
@@ -37,6 +37,9 @@
         <br>
         <br>
 
+        {% vite_hmr_client %}
+        {% vite_asset 'main.js' %}
+
         <!-- Dynamic workspace content -->
         <div id="workspaceContent">
             <!-- Each workspace tab content -->
@@ -44,13 +47,11 @@
                 <!-- Placeholder for initial workspace content -->
             </div>
         </div>
+        
+        {% vite_hmr_client %}
+        {% vite_asset 'main.js' %}
 
-
-        <div id="app">
-            <shadow-component></shadow-component>
-        </div>    
-
-
+        <div id="app"></div>   
     </div>
 </section>
 
@@ -73,8 +74,6 @@
     </div>
 </div>
 
-
-
 <!-- Footer-->
 <footer class="footer py-4">
     <div class="container">
@@ -96,10 +95,7 @@
 <!-- Ensure jQuery is included -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.min.js"></script>
-
-<script type="module" crossorigin src="/static/index-BUjMbZzO.js"></script>
-<script src="/static/js/shadow-component.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
 
 <script>
     $(document).ready(function(){
@@ -109,7 +105,7 @@
         var workspaceCounter = 0;
 
         // Handle Add Workspace button click
-        $('.add-workspace').click(function(){
+        $('.add-visualization').click(function(){
             workspaceCounter++;
             var newWorkspaceId = 'workspace' + workspaceCounter;
 
@@ -169,7 +165,6 @@
                         {% endfor %}
                     </select>
                 </div>
-
             `;
 
             $('.modal-body').html(visualizationOptions);

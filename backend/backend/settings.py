@@ -11,10 +11,12 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import pathlib
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 
+BASE_DIRR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -27,7 +29,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_vite',
 ]
 
 MIDDLEWARE = [
@@ -102,7 +104,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/1.11/topics/i18n/
+# https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -110,25 +112,38 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
-
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.11/howto/static-files/
+# https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Where ViteJS assets are built.
+DJANGO_VITE_ASSETS_PATH = BASE_DIR / "vue-app" / "dist"
+
+# If use HMR or not.
+DJANGO_VITE_DEV_MODE = DEBUG
+
+# Name of static files folder (after called python manage.py collectstatic)
+STATIC_ROOT = BASE_DIR / "collectedstatic"
+
+DJANGO_VITE_MANIFEST_PATH = BASE_DIR / 'vue-app' / 'dist' / '.vite' / 'manifest.json'
+
+DJANGO_VITE_DEV_SERVER_URL = 'http://localhost:5173/'
+
+# Include DJANGO_VITE_ASSETS_PATH into STATICFILES_DIRS to be copied inside
+# when run command python manage.py collectstatic
+# STATICFILES_DIRS = [DJANGO_VITE_ASSETS_PATH]
+
+# Include both DJANGO_VITE_ASSETS_PATH and STATIC folder into STATICFILES_DIRS
+STATICFILES_DIRS = [
+    DJANGO_VITE_ASSETS_PATH,
+    os.path.join(BASE_DIRR, "static")  # Add this line to include the STATIC folder
+]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Added manually
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
-
-LOGIN_URL = '/login_register'

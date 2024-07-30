@@ -180,8 +180,13 @@ watch(
     flex-direction: column-reverse;
     justify-content: flex-start;
     align-items: center;
+<<<<<<< HEAD
     height: 50vh;
     width: 50vw;
+=======
+    height: 100vh;
+    width: 100vw;
+>>>>>>> ae364f692db9e1c756abda1883ee65e4d1890624
     margin: auto;
     position: relative;
     bottom: 0;

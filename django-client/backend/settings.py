@@ -142,6 +142,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIRR, "static")  # Add this line to include the STATIC folder
 ]
 
+STATICFILES_DIRS = [DJANGO_VITE_ASSETS_PATH]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

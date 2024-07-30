@@ -5,7 +5,7 @@ class ShadowComponent extends HTMLElement {
 
         const style = document.createElement('style');
         style.textContent = `
-            @import url('/static/index-G1GaC6Sm.css');
+            @import url('/static/index-v4Y3ZSEr.css);
             /* Add any additional styles here */
         `;
 

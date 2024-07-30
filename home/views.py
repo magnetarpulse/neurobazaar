@@ -26,18 +26,23 @@ def logoutUser(request):
     return redirect('/login_register')
 
 def datastore(request):
+    username = request.user.username
     # Handle form submissions for adding or removing datastores
     if request.method == 'POST':
         if 'add_datastore' in request.POST:
             database_type = request.POST.get('database')
             if database_type == 'filesystem':
                 path = request.POST.get('destination_path')
+                datastore_name = request.POST.get('datastore_name')
                 manager = getDataStoreManager()
-                datastore_id = manager.addFSDataStore(path)
+                datastore_id = uuid.uuid4()
+                manager.addLocalFSDatastore(datastore_id,path)
                 new_local_fs = LocalFSDatastores(
-                    DataStore_ID=str(datastore_id),  
-                    DataStore_Name="filesystem",
-                    Destination_Path=path 
+                    UUID=str(datastore_id),  
+                    Name=datastore_name,
+                    Type = "filesystem",
+                    Connected=True,
+                    Directory_Path=path 
                 )
                 new_local_fs.save()
                 # DataStores.objects.create(

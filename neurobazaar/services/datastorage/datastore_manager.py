@@ -4,7 +4,6 @@ from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
 from neurobazaar.services.datastorage.mongodb_datastore import MongoDBDatastore
 
 import threading
-import functools
 
 datastore_manager = None
 
@@ -40,9 +39,12 @@ class DatastoreManager:
         for datastoreUUID, record in records.items():
             if datastoreUUID not in self._datastores:
                 self.addLocalFSDatastore(datastoreUUID, record.Directory_Path)
+                record.Connected = True
+                record.save()
 
         # Remove objects that exist in the runtime but not in the model
-        for datastoreUUID, datastore in self._datastores:
+        datastores = list(self._datastores.keys())
+        for datastoreUUID in datastores:
             if datastoreUUID not in records:
                 del self._datastores[datastoreUUID]
     
@@ -58,9 +60,12 @@ class DatastoreManager:
                                          record.Host,
                                          record.Port,
                                          record.Database)
+                record.Connected = True
+                record.save()
 
         # Remove objects that exist in the runtime but not in the model
-        for datastoreUUID, datastore in self._datastores:
+        datastores = list(self._datastores.keys())
+        for datastoreUUID in datastores:
             if datastoreUUID not in records:
                 del self._datastores[datastoreUUID]
         

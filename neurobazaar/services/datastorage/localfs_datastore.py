@@ -1,4 +1,4 @@
-from neurobazaar.services.datastorage.abstract_datastore import AbstractDatastore, DatastoreType, synchronized
+from neurobazaar.services.datastorage.abstract_datastore import AbstractDatastore, DatastoreType
 from django.core.files.uploadedfile import UploadedFile
 
 import os

@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 import enum
-import threading
-import functools
 
 from django.core.files.uploadedfile import UploadedFile
 

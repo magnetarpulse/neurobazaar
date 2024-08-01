@@ -63,21 +63,27 @@ python server.py --server
 Start the Vue & Vite server(In different terminal):
 ```
 cd vue-app
-
+```
+```
 npm install
-
+```
+```
 npm run build
-
+```
+```
 npm run dev
 ```
 
 Start the Django client(In different terminal):
 ```
-cd backend   
-
+cd client   
+```
+```
 python manage.py makemigrations home
-
+```
+```
 python manage.py migrate
-
+```
+```
 python manage.py runserver   
 ```

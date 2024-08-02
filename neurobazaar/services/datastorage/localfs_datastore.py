@@ -14,9 +14,7 @@ class LocalFSDatastore(AbstractDatastore):
     
     def putDataset(self, datasetUUID,uploadedFile: UploadedFile) -> str:
         datasetUUID = str(datasetUUID)
-        original_name = uploadedFile.name # get the original name of the file for extension
-        _, ext = os.path.splitext(original_name) # get the extension of the file
-        destinationPath = os.path.join(self._storeDirPath, datasetUUID+ext)
+        destinationPath = os.path.join(self._storeDirPath, datasetUUID)
         with open(destinationPath, 'wb') as fileout:
             for chunk in iter(lambda: uploadedFile.read(1048576), b''):
                 fileout.write(chunk)

@@ -1,4 +1,5 @@
 import time
+from django.http import FileResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -143,12 +144,12 @@ def datasets(request):
     if request.method == 'POST':
         # Handling file upload and dataset creation
         if 'dname' in request.FILES and 'description' in request.POST and 'repo' in request.POST:
+            # Get the start time from session or calculate it based on form submission
+            start_time = float(request.session.get('uploadStartTime', time.time() * 1000)) / 1000
             dname = request.FILES.get('dname')
             description = request.POST['description']
             repo = request.POST['repo']
             datastore = request.POST['datastore']
-            
-            start_time = time.perf_counter()
             
             metadata = Datasets(
                 User=username,
@@ -166,11 +167,11 @@ def datasets(request):
             datasetid = str(metadata.UUID) 
             datastore.putDataset(datasetid, dname)
             
-            end_time = time.perf_counter()
+            end_time = time.time()
             upload_time = end_time - start_time
             print(f"Upload time: {upload_time}")
             
-            messages.info(request, f"File uploaded in {upload_time:.2f} seconds.")
+            messages.info(request, f"File uploaded in {upload_time:.4f} seconds.")
             return redirect('datasets')  # Redirect to avoid resubmission of form
             
         # Handling like action
@@ -215,6 +216,20 @@ def datasets(request):
             metadata = Datasets.objects.get(id=file_id)
             metadata.delete()
             return redirect('datasets')
+        
+                # Handling download action
+        elif 'download_file' in request.POST:
+            start_time = float(request.session.get('uploadStartTime', time.time() * 1000)) / 1000
+            dataset_UUID = request.POST['download_file']
+            dataset = Datasets.objects.get(UUID=dataset_UUID)
+            manager = getDataStoreManager()
+            datastore = manager.getDatastore(dataset.Datastore_UUID)
+            file_obj = datastore.getDataset(dataset.UUID)
+            end_time = time.time()
+            fetch_time = end_time - start_time
+            print(f"fetch time: {fetch_time}")
+            response = FileResponse(file_obj, as_attachment=True, filename=dataset.Name)
+            return response
 
     # Query the Metadata table for different categories
     public_datasets = Datasets.objects.filter(Repository='public')

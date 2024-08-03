@@ -19,13 +19,13 @@ Additionally, the code in this directory has been cleaned and lacks comments. Th
 
 ### Sub-directories
 
-**vue-client-for-trame-server**
+**`vue-client-for-trame-server`**
 
 As the name of the directory suggests, the code in this directory was used to verify the possibility of having the trame server and trame client loosely coupled. This code use Vue.js as the client for the trame server. 
 
 If you are wondering why we wanted to loosely couple the trame application, it was mainly because of security. We were initially using an `iframe` to display the trame application and loosely coupled it with Django, but there was many concerns, security being one of the biggest.
 
-**django-integration-with-vue-client**
+**`django-integration-with-vue-client`**
 
 As the name of the directory suggests, the code in this directory was used to verify the possibility of integrating the vue-client, which was bundled using ViteJS, with Django.
 
@@ -34,3 +34,13 @@ If you want to find more information on how you can do this, I would recommend l
 - https://github.com/MrBin99/django-vite?tab=readme-ov-file
 
 - https://github.com/MrBin99/django-vite-example/tree/master
+
+**`trame-server`**
+
+This directory contains legacy code that was originally used to develop the trame server.
+
+**`trame-client-and-server-tightly-integrated`**
+
+This directory contains legacy code that was originally used to develop the trame application, with the server and the client of trame being tightly integrated. 
+
+Unlike the **`trame-server directory`**, which only includes legacy code for the server, this directory exclusively showcases the integration of both the trame client and server.

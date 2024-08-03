@@ -3,7 +3,6 @@ import vue from '@vitejs/plugin-vue';
 import vuetify from 'vite-plugin-vuetify';
 import { resolve } from 'path';
 
-// Construct the path to the main.js file
 const mainJsPath = resolve(__dirname, 'main.js');
 
 export default defineConfig({

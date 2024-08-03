@@ -145,7 +145,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # -------------------------------------------------------------------------------------------------------------------------------------
 
 # Where ViteJS assets are built.
-DJANGO_VITE_ASSETS_PATH = BASE_DIR / "vue-app" / "dist"
+DJANGO_VITE_ASSETS_PATH = BASE_DIR / "trame-client-examples" / "dist"
 
 # If use HMR or not.
 DJANGO_VITE_DEV_MODE = DEBUG
@@ -153,7 +153,7 @@ DJANGO_VITE_DEV_MODE = DEBUG
 # Name of static files folder (after running the command "python manage.py collectstatic").
 STATIC_ROOT = BASE_DIR / "collectedstatic"
 
-DJANGO_VITE_MANIFEST_PATH = BASE_DIR / 'vue-app' / 'dist' / '.vite' / 'manifest.json'
+DJANGO_VITE_MANIFEST_PATH = BASE_DIR / 'trame-client-examples' / 'dist' / '.vite' / 'manifest.json'
 
 DJANGO_VITE_DEV_SERVER_URL = 'http://localhost:5173/'
 

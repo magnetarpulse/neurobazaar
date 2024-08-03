@@ -133,30 +133,52 @@ node --version
 npm --version
 ```
 
-## How to Build and Run the Neurobazaar
+## How to Build and Run the Neurobazaar (Development Mode)
 Most likely, if you closed your command-line interface or exited from your remote machine, once you open/connect to your command-line interface/remote machine again, you will no longer be in the Python Virtual Environment. 
 
 Please make sure you are in the Python Virtual Environment.
 
-You can activate your Python Virtual Environment from the following command (if you did not name your Python Virtual Environment "**.venv**", then it will be the name of your Python Virtual Environment): 
+You can activate your Python Virtual Environment from the following command (if you did not name your Python Virtual Environment "**`.venv`**", then it will be the name of your Python Virtual Environment): 
 
 ```
 source .venv/bin/activate
 ```
 
-Once activated, please change directory and enter the **trame-server-examples** directory.
+Before anything, since this is development mode, you will need to rename **`workspaces.html`**. You can rename it to whatever you want, just make sure that the it is no longer **`workspaces.html`**.
+
+Change directory to the **`templates`** directory.
+
+```
+cd path/to/neurobazaar/neurobazaar/templates/workspace.html
+```
+
+Rename **`workspaces.html`** to **`new_name.html`**.
+
+```
+mv workspaces.html new_name.html
+```
+
+Then you will need to rename **`workspaces_development_only.html`** to **`workspaces.html`**.
+
+**Note:** It **must** be renamed to **`workspaces.html`** if you do not want to break the current django server. However, if you plan to modify the django server, then you can name it to whatever you want, just make sure to change **`home/views.py`**.
+
+```
+mv workspaces_development_only.html workspaces.html
+```
+
+Once finished renaming the **`workspaces.html`** and **`workspaces_development_only.html`**, please change directory and enter the **`trame-server-examples`** directory.
 
 ```
 cd path/to/neurobazaar/neurobazaar/trame-server-examples
 ```
 
-Please start the trame-server
+Please start the trame-server.
 
 ```
 python trame_server_example.py --server
 ```
 
-In a **new** terminal, please change directory to neurobazaar/neurobazaar/trame-client-examples.
+In a **new** terminal, please change directory to **`trame-client-examples`**.
 
 ```
 cd path/to/neurobazaar/neurobazaar/trame-client-examples
@@ -178,8 +200,6 @@ npm run build
 
 We then need to start the server of the client of the visualization service(s) of the Neurobazaar platform. 
 
-**Note:** This command is only for development purposes, this command will no longer need to be ran in the future.
-
 ```
 npm run dev
 ```
@@ -187,7 +207,7 @@ npm run dev
 In a **new** terminal, please change directory to neurobazaar/neurobazaar.
 
 ```
-cd path/to/neurobazaar/neurobazaar.
+cd path/to/neurobazaar/neurobazaar
 ```
 
 We need to create new migrations and apply these migrations.
@@ -202,6 +222,148 @@ Finally, start the Neurobazaar server.
 
 ```
 python manage.py runserver   
+```
+
+## How to Build and Run the Neurobazaar (Production Mode)
+Most likely, if you closed your command-line interface or exited from your remote machine, once you open/connect to your command-line interface/remote machine again, you will no longer be in the Python Virtual Environment. 
+
+Please make sure you are in the Python Virtual Environment.
+
+You can activate your Python Virtual Environment from the following command (if you did not name your Python Virtual Environment "**`.venv`**", then it will be the name of your Python Virtual Environment): 
+
+```
+source .venv/bin/activate
+```
+
+Once activated, please change directory and enter the **`trame-client-examples`** directory.
+
+```
+cd path/to/neurobazaar/neurobazaar/trame-client-examples
+```
+
+We need to install the dependencies of the client of the visualization service(s) of the Neurobazaar platform. 
+
+**Note:** If you receive an unexpected error(s) or warning(s) while installing the dependencies, please refer to the **Other Information** section. If you do not see the error(s) or warning(s) list in the  **Other Information** section, please contact one of the contributors or maintainers to receive help. 
+
+```
+npm install
+```
+
+We then need to bundle the client of the visualization service(s) of the Neurobazaar platform. 
+
+```
+npm run build
+```
+
+After installing and bundling, in a **new** terminal, please change directory to **`neurobazaar`**. You will also need to be in the Python Virtual Environment
+
+```
+source .venv/bin/activate
+cd path/to/neurobazaar/neurobazaar
+```
+
+We need to create new migrations and apply these migrations.
+
+**Note:** If you receive an unexpected error(s) or warning(s) while creating new migrations or applying these migrations, please refer to the **Other Information** section. If you do not see the error(s) or warning(s) list in the  **Other Information** section, please contact one of the contributors or maintainers to receive help. 
+
+```
+python manage.py makemigrations home
+python manage.py migrate
+```
+
+After creating new migrations or applying these migrations, we need to collect all the static files.
+
+```
+python manage.py collectstatic
+```
+
+After running the command, a new directory called **`collectedstatic`** will be created. We need to change directory to this **`collectedstatic`** directory.
+
+```
+cd/path/to/neurobazaar/collectedstatic
+```
+
+We need to find and copy two pieces of information; the bundled Vue.js Javascript (**`.js`**) and the bundled Vue.js Cascading Style Sheets (**`.css`**).
+
+Please list the files of the **`collectedstatic`** directory.
+
+```
+ls
+```
+
+You should see two files, they both start with **`main-`** and one of the files should end with **`.js`** and the other ends with **`.css`**. Please write write down the full name of the two files.
+
+In my case, my files are called:
+
+```
+main-DYg20UMC.js
+main-B7nC34Ax.css
+```
+
+After writing down the full names of the two files. Please change directory to the **`templates`** directory.
+
+You will need to directly edit the **`workspaces.html`**. 
+
+Open the file using nano.
+
+**Note:** If you have an editor, this would be a lot simpler for you.
+
+```
+nano workspaces.html
+```
+
+Using the nano text editor, please change the following **`main-DYg20UMC.js`** and **`main-B7nC34Ax.css`** to the names of your file.
+
+Here is how it looks for me, but it will be different for you:
+
+```
+
+<!-- Load the CSS file -->
+<link rel="stylesheet" href="{% static 'main-B7nC34Ax.css' %}">
+
+...
+
+        <!-- Dynamic workspace content -->
+        <div id="workspaceContent">
+            <!-- Each workspace tab content -->
+            <div class="tab-content">
+                <!-- Placeholder for initial workspace content -->
+            </div>
+        </div>
+        
+        <script src="{% static 'main-DYg20UMC.js' %}"></script>
+```
+
+After making the changes, save the changes:
+
+```
+^0
+^X
+```
+
+After that, please change directory to **`trame-server-examples`**.
+
+```
+cd path/to/neurobazaar/neurobazaar/trame-server-examples
+```
+
+Start the trame server
+
+```
+python trame_server_example.py --server
+```
+
+In a **new** terminal, change directory to **`neurobazaar`**. You will also need to be in the Python Virtual Environment. 
+
+```
+source .venv/bin/activate
+cd path/to/neurobazaar/neurobazaar
+```
+
+Start the django server.
+
+```
+python manage.py runserver
 ```
 
 ### Other Information
@@ -219,9 +381,4 @@ npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memo
 Warning two (**not fatal/still passing**):
 ```
 npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
-```
-Warning three (**not fatal/still passing**):
-```
-?: (staticfiles.W004) The directory '/neurobazaar/neurobazaar/vue-app/dist' in the STATICFILES_DIRS setting does not exist.
-No changes detected in app 'home'
 ```

@@ -2,12 +2,9 @@
 {% block title %}Workspaces{% endblock title %}
 {% block nav3 %} d-none {% endblock nav3 %}
 {% block body %}
-{% load static %}
+{% load django_vite %}
 
-<!-- Load the CSS file -->
-<link rel="stylesheet" href="{% static 'main-B7nC34Ax.css' %}">
-
-<!-- Masthead -->
+<!-- Masthead-->
 <header class="masthead">
     <div class="container">
         <div class="masthead-heading">Workspaces</div>
@@ -48,7 +45,8 @@
             </div>
         </div>
         
-        <script src="{% static 'main-DYg20UMC.js' %}"></script>
+        {% vite_hmr_client %}
+        {% vite_asset 'main.js' %}
 
         <div id="app"></div>   
     </div>

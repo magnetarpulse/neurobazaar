@@ -4,12 +4,16 @@
 Authors and Contributors:
 - Alexandru Iulian Orhean 2024 (aorhean@depaul.edu)  
 - Vivek Shravan Gupta 2024 (vgupta16@depaul.edu)  
+<<<<<<< HEAD
 - Huy Quoc Nguyen 2024 (hnguye83@depaul.edu)  
+=======
+>>>>>>> f982d483fbb1d12cb88d0beb63b0d325d0b951fb
 
 Interactive Visualization Platform for Machine Learning and Data Science Datasets.
 
 ## Requirements and Setup
 
+<<<<<<< HEAD
 In order to run the Neurobazaar Platform you need to have at least Python **3.11** installed on your machine.
 
 This software uses VTK version 9.3.1.
@@ -61,10 +65,46 @@ python3.11 -m venv .venv
 
 To load/activate the Python Virtual Environment on Ubuntu 22.04 LTS or a newer Ubuntu version: 
 
+=======
+### System Requirements
+
+In order to run the Neurobazaar Platform you need to have at least Python **3.11** installed on your computer.
+
+This software has been developed and tested with Python **3.11** on:
+- Windows 10
+- Ubuntu 22.04 LTS
+
+### Python Virtual Environment Setup
+
+All of the required Python packages are installed in a Python Virtual Environment. The first step is to create the virtual environment and the second step is to load/activate the environment. The first step has to be run only once.
+
+Create the Python Virtual Environment on Windows 10:
+```
+py -3.11 -m venv .venv
+```
+
+Create the Python Virtual Environment on Ubuntu 22.04 LTS or Mac OS 14:  
+```
+python3.11 -m venv .venv  
+```
+
+Load/activate the Python Virtual Environment in Windows 10 Powershell:
+```
+.venv/Scripts/Activate.ps1
+```
+
+Load/activate the Python Virtual Environment in Windows 10 CMD:
+```
+.venv/Scripts/activate.bat
+```
+
+Load/activate the Python Virtual Environment in Ubuntu 22.04 LTS or Mac OS 14: 
+>>>>>>> f982d483fbb1d12cb88d0beb63b0d325d0b951fb
 ```
 source .venv/bin/activate
 ```
 
+<<<<<<< HEAD
 ### VTK Setup
 
 **Note:** If you are not building the Neurobazaar on a headless machine and did not install the "**Ubuntu Required Packages**", then you will **not** need to run the following commands. 
@@ -94,10 +134,16 @@ cmake --build build --target install
 
 Install the dependencies/packages on the loaded/activated virtual environment:
 
+=======
+### Install the Python Dependencies/Packages
+
+Install the dependecies/packages on the loaded/activated virtual environment:
+>>>>>>> f982d483fbb1d12cb88d0beb63b0d325d0b951fb
 ```
 python -m pip install -r requirements.txt
 ```
 
+<<<<<<< HEAD
 **Note:** If you are not building the Neurobazaar on a headless machine and did not install the "**Ubuntu Required Packages**", then please install run the following command:
 
 ```
@@ -181,10 +227,36 @@ We then need to start the server of the client of the visualization service(s) o
 
 **Note:** This command is only for development purposes, this command will no longer need to be ran in the future.
 
+=======
+## How to Build and Run
+
+Make Migration for the Django database (only required to run once):
+```
+cd backend   
+```
+```
+python manage.py makemigrations home
+```
+
+Migrate the Django database (only required to run once):
+```
+python manage.py migrate
+```
+
+Start the Vue & Vite server(In different terminal):
+```
+cd trame  
+```
+Install npm (once at the beginning)
+```
+npm install
+```
+>>>>>>> f982d483fbb1d12cb88d0beb63b0d325d0b951fb
 ```
 npm run dev
 ```
 
+<<<<<<< HEAD
 In a **new** terminal, please change directory to neurobazaar/neurobazaar.
 
 ```
@@ -226,3 +298,12 @@ Warning three (**not fatal/still passing**):
 ?: (staticfiles.W004) The directory '/neurobazaar/neurobazaar/vue-app/dist' in the STATICFILES_DIRS setting does not exist.
 No changes detected in app 'home'
 ```
+=======
+Start the Django server(In different terminal):
+```
+cd backend   
+```
+```
+python manage.py runserver   
+```
+>>>>>>> f982d483fbb1d12cb88d0beb63b0d325d0b951fb

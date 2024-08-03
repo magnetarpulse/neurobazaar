@@ -1,4 +1,5 @@
 django
+django-vite
 numpy
 matplotlib
 pandas
@@ -8,9 +9,6 @@ trame-client
 trame-components
 trame-matplotlib
 trame-server
-trame-vtk
 trame-vuetify
-dask[complete]
-numba
-django-vite
-fast-histogram
+trame-vtk
+vtk

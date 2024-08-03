@@ -31,7 +31,6 @@ After, installing the Deadsnakes Personal Package Archive (PPA), I would recomme
 sudo apt update
 sudo apt upgrade
 sudo reboot
-
 ```
 After rebooting. You will also need to install these packages if you want to run the Neurobazaar from a headless machine.
 

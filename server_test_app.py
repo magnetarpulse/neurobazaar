@@ -6,6 +6,7 @@ import vtk as standard_vtk
 import pandas as pd
 from io import BytesIO
 import base64
+import time
 
 @TrameApp()
 class HistogramApp:
@@ -37,7 +38,7 @@ class HistogramApp:
         self.server = get_server(client_type="vue2") # This is the equivalent of server = get_server(client_type="vue2") from test_app.py
         # print("server:", self.server) for debugging purposes
     
-        self.np_data = np.random.normal(size=1000) # np_data = np.random.normal(size=1000) from test_app.py
+        self.np_data = np.random.normal(size=1_000_000_000) # np_data = np.random.normal(size=1000) from test_app.py
         # print("np_data:", self.np_data) for debugging purposes
         
         self.server.state.bins = 5 # bins = np.linspace(-3, 3, 20) from test_app.py
@@ -146,7 +147,10 @@ class HistogramApp:
         '''
         
         bins = int(bins)
+        start_time = time.time()
         self.hist, self.bin_edges = np.histogram(self.np_data, bins=bins)
+        end_time = time.time()
+        print("Time taken to calculate histogram:", end_time - start_time)
         
         self.arrX.Reset()
         self.arrY.Reset()
@@ -182,10 +186,14 @@ class HistogramApp:
         ...     table.Modified()
         ...     ctrl.view_update()
         '''
-        
+        start_time = time.time()
         self.update_histogram(bins)
+        end_time = time.time()
+
+        self.client_view.update()  # Update the render window to the client-side.
+
         print("Changed bins to:", bins)
-    
+        print("Time taken to update histogram:", end_time - start_time)
         
     # -----------------------------------------------------------------------------
     # State change handler for file input

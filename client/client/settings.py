@@ -121,9 +121,6 @@ LOGIN_URL = '/login_register'
 
 STATIC_URL = '/static/'
 
-# Where ViteJS assets are built.
-DJANGO_VITE_ASSETS_PATH = BASE_DIR / "vue-app" / "dist"
-
 # If use HMR or not.
 DJANGO_VITE_DEV_MODE = DEBUG
 
@@ -134,18 +131,9 @@ DJANGO_VITE_MANIFEST_PATH = BASE_DIR / 'vue-app' / 'dist' / '.vite' / 'manifest.
 
 DJANGO_VITE_DEV_SERVER_URL = 'http://localhost:5173/'
 
-# Include DJANGO_VITE_ASSETS_PATH into STATICFILES_DIRS to be copied inside
-# when run command python manage.py collectstatic
-# STATICFILES_DIRS = [DJANGO_VITE_ASSETS_PATH]
-
 # Include both DJANGO_VITE_ASSETS_PATH and STATIC folder into STATICFILES_DIRS
 STATICFILES_DIRS = [
-    DJANGO_VITE_ASSETS_PATH,
     os.path.join(BASE_DIRR, "static")  # Add this line to include the STATIC folder
 ]
-
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

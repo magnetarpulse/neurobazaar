@@ -1,5 +1,3 @@
-// wslink.js
-
 // Imports
 import vtkURLExtract from "@kitware/vtk.js/Common/Core/URLExtract";
 import SmartConnect from "wslink/src/SmartConnect";

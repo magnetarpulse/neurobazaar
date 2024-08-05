@@ -57,13 +57,13 @@ python -m pip install -r requirements.txt
 
 Start the Trame server(In different terminal):
 ```
+cd trame
+```
+```
 python server.py --server 
 ```
 
 Start the Vue & Vite server(In different terminal):
-```
-cd vue-app
-```
 ```
 npm install
 ```
@@ -75,9 +75,6 @@ npm run dev
 ```
 
 Start the Django client(In different terminal):
-```
-cd client   
-```
 ```
 python manage.py makemigrations home
 ```

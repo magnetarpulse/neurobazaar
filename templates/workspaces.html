@@ -98,8 +98,20 @@
     $(document).ready(function(){
         var username = "{{ username }}"; // Replace with how your backend provides the username
 
-        // Counter for unique workspace IDs
-        var workspaceCounter = 0;
+        // Initialize WebSocket connection to Trame server
+        var ws = new WebSocket('ws://localhost:8080/ws'); // Adjust URL to your Trame server
+
+        ws.onopen = function() {
+            console.log("WebSocket connection established");
+        };
+
+        ws.onmessage = function(event) {
+            console.log("Message from server: ", event.data);
+        };
+
+        ws.onerror = function(error) {
+            console.error("WebSocket error: ", error);
+        };
 
         // Handle Add Workspace button click
         $('.add-visualization').click(function(){
@@ -156,7 +168,7 @@
                         {% for category, files in datasets.items %}
                             <optgroup label="{{ category }}">
                                 {% for file in files %}
-                                    <option value="{{ category }}/{{ file }}">{{ file }}</option>
+                                    <option value="{{ file.dname }}" data-did="{{ file.did }}">{{ file.dname }}</option>
                                 {% endfor %}
                             </optgroup>
                         {% endfor %}
@@ -169,11 +181,24 @@
 
         // Handle Submit button click
         $('#submitVisualizationOptions').click(function(){
-            var selectedDataset = $('#datasetSelect').val();
+            var selectedDatasetname = $('#datasetSelect').val();
             var visualizationType = $('input[name="visualizationType"]:checked').val();
+            var selectedDatasetDid = $('#datasetSelect option:selected').data('did');
             
             // Display alert with the collected information
-            alert('Username: ' + username + '\nSelected Visualization Type: ' + visualizationType + '\nSelected File: ' + selectedDataset);
+            alert('Username: ' + username + '\nSelected Visualization Type: ' + visualizationType + '\nSelected Dataset Name: ' + selectedDatasetname + '\nSelected Dataset DID: ' + selectedDatasetDid);
+
+            // Send selected dataset and did to the Trame server
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'dataset',
+                    datasetname: selectedDatasetname,
+                    datasetDid: selectedDatasetDid,
+                    visualizationType: visualizationType
+                }));
+            } else {
+                console.error('WebSocket connection is not open.');
+            }
 
             // Close the modal
             var modal = bootstrap.Modal.getInstance(document.getElementById('visualizationOptionsModal'));
@@ -181,5 +206,6 @@
         });
     });
 </script>
+
 
 {% endblock body %}

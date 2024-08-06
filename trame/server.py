@@ -6,6 +6,7 @@ import vtk as standard_vtk
 import pandas as pd
 from io import BytesIO
 import base64
+import json
 
 @TrameApp()
 class HistogramApp:
@@ -25,12 +26,15 @@ class HistogramApp:
         self.server.state.bins = 5
         self.server.state.file_input = None
         self.server.state.selected_column = None
-        
+
         # Initialize VTK objects
         self.histogram_vtk()
         self.client_view = vtk.VtkRemoteView(
             self.renderWindow, trame_server=self.server, ref="view"
         )
+
+        # Register WebSocket message handler
+        self.server.websocket_on_message = self.on_message
 
         # Debugging purposes
         self.call_count = 0 
@@ -173,6 +177,22 @@ class HistogramApp:
                 print(f"KeyError: {e} - Check the structure of the CSV file.")
             except Exception as e:
                 print(f"An error occurred (selected_column): {e}")
+
+    def on_message(self, websocket, path):
+        """
+        Handle incoming WebSocket messages.
+        """
+        try:
+            msg = websocket.recv()
+            data = json.loads(msg)
+            if data['type'] == 'dataset':
+                datasetname = data['datasetname']
+                datasetDid = data['datasetDid']
+                print(f"Received selected dataset did from client: {datasetDid} for dataset: {datasetname}")
+                # Optionally, update server state
+                self.server.state.datasetDid = datasetDid
+        except json.JSONDecodeError:
+            print("Failed to decode JSON message")
 
 if __name__ == "__main__":
     histogram_app = HistogramApp()

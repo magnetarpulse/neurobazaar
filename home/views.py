@@ -176,7 +176,3 @@ def workspaces(request):
     }
 
     return render(request, 'workspaces.html', context)
-
-
-def vv(request):
-    return render(request, 'vv.html')

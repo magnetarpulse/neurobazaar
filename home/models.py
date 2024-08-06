@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import uuid
 
 # Create your models here.
 class User(models.Model):
@@ -11,7 +12,7 @@ class User(models.Model):
 
 class Metadata(models.Model):
     dsid = models.CharField(max_length=100,null=True)
-    did = models.CharField(max_length=100, null=True)
+    did = models.UUIDField(default=uuid.uuid4, editable=True, unique=True)
     user = models.CharField(max_length=100, null=True)
     dname = models.CharField(max_length=255)
     description = models.TextField(null=True)

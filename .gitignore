@@ -1,4 +1,8 @@
-**/__pycache__/
 .venv
-.idea
+**/__pycache__/
 db.sqlite3
+build
+datastore
+node_modules
+static/dist
+.idea

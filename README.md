@@ -38,7 +38,7 @@ All of the required Python packages are installed in a Python Virtual Environmen
 
 Create the Python Virtual Environment on Ubuntu 22.04 LTS:  
 ```
-python3.11 -m venv .venv  
+python3.11 -m venv .venv
 ```
 
 Load/activate the Python Virtual Environment in Ubuntu 22.04 LTS: 
@@ -54,7 +54,7 @@ Before you can build VTK, you need to initalize the VTK submodule.
 git submodule init
 git submodule update
 mkdir build
-cmake -GNinja -DCMAKE_INSTALL_PREFIX=.venv -DVTK_WRAP_PYTHON=ON -DVTK_SMP_IMPLEMENTATION_TYPE=STDThread -DVTK_USE_COCOA=OFF -DVTK_USE_X=OFF -DVTK_USE_WIN32_OPENGL=OFF -DVTK_OPENGL_HAS_OSMESA=ON -DVTK_OPENGL_USE_EGL=OFF -DVTK_DEFAULT_RENDER_WINDOW_OFFSCREEN=ON -DVTK_DEFAULT_RENDER_WINDOW_HEADLESS=ON -DVTK_GROUP_ENABLE_Web:STRING=WANT -S vtk/ -B build/
+cmake -GNinja -DCMAKE_INSTALL_PREFIX=$VIRTUAL_ENV -DVTK_WRAP_PYTHON=ON -DVTK_SMP_IMPLEMENTATION_TYPE=STDThread -DVTK_USE_COCOA=OFF -DVTK_USE_X=OFF -DVTK_USE_WIN32_OPENGL=OFF -DVTK_OPENGL_HAS_OSMESA=ON -DVTK_OPENGL_USE_EGL=OFF -DVTK_DEFAULT_RENDER_WINDOW_OFFSCREEN=ON -DVTK_DEFAULT_RENDER_WINDOW_HEADLESS=ON -DVTK_GROUP_ENABLE_Web:STRING=WANT -S vtk/ -B build/
 cmake --build build
 cmake --build build --target install
 ```
@@ -70,11 +70,10 @@ python -m pip install -r requirements.txt
 
 Migrate the Django database (only required to run once or when the models have been changed):
 ```
-python manage.py makemigrations
 python manage.py migrate
 ```
 
 Start the Django server:
 ```
-python manage.py runserver   
+python manage.py runserver
 ```

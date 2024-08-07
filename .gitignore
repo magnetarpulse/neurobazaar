@@ -3,6 +3,7 @@
 db.sqlite3
 build
 datastore
+package-lock.json
 node_modules
 static/dist
 .idea

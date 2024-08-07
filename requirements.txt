@@ -1,5 +1,4 @@
 django
-vtk
 numpy
 matplotlib
 pandas

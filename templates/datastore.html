@@ -245,4 +245,45 @@
     }
 </script>
 
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Error Deleting Datastore</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% if protected_error %}
+                    Cannot delete this datastore because it is still referenced by other objects.
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script to show the modal if there is a protected_error -->
+<script>
+    $(document).ready(function(){
+        {% if protected_error %}
+            $('#errorModal').modal('show');
+        {% endif %}
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        // Show the modal if there is an error
+        {% if protected_error %}
+            $('#errorModal').modal('show');
+        {% endif %}
+
+        // Manual handler for closing modal
+        $('.close').on('click', function() {
+            $('#errorModal').modal('hide');
+        });
+    });
+</script>
+
 {% endblock body %}

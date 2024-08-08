@@ -1,7 +1,12 @@
+from urllib import request
+from uuid import UUID
+
+from django.shortcuts import render
 from home.models import LocalFSDatastores, MongoDBDatastores
 from neurobazaar.services.datastorage.abstract_datastore import AbstractDatastore
 from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
 from neurobazaar.services.datastorage.mongodb_datastore import MongoDBDatastore
+from django.db.models.deletion import ProtectedError
 
 import threading
 import functools
@@ -86,19 +91,30 @@ class DatastoreManager:
         print(f"MongoDB datastore added: {datastoreUUID}")
     
     def getDatastore(self, dataStoreUUID : str) -> AbstractDatastore:
-        if dataStoreUUID in self._datastores:
-            self.refresh()
-            print(f"\n\nGetting datastore with UUID: {dataStoreUUID}")
-            return self._datastores[dataStoreUUID]
+        uuid_obj = UUID(dataStoreUUID)
+        if uuid_obj in self._datastores:
+            return self._datastores[uuid_obj]
         else:
-            print(f"\n\nDatastore with UUID: {dataStoreUUID} not found\n\n")
-            print(f"Current datastores: {self._datastores}\n\n")
-            return None
+            self.refresh()
+            return self._datastores.get(uuid_obj, None)
+        # if dataStoreUUID in self._datastores:
+        #     self.refresh()
+        #     print(f"\n\nGetting datastore with UUID: {dataStoreUUID}")
+        #     return self._datastores[dataStoreUUID]
+        # else:
+        #     print(f"\n\nDatastore with UUID: {dataStoreUUID} not found\n\n")
+        #     print(f"Current datastores: {self._datastores}\n\n")
+        #     return None
         
     def removeDataStore(self, datastoreUUID: str):
-        if datastoreUUID in self._datastores:
-            del self._datastores[datastoreUUID]
+        uuid_obj = UUID(datastoreUUID)
+        if uuid_obj in self._datastores:
+            del self._datastores[uuid_obj]
+            datastore_manager.refresh()
             print(f"Datastore with UUID: {datastoreUUID} removed")
         else:
             print(f"Datastore with UUID: {datastoreUUID} not found")
         print(f"Current datastores: {self._datastores}")
+
+
+

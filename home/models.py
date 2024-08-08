@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 
 import uuid
 
-class User(models.Model):
-    username = models.CharField(primary_key=True, editable=False, max_length=128)
-    password = models.CharField(max_length=256)
+# class User(models.Model):
+#     username = models.CharField(primary_key=True, editable=False, max_length=128)
+#     password = models.CharField(max_length=256)
     
 class Datastores(models.Model):
     UUID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

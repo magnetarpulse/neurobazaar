@@ -6,8 +6,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.db.models.deletion import ProtectedError
 
-from home.models import User, Datasets, Datastores, LocalFSDatastores, MongoDBDatastores
+from home.models import Datasets, Datastores, LocalFSDatastores, MongoDBDatastores
 
 from neurobazaar.services.datastorage.datastore_manager import getDataStoreManager
 
@@ -80,8 +81,17 @@ def datastore(request):
         elif 'remove_datastore' in request.POST:
             datastore_id = request.POST.get('datastore_id')
             manager = getDataStoreManager()
-            manager.removeDataStore(datastore_id)
-            Datastores.objects.filter(UUID=datastore_id).delete()
+            
+            try:
+                manager.removeDataStore(datastore_id)
+                Datastores.objects.filter(UUID=datastore_id).delete()
+                messages.success(request, "Datastore removed successfully.")
+            except ProtectedError as e:
+                # Here we catch and handle the protected error
+                return render(request, 'datastore.html', {
+                    'protected_error': "Cannot delete this datastore because it is still referenced by other objects.",
+                    'datastores': Datastores.objects.all()
+                })
 
     datastores = Datastores.objects.all()
     return render(request, 'datastore.html', {'datastores': datastores, 'username': username})
@@ -150,12 +160,16 @@ def datasets(request):
             description = request.POST['description']
             repo = request.POST['repo']
             datastore = request.POST['datastore']
+            print("Datastore:", datastore)
+            datastore_instance = Datastores.objects.get(UUID=datastore)
+            print("Username:", username)
+            user_instance = User.objects.get(username=username)
             
             metadata = Datasets(
-                User=username,
+                Username=user_instance,
                 Name=dname.name,
                 UUID=uuid.uuid4(),
-                Datastore_UUID = datastore,
+                Datastore_UUID = datastore_instance,
                 Description=description,
                 Repository=repo,
                 Created=timezone.now().date(), 
@@ -223,18 +237,20 @@ def datasets(request):
             dataset_UUID = request.POST['download_file']
             dataset = Datasets.objects.get(UUID=dataset_UUID)
             manager = getDataStoreManager()
-            datastore = manager.getDatastore(dataset.Datastore_UUID)
-            file_obj = datastore.getDataset(dataset.UUID)
+            datastore_instance = dataset.Datastore_UUID
+            datastore = manager.getDatastore(str(datastore_instance.UUID))
+            file_obj = datastore.getDataset(str(dataset.UUID))
             end_time = time.time()
             fetch_time = end_time - start_time
             print(f"fetch time: {fetch_time}")
             response = FileResponse(file_obj, as_attachment=True, filename=dataset.Name)
             return response
 
+    user_instance = User.objects.get(username=username)
     # Query the Metadata table for different categories
     public_datasets = Datasets.objects.filter(Repository='public')
-    private_datasets = Datasets.objects.filter(User=username, Repository='private')
-    favorite_datasets = Datasets.objects.filter(User=username, Repository='favorites')
+    private_datasets = Datasets.objects.filter(Username=user_instance, Repository='private')
+    favorite_datasets = Datasets.objects.filter(Username=user_instance, Repository='favorites')
     datastores = Datastores.objects.all()
     print(datastores)
 

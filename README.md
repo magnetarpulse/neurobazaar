@@ -90,10 +90,10 @@ python manage.py createsuperuser
 ```
 
 When prompted:
-- Username: `admin`
-- Email Address: (Leave this blank)
-- Password: `admin`
-- Confirm the password and proceed by pressing 'y' when asked to bypass the password validation.
+- Username: `any_username` (choose any username you prefer)
+- Email Address: (can be left blank)
+- Password: `add_your_password` (enter a password of your choice)
+- Confirm the password by re-entering it. If prompted, you can press 'y' to bypass password validation, or re-enter the password if you prefer not to bypass.
 
 4. **Start the Django Server**:  
 Start the server to access the Neurobazaar Platform locally:

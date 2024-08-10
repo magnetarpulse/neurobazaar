@@ -1,5 +1,9 @@
+from msilib import Binary
+from uuid import UUID
+import uuid
 from neurobazaar.services.datastorage.abstract_datastore import AbstractDatastore, DatastoreType
 from django.core.files.uploadedfile import UploadedFile
+from bson import UUIDLegacy
 
 from pymongo import MongoClient
 from gridfs import GridFS
@@ -14,7 +18,7 @@ class MongoDBDatastore(AbstractDatastore):
         self.__host = host
         self.__port = port
         self.__database = database
-        uri = f"mongodb://{username}:{password}@{host}:{port}/?ssl=true&replicaSet=globaldb&retryWrites=false"
+        uri = f"mongodb://{username}:{password}@{host}:{port}/"
         try:
             self._client = MongoClient(uri, serverSelectionTimeoutMS=5000)
             self._client.server_info()  # Force connection on a request as the MongoClient's connect is lazy.
@@ -27,8 +31,9 @@ class MongoDBDatastore(AbstractDatastore):
     def putDataset(self, uploadedFile: UploadedFile) -> str:
         """Uploads a dataset to GridFS and returns the unique dataset UUID as a string."""
         try:
-            datasetUUID = self._fs.put(uploadedFile)
-            return str(datasetUUID)
+            datasetUUID =uuid.uuid4()
+            self._fs.put(uploadedFile, _id=datasetUUID)
+            return datasetUUID
         except Exception as e:
             logging.error(f"Failed to upload dataset: {e}")
             raise
@@ -36,8 +41,10 @@ class MongoDBDatastore(AbstractDatastore):
     def getDataset(self, datasetUUID: str):
         """Returns a GridFSFile object if the dataset exists, otherwise returns None."""
         try:
-            if self._fs.exists({"_id": datasetUUID}):
-                return self._fs.get(datasetUUID)
+            uuid_obj = uuid.UUID(datasetUUID)
+            uuid_bin = UUIDLegacy(uuid_obj)
+            if self._fs.exists({"_id": uuid_bin}):
+                return self._fs.get(uuid_bin)
             else:
                 return None
         except Exception as e:

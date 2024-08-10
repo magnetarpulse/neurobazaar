@@ -12,9 +12,9 @@ class LocalFSDatastore(AbstractDatastore):
         if not os.path.exists(storeDirPath):
             os.makedirs(storeDirPath)
     
-    def putDataset(self, datasetUUID,uploadedFile: UploadedFile) -> str:
-        datasetUUID = str(datasetUUID)
-        destinationPath = os.path.join(self._storeDirPath, datasetUUID)
+    def putDataset(self,uploadedFile: UploadedFile) -> str:
+        datasetUUID = uuid.uuid4()
+        destinationPath = os.path.join(self._storeDirPath, str(datasetUUID))
         with open(destinationPath, 'wb') as fileout:
             for chunk in iter(lambda: uploadedFile.read(1048576), b''):
                 fileout.write(chunk)

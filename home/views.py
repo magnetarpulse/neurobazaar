@@ -52,18 +52,17 @@ def datastore(request):
                 #     DataStore_Name='FileSystem',
                 #     Destination_Path=path
                 # )
-            elif database_type == 'mongodb': 
-                host = request.POST.get('host')
-                port = request.POST.get('port')
-                username = request.POST.get('username')
-                password = request.POST.get('password')
-                database = request.POST.get('database')
-                collection = request.POST.get('collection') 
-                datastore_name = request.POST.get('datastore_name')
+            elif database_type == 'mongodb':
+                host = request.POST.get('host_mongo')
+                port = request.POST.get('port_mongo')
+                username = request.POST.get('username_mongo')
+                password = request.POST.get('password_mongo')
+                database = request.POST.get('database_mongo')
+                datastore_name = request.POST.get('datastore_name_mongo')
                 datastore_id = uuid.uuid4()
                 manager = getDataStoreManager()
-                manager.addMongoDBDatastore(username, password, host, port, database)
-                
+                manager.addMongoDBDatastore(str(datastore_id), username, password, host, port, database)
+
                 new_mongodb = MongoDBDatastores(
                     UUID=str(datastore_id),
                     Name=datastore_name,
@@ -73,8 +72,7 @@ def datastore(request):
                     Port=port,
                     Username=username,
                     Password=password,
-                    Database=database,
-                    Collection=collection
+                    Database=database
                 )
                 new_mongodb.save()
                 
@@ -165,10 +163,15 @@ def datasets(request):
             print("Username:", username)
             user_instance = User.objects.get(username=username)
             
+            manager = getDataStoreManager()
+            datastore = manager.getDatastore(datastore)
+            datasetid = datastore.putDataset(dname)
+            print("Dataset ID:", datasetid)
+            
             metadata = Datasets(
                 Username=user_instance,
                 Name=dname.name,
-                UUID=uuid.uuid4(),
+                UUID=datasetid,
                 Datastore_UUID = datastore_instance,
                 Description=description,
                 Repository=repo,
@@ -176,10 +179,6 @@ def datasets(request):
             )
             metadata.save()
             
-            manager = getDataStoreManager()
-            datastore = manager.getDatastore(datastore)
-            datasetid = str(metadata.UUID) 
-            datastore.putDataset(datasetid, dname)
             
             end_time = time.time()
             upload_time = end_time - start_time
@@ -268,11 +267,11 @@ def datasets(request):
 @login_required
 def workspaces(request):
     username = request.user.username
-
+    user_instance = User.objects.get(username=username)
     # Query the Metadata table for different categories
-    public_datasets = Datasets.objects.filter(repo='public')
-    private_datasets = Datasets.objects.filter(user=username, repo='private')
-    favorite_datasets = Datasets.objects.filter(user=username, repo='favorites')
+    public_datasets = Datasets.objects.filter(Repository='public')
+    private_datasets = Datasets.objects.filter(Username=user_instance, Repository='private')
+    favorite_datasets = Datasets.objects.filter(Username=user_instance, Repository='favorites')
 
     # Create a dictionary to pass the datasets to the template
     datasets = {

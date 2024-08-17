@@ -75,34 +75,9 @@ python -m pip install -r requirements.txt
 
 ## How to Build and Run
 
-Before starting the server, ensure that the Django database is correctly set up by performing migrations and creating a superuser for administrative access. Follow these steps:
+Migrate the Django database (only required to run once):
 
-1. **Prepare Database Migrations**:  
-   Initialize database migrations needed for the Django models:
-```
-python manage.py makemigrations
-```
-
-2. **Apply Migrations**:  
-Apply the prepared migrations to the database:
-```
-python manage.py migrate
-```
-
-
-3. **Create Superuser**:  
-Create an administrative user to access the Django admin panel:
-```
-python manage.py createsuperuser
-```
-
-When prompted:
-- Username: `any_username` (choose any username you prefer)
-- Email Address: (can be left blank)
-- Password: `add_your_password` (enter a password of your choice)
-- Confirm the password by re-entering it. If prompted, you can press 'y' to bypass password validation, or re-enter the password if you prefer not to bypass.
-
-4. **Start the Django Server**:  
+**Start the Django Server**:  
 Start the server to access the Neurobazaar Platform locally:
 ```
 python manage.py runserver

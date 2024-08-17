@@ -87,6 +87,7 @@
                     <th>Datastore Name</th>
                     <th>Datastore Type</th>
                     <th>Date Created</th>
+                    <th>Connected</th>
                     <th>Remove Datastore</th>
                 </tr>
             </thead>
@@ -97,6 +98,25 @@
                     <td>{{ datastore.Name }}</td>
                     <td>{{ datastore.Type }}</td>
                     <td>{{ datastore.Created }}</td>
+                    <td>
+                        {% if datastore.Connected %}
+                            <form action="{% url 'datastore' %}" method="post" id="toggle-form-{{ datastore.UUID }}">
+                                {% csrf_token %}
+                                <input type="hidden" name="disconnect_datastore" value="{{ datastore.UUID }}">
+                                <span class="text-success cursor-pointer" onclick="submitToggleForm('{{ datastore.UUID }}')" title="Click to disconnect">
+                                    <i class="fas fa-check-circle"></i> Connected
+                                </span>
+                            </form>
+                        {% else %}
+                            <form action="{% url 'datastore' %}" method="post" id="toggle-form-{{ datastore.UUID }}">
+                                {% csrf_token %}
+                                <input type="hidden" name="connect_datastore" value="{{ datastore.UUID }}">
+                                <span class="text-danger cursor-pointer" onclick="submitToggleForm('{{ datastore.UUID }}')" title="Click to connect">
+                                    <i class="fas fa-times-circle"></i> Disconnected
+                                </span>
+                            </form>
+                        {% endif %}
+                    </td>                 
                     <td>
                         <!-- Add a form for removing a DataStore -->
                         <form method="post" action="" style="display: inline;">
@@ -297,5 +317,56 @@
         });
     });
 </script>
+
+<script>
+    function submitToggleForm(datastoreId) {
+        var formId = 'toggle-form-' + datastoreId;
+        document.getElementById(formId).submit();
+    }
+</script>
+
+<style>
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        border-bottom: 1px dotted black; /* Optional: adds underline to indicate hover state */
+    }
+    
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -60px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }    
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
+</style>
+
+<span class="tooltip cursor-pointer" onclick="submitToggleForm('{{ datastore.UUID }}')">
+    <i class="fas fa-check-circle"></i> Connected
+    <span class="tooltiptext">Click to disconnect</span>
+</span>
+<span class="tooltip cursor-pointer" onclick="submitToggleForm('{{ datastore.UUID }}')">
+    <i class="fas fa-times-circle"></i> Disconnected
+    <span class="tooltiptext">Click to connect</span>
+
+
 
 {% endblock body %}

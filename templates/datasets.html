@@ -43,7 +43,9 @@
                         <label class="m-2" for="datastore">Datastore:</label>
                         <select class="btn btn-outline-primary dropdown-toggle" name="datastore" id="datastore" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {% for datastore in datastores %}
-                                <option class="dropdown-item" value="{{ datastore.UUID }}">{{ datastore.Name }} | {{datastore.Type}}</option>
+                                {% if datastore.Connected %}
+                                    <option class="dropdown-item" value="{{ datastore.UUID }}">{{ datastore.Name }} | {{datastore.Type}}</option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                     </div>
@@ -68,7 +70,84 @@
 <!-- Datasets Section -->
 <section class="page-section bg-light" id="portfolio">
     <div class="container">
-        <!-- Dataset Table -->
+
+        <!-- Favourites Subgroup -->
+        <div id="favourites" style="display:none;">
+            {% for file in favorite_datasets %}
+            <div class="portfolio-item" id="portfolioItem1">
+                <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal1">
+                    <img class="img-fluid" src="/static/src/assets/img/d1.jpg" alt="..." />
+                </a>
+                <div class="portfolio-caption">
+                    <div class="portfolio-caption-heading">{{ file.Name }}</div>
+                    <div class="portfolio-caption-subheading text-muted">{{ file.Description }}</div>
+                    <!-- Buttons -->
+                    <div class="d-flex align-items-center mt-2">
+                        <!-- Download Button -->
+                        <form action="{% url 'datasets' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="download_file" value="{{ file.UUID }}">
+                            <button type="submit" class="delete-button btn btn-outline-info mx-4">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                        </form>
+                        <!-- Delete Button -->
+                        <form action="{% url 'datasets' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="delete_file" value="{{ file.UUID }}">
+                            <button type="submit" class="delete-button btn btn-outline-dark me-3">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Private Subgroup -->
+        <div id="private" style="display:none;">
+            {% for file in private_datasets %}
+            <div class="portfolio-item" id="portfolioItem4">
+                <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal4">
+                    <img class="img-fluid" src="/static/src/assets/img/d3.jpg" alt="..." />
+                </a>
+                <div class="portfolio-caption">
+                    <div class="portfolio-caption-heading">{{ file.Name }}</div>
+                    <div class="portfolio-caption-subheading text-muted">{{ file.Description }}</div>
+                    <!-- Buttons -->
+                    <div class="d-flex align-items-center mt-2">
+                        <!-- Favourite Button -->
+                        <form action="{% url 'datasets' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="copy_to_favorites" value="{{ file.UUID }}">
+                            <button type="submit" class="favourite-button btn btn-outline-warning me-3">
+                                <i class="fas fa-star"></i> Favourite
+                            </button>
+                        </form>                        
+                        <!-- Download Button -->
+                        <form action="{% url 'datasets' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="download_file" value="{{ file.UUID }}">
+                            <button type="submit" class="delete-button btn btn-outline-info me-3">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                        </form>
+                        <!-- Delete Button -->
+                        <form action="{% url 'datasets' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="delete_file" value="{{ file.UUID }}">
+                            <button type="submit" class="delete-button btn btn-outline-dark me-3">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Public Subgroup -->
         <div class="text-center">
             <h2 class="section-heading text-uppercase">Datasets</h2>
         </div>
@@ -87,17 +166,17 @@
                     <td class="text-center">{{ file.Description }}</td>
                     <td class="text-center">
                         <!-- Like Button -->
-                        <button class="like-button btn btn-outline-success me-1" onclick="likeFile('{{ file.id }}')">
+                        <button class="like-button btn btn-outline-success me-1" onclick="likeFile('{{ file.UUID }}')">
                             <i class="fas fa-thumbs-up"></i>
                         </button>
                         <!-- Dislike Button -->
-                        <button class="dislike-button btn btn-outline-danger me-1" onclick="dislikeFile('{{ file.id }}')">
+                        <button class="dislike-button btn btn-outline-danger me-1" onclick="dislikeFile('{{ file.UUID }}')">
                             <i class="fas fa-thumbs-down"></i>
                         </button>
                         <!-- Favourite Button -->
                         <form action="{% url 'datasets' %}" method="post" class="d-inline">
                             {% csrf_token %}
-                            <input type="hidden" name="copy_to_favorites" value="{{ file.id }}">
+                            <input type="hidden" name="copy_to_favorites" value="{{ file.UUID }}">
                             <button type="submit" class="favourite-button btn btn-outline-warning me-3">
                                 <i class="fas fa-star"></i>
                             </button>
@@ -105,7 +184,7 @@
                         <!-- Download Button -->
                         <form action="{% url 'datasets' %}" method="post" class="d-inline">
                             {% csrf_token %}
-                            <input type="hidden" name="download_file" value="{{ file.UUID}}">
+                            <input type="hidden" name="download_file" value="{{ file.UUID }}">
                             <button type="submit" class="download-button btn btn-outline-info me-1" onclick="startDownloadTimer()">
                                 <i class="fas fa-download"></i>
                             </button>
@@ -117,7 +196,6 @@
         </table>
     </div>
 </section>
-
 
 <!-- Footer-->
 <footer class="footer py-4">

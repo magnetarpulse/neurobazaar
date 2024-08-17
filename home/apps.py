@@ -28,6 +28,7 @@ class HomeConfig(AppConfig):
                 from neurobazaar.services.datastorage.datastore_manager import getDataStoreManager
                 manager = getDataStoreManager()
                 manager.refresh()
+                Datastores.objects.update(Connected=True)
                 
             except OperationalError:
                 pass

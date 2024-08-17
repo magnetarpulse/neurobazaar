@@ -7,14 +7,10 @@ from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.db.models.deletion import ProtectedError
-
 from home.models import Datasets, Datastores, LocalFSDatastores, MongoDBDatastores
-
 from neurobazaar.services.datastorage.datastore_manager import getDataStoreManager
-
 import os
 import uuid
-
 
 # Create your views here.
 def index(request):
@@ -47,11 +43,7 @@ def datastore(request):
                     Directory_Path=path 
                 )
                 new_local_fs.save()
-                # DataStores.objects.create(
-                #     DataStore_ID=str(datastore_id),
-                #     DataStore_Name='FileSystem',
-                #     Destination_Path=path
-                # )
+
             elif database_type == 'mongodb':
                 host = request.POST.get('host_mongo')
                 port = request.POST.get('port_mongo')
@@ -90,6 +82,27 @@ def datastore(request):
                     'protected_error': "Cannot delete this datastore because it is still referenced by other objects.",
                     'datastores': Datastores.objects.all()
                 })
+        
+        elif 'connect_datastore' in request.POST:
+            datastore_id = request.POST.get('connect_datastore')
+            try:
+                datastore = Datastores.objects.get(UUID=datastore_id)
+                datastore.Connected = True
+                datastore.save()
+                messages.success(request, f"{datastore.Name} connected successfully.")
+            except Datastores.DoesNotExist:
+                messages.error(request, "Datastore not found.")
+
+        elif 'disconnect_datastore' in request.POST:
+            datastore_id = request.POST.get('disconnect_datastore')
+            try:
+                datastore = Datastores.objects.get(UUID=datastore_id)
+                datastore.Connected = False
+                datastore.save()
+                messages.success(request, f"{datastore.Name} disconnected successfully.")
+            except Datastores.DoesNotExist:
+                messages.error(request, "Datastore not found.")
+
 
     datastores = Datastores.objects.all()
     return render(request, 'datastore.html', {'datastores': datastores, 'username': username})
@@ -158,15 +171,12 @@ def datasets(request):
             description = request.POST['description']
             repo = request.POST['repo']
             datastore = request.POST['datastore']
-            print("Datastore:", datastore)
             datastore_instance = Datastores.objects.get(UUID=datastore)
-            print("Username:", username)
             user_instance = User.objects.get(username=username)
             
             manager = getDataStoreManager()
             datastore = manager.getDatastore(datastore)
             datasetid = datastore.putDataset(dname)
-            print("Dataset ID:", datasetid)
             
             metadata = Datasets(
                 Username=user_instance,
@@ -178,56 +188,36 @@ def datasets(request):
                 Created=timezone.now().date(), 
             )
             metadata.save()
-            
-            
             end_time = time.time()
             upload_time = end_time - start_time
-            print(f"Upload time: {upload_time}")
             
             messages.info(request, f"File uploaded in {upload_time:.4f} seconds.")
             return redirect('datasets')  # Redirect to avoid resubmission of form
             
-        # Handling like action
-        elif 'like_file' in request.POST:
-            file_id = request.POST['like_file']
-            metadata = Datasets.objects.get(id=file_id)
-            metadata.likes += 1
-            metadata.save()
+        elif 'like_file' in request.POST or 'dislike_file' in request.POST:
+            action = 'like_file' if 'like_file' in request.POST else 'dislike_file'
+            file_id = request.POST[action]
+            dataset = Datasets.objects.get(UUID=file_id)
+            if action == 'like_file':
+                dataset.Likes += 1
+            else:
+                dataset.Dislikes += 1
+            dataset.save()
             return redirect('datasets')
 
-        # Handling dislike action
-        elif 'dislike_file' in request.POST:
-            file_id = request.POST['dislike_file']
-            metadata = Datasets.objects.get(id=file_id)
-            metadata.dislikes += 1
-            metadata.save()
-            return redirect('datasets')
-
-        # Handling copy to favorites action
         elif 'copy_to_favorites' in request.POST:
             file_id = request.POST['copy_to_favorites']
-            metadata = Datasets.objects.get(id=file_id)
-            
-            # Check if the file is already in favorites to prevent duplication
-            if not Datasets.objects.filter(user=username, dname=metadata.dname, repo='favorites').exists():
-                # Create a new metadata entry for favorites
-                favorite_metadata = Datasets(
-                    user=username,
-                    dname=metadata.dname,
-                    description=metadata.description,
-                    repo='favorites',
-                    date=timezone.now().date(),
-                    time=timezone.now().time()
-                )
-                favorite_metadata.save()
-                
+            dataset = Datasets.objects.get(UUID=file_id)
+            if not Datasets.objects.filter(Username=user_instance, UUID=file_id, Repository='favorites').exists():
+                dataset.pk = None
+                dataset.Repository = 'favorites'
+                dataset.save()
             return redirect('datasets')
 
-        # Handling delete action
         elif 'delete_file' in request.POST:
             file_id = request.POST['delete_file']
-            metadata = Datasets.objects.get(id=file_id)
-            metadata.delete()
+            dataset = Datasets.objects.get(UUID=file_id)
+            dataset.delete()
             return redirect('datasets')
         
                 # Handling download action
@@ -241,7 +231,6 @@ def datasets(request):
             file_obj = datastore.getDataset(str(dataset.UUID))
             end_time = time.time()
             fetch_time = end_time - start_time
-            print(f"fetch time: {fetch_time}")
             response = FileResponse(file_obj, as_attachment=True, filename=dataset.Name)
             return response
 
@@ -251,7 +240,6 @@ def datasets(request):
     private_datasets = Datasets.objects.filter(Username=user_instance, Repository='private')
     favorite_datasets = Datasets.objects.filter(Username=user_instance, Repository='favorites')
     datastores = Datastores.objects.all()
-    print(datastores)
 
     context = {
         'public_datasets': public_datasets,

@@ -76,6 +76,12 @@ python -m pip install -r requirements.txt
 ## How to Build and Run
 
 Migrate the Django database (only required to run once):
+```
+python manage.py makemigrations home
+```
+```
+python manage.py migrate
+```
 
 **Start the Django Server**:  
 Start the server to access the Neurobazaar Platform locally:

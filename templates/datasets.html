@@ -97,12 +97,12 @@
                                 <button class="dislike-button btn btn-outline-danger me-1" onclick="dislikeFile('{{ file.UUID }}')">
                                     <i class="fas fa-thumbs-down"></i>
                                 </button>
-                                <!-- Favourite Button -->
+                                <!-- Delete Button -->
                                 <form action="{% url 'datasets' %}" method="post" class="d-inline">
                                     {% csrf_token %}
-                                    <input type="hidden" name="copy_to_favorites" value="{{ file.UUID }}">
-                                    <button type="submit" class="favourite-button btn btn-outline-warning me-3">
-                                        <i class="fas fa-star"></i>
+                                    <input type="hidden" name="delete_file" value="{{ file.UUID }}">
+                                    <button type="submit" class="delete-button btn btn-outline-danger me-1">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
                                 <!-- Download Button -->
@@ -152,8 +152,16 @@
                                 <form action="{% url 'datasets' %}" method="post" class="d-inline">
                                     {% csrf_token %}
                                     <input type="hidden" name="copy_to_favorites" value="{{ file.UUID }}">
-                                    <button type="submit" class="favourite-button btn btn-outline-warning me-3">
+                                    <button type="submit" class="favourite-button btn btn-outline-warning me-1">
                                         <i class="fas fa-star"></i>
+                                    </button>
+                                </form>
+                                <!-- Delete Button -->
+                                <form action="{% url 'datasets' %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="delete_file" value="{{ file.UUID }}">
+                                    <button type="submit" class="delete-button btn btn-outline-danger me-1">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
                                 <!-- Download Button -->
@@ -202,10 +210,20 @@
                                 <form action="{% url 'datasets' %}" method="post" class="d-inline">
                                     {% csrf_token %}
                                     <input type="hidden" name="copy_to_favorites" value="{{ file.UUID }}">
-                                    <button type="submit" class="favourite-button btn btn-outline-warning me-3">
+                                    <button type="submit" class="favourite-button btn btn-outline-warning me-1">
                                         <i class="fas fa-star"></i>
                                     </button>
                                 </form>
+                                <!-- Delete Button (Visible only for the owner) -->
+                                {% if user_instance == file.Username %}
+                                <form action="{% url 'datasets' %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="delete_file" value="{{ file.UUID }}">
+                                    <button type="submit" class="delete-button btn btn-outline-danger me-1">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
                                 <!-- Download Button -->
                                 <form action="{% url 'datasets' %}" method="post" class="d-inline">
                                     {% csrf_token %}
@@ -214,7 +232,7 @@
                                         <i class="fas fa-download"></i>
                                     </button>
                                 </form>
-                                    </td>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>

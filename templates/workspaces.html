@@ -149,7 +149,7 @@
                         {% for category, files in datasets.items %}
                             <optgroup label="{{ category }}">
                                 {% for file in files %}
-                                    <option value="{{ category }}/{{ file }}">{{ file }}</option>
+                                    <option value="{{ file.UUID }}">{{ file.Name }}</option>
                                 {% endfor %}
                             </optgroup>
                         {% endfor %}

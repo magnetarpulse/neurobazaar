@@ -161,80 +161,87 @@ def login_register(request):
 @login_required
 def datasets(request):
     username = request.user.username
+    user_instance = User.objects.get(username=username) 
     upload_time = None  
     if request.method == 'POST':
-        # Handling file upload and dataset creation
-        if 'dname' in request.FILES and 'description' in request.POST and 'repo' in request.POST:
-            # Get the start time from session or calculate it based on form submission
-            start_time = float(request.session.get('uploadStartTime', time.time() * 1000)) / 1000
-            dname = request.FILES.get('dname')
-            description = request.POST['description']
-            repo = request.POST['repo']
-            datastore = request.POST['datastore']
-            datastore_instance = Datastores.objects.get(UUID=datastore)
-            user_instance = User.objects.get(username=username)
-            
-            manager = getDataStoreManager()
-            datastore = manager.getDatastore(datastore)
-            datasetid = datastore.putDataset(dname)
-            
-            metadata = Datasets(
-                Username=user_instance,
-                Name=dname.name,
-                UUID=datasetid,
-                Datastore_UUID = datastore_instance,
-                Description=description,
-                Repository=repo,
-                Created=timezone.now().date(), 
-            )
-            metadata.save()
-            end_time = time.time()
-            upload_time = end_time - start_time
-            
-            messages.info(request, f"File uploaded in {upload_time:.4f} seconds.")
-            return redirect('datasets')  # Redirect to avoid resubmission of form
-            
-        elif 'like_file' in request.POST or 'dislike_file' in request.POST:
-            action = 'like_file' if 'like_file' in request.POST else 'dislike_file'
-            file_id = request.POST[action]
-            dataset = Datasets.objects.get(UUID=file_id)
-            if action == 'like_file':
-                dataset.Likes += 1
-            else:
-                dataset.Dislikes += 1
-            dataset.save()
-            return redirect('datasets')
-
-        elif 'copy_to_favorites' in request.POST:
-            file_id = request.POST['copy_to_favorites']
-            dataset = Datasets.objects.get(UUID=file_id)
-            if not Datasets.objects.filter(Username=user_instance, UUID=file_id, Repository='favorites').exists():
-                dataset.pk = None
-                dataset.Repository = 'favorites'
+        try:
+            # Handling file upload and dataset creation
+            if 'dname' in request.FILES and 'description' in request.POST and 'repo' in request.POST:
+                # Get the start time from session or calculate it based on form submission
+                start_time = float(request.session.get('uploadStartTime', time.time() * 1000)) / 1000
+                dname = request.FILES.get('dname')
+                description = request.POST['description']
+                repo = request.POST['repo']
+                datastore = request.POST['datastore']
+                datastore_instance = Datastores.objects.get(UUID=datastore)
+                
+                manager = getDataStoreManager()
+                datastore = manager.getDatastore(datastore)
+                datasetid = datastore.putDataset(dname)
+                
+                metadata = Datasets(
+                    Username=user_instance,
+                    Name=dname.name,
+                    UUID=datasetid,
+                    Datastore_UUID = datastore_instance,
+                    Description=description,
+                    Repository=repo,
+                    Created=timezone.now().date(), 
+                )
+                metadata.save()
+                end_time = time.time()
+                upload_time = end_time - start_time
+                
+                messages.info(request, f"File uploaded in {upload_time:.4f} seconds.")
+                return redirect('datasets')  # Redirect to avoid resubmission of form
+                
+            elif 'like_file' in request.POST or 'dislike_file' in request.POST:
+                action = 'like_file' if 'like_file' in request.POST else 'dislike_file'
+                file_id = request.POST[action]
+                dataset = Datasets.objects.get(UUID=file_id)
+                if action == 'like_file':
+                    dataset.Likes += 1
+                else:
+                    dataset.Dislikes += 1
                 dataset.save()
-            return redirect('datasets')
+                return redirect('datasets')
 
-        elif 'delete_file' in request.POST:
-            file_id = request.POST['delete_file']
-            dataset = Datasets.objects.get(UUID=file_id)
-            dataset.delete()
-            return redirect('datasets')
-        
-                # Handling download action
-        elif 'download_file' in request.POST:
-            start_time = float(request.session.get('uploadStartTime', time.time() * 1000)) / 1000
-            dataset_UUID = request.POST['download_file']
-            dataset = Datasets.objects.get(UUID=dataset_UUID)
-            manager = getDataStoreManager()
-            datastore_instance = dataset.Datastore_UUID
-            datastore = manager.getDatastore(str(datastore_instance.UUID))
-            file_obj = datastore.getDataset(str(dataset.UUID))
-            end_time = time.time()
-            fetch_time = end_time - start_time
-            response = FileResponse(file_obj, as_attachment=True, filename=dataset.Name)
-            return response
+            elif 'copy_to_favorites' in request.POST:
+                file_id = request.POST['copy_to_favorites']
+                dataset = Datasets.objects.get(UUID=file_id)
+                if not Datasets.objects.filter(Username=user_instance, UUID=file_id, Repository='favorites').exists():
+                    dataset.pk = None
+                    dataset.Repository = 'favorites'
+                    dataset.save()
+                return redirect('datasets') 
 
-    user_instance = User.objects.get(username=username)
+            elif 'delete_file' in request.POST:
+                file_id = request.POST['delete_file']
+                dataset = Datasets.objects.get(UUID=file_id)
+                dataset.delete()
+                return redirect('datasets')
+            
+            # Handling download action
+            elif 'download_file' in request.POST:
+                start_time = float(request.session.get('uploadStartTime', time.time() * 1000)) / 1000
+                dataset_UUID = request.POST['download_file']
+                dataset = Datasets.objects.get(UUID=dataset_UUID)
+                manager = getDataStoreManager()
+                datastore_instance = dataset.Datastore_UUID
+                datastore = manager.getDatastore(str(datastore_instance.UUID))
+                file_obj = datastore.getDataset(str(dataset.UUID))
+                if file_obj is None:
+                    messages.info(request, f"File {dataset.Name} not found.")
+                    return redirect('datasets')
+                end_time = time.time()
+                fetch_time = end_time - start_time
+                response = FileResponse(file_obj, as_attachment=True, filename=dataset.Name)
+                return response   
+
+        except Exception as e:
+            messages.error(request, "No Datastore Connected")
+            return redirect('datasets') 
+
     # Query the Metadata table for different categories
     public_datasets = Datasets.objects.filter(Repository='public')
     private_datasets = Datasets.objects.filter(Username=user_instance, Repository='private')
@@ -247,7 +254,9 @@ def datasets(request):
         'favorite_datasets': favorite_datasets,
         'datastores': datastores,
         'username': username,  # Include username in the context
-        'upload_time': upload_time
+        'upload_time': upload_time,
+        'user_instance': request.user,  # Current logged-in user
+
     }
 
     return render(request, 'datasets.html', context)

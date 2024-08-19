@@ -72,6 +72,9 @@ python -m pip install -r requirements.txt
 
 Migrate the Django database (only required to run once or when the models have been changed):
 ```
+python manage.py makemigrations home
+```
+```
 python manage.py migrate
 ```
 

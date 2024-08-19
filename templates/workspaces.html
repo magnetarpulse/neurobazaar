@@ -95,7 +95,8 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.min.js"></script>
 
 <script>
-    $(document).ready(function(){
+    $(document).ready(function()
+    {
         var username = "{{ username }}"; // Replace with how your backend provides the username
 
         // Initialize WebSocket connection to Trame server
@@ -115,33 +116,34 @@
 
         // Handle Add Workspace button click
         $('.add-visualization').click(function(){
-        // Counter for unique workspace IDs
-        var workspaceCounter = 0;
+            // Counter for unique workspace IDs
+            var workspaceCounter = 0;
 
-        // Handle Add Workspace button click
-        $('.add-workspace').click(function(){
-            workspaceCounter++;
-            var newWorkspaceId = 'workspace' + workspaceCounter;
+            // Handle Add Workspace button click
+            $('.add-workspace').click(function(){
+                workspaceCounter++;
+                var newWorkspaceId = 'workspace' + workspaceCounter;
 
-            // Create new workspace tab and content
-            var newWorkspaceTab = $('<li class="nav-item"><a class="nav-link" id="' + newWorkspaceId + '-tab" data-bs-toggle="tab" href="#' + newWorkspaceId + '" role="tab" aria-controls="' + newWorkspaceId + '" aria-selected="false">Workspace ' + workspaceCounter + '<button class="btn-close close-workspace" type="button" aria-label="Close"></button></a></li>');
-            var newWorkspacePane = $('<div class="tab-pane fade" id="' + newWorkspaceId + '" role="tabpanel"></div>');
+                // Create new workspace tab and content
+                var newWorkspaceTab = $('<li class="nav-item"><a class="nav-link" id="' + newWorkspaceId + '-tab" data-bs-toggle="tab" href="#' + newWorkspaceId + '" role="tab" aria-controls="' + newWorkspaceId + '" aria-selected="false">Workspace ' + workspaceCounter + '<button class="btn-close close-workspace" type="button" aria-label="Close"></button></a></li>');
+                var newWorkspacePane = $('<div class="tab-pane fade" id="' + newWorkspaceId + '" role="tabpanel"></div>');
 
-            // Append new workspace tab and pane
-            $('#workspaceTabs').append(newWorkspaceTab);
-            $('.tab-content').append(newWorkspacePane);
+                // Append new workspace tab and pane
+                $('#workspaceTabs').append(newWorkspaceTab);
+                $('.tab-content').append(newWorkspacePane);
 
-            // Activate new workspace tab
-            $('#' + newWorkspaceId + '-tab').tab('show');
+                // Activate new workspace tab
+                $('#' + newWorkspaceId + '-tab').tab('show');
+            }); 
+
+            // Handle Close Workspace button click
+            $(document).on('click', '.close-workspace', function(){
+                var workspaceId = $(this).closest('a').attr('href');
+                $(workspaceId).remove();
+                $(this).closest('li').remove();
+                $('#workspaceTabs a:last').tab('show');
+            });
         }); 
-
-        // Handle Close Workspace button click
-        $(document).on('click', '.close-workspace', function(){
-            var workspaceId = $(this).closest('a').attr('href');
-            $(workspaceId).remove();
-            $(this).closest('li').remove();
-            $('#workspaceTabs a:last').tab('show');
-        });
 
         // Handle Add Visualization button click
         $(document).on('click', '.add-visualization', function(){
@@ -173,7 +175,7 @@
                         {% for category, files in datasets.items %}
                             <optgroup label="{{ category }}">
                                 {% for file in files %}
-                                    <option value="{{ file.UUID }}">{{ file.Name }}</option>
+                                    <option value="{{ file.Name }}" data-uuid="{{ file.UUID  }}">{{ file.Name }}</option>
                                 {% endfor %}
                             </optgroup>
                         {% endfor %}
@@ -204,11 +206,6 @@
             } else {
                 console.error('WebSocket connection is not open.');
             }
-            var selectedDataset = $('#datasetSelect').val();
-            var visualizationType = $('input[name="visualizationType"]:checked').val();
-            
-            // Display alert with the collected information
-            alert('Username: ' + username + '\nSelected Visualization Type: ' + visualizationType + '\nSelected File: ' + selectedDataset);
 
             // Close the modal
             var modal = bootstrap.Modal.getInstance(document.getElementById('visualizationOptionsModal'));
@@ -216,6 +213,5 @@
         });
     });
 </script>
-
 
 {% endblock body %}

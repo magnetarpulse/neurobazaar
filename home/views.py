@@ -1,20 +1,16 @@
-import os
-from django.http import FileResponse, HttpResponseNotFound
-from django.conf import settings
-from django.shortcuts import render, HttpResponse, redirect
-from neurobazaar.settings import BASE_DIR
-from home.models import User
+import time
+from django.http import FileResponse
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout, authenticate, login
-from django.http import JsonResponse
-import os
-import csv
-# import by rushi
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from django.db.models.deletion import ProtectedError
+from home.models import Datasets, Datastores, LocalFSDatastores, MongoDBDatastores
+from neurobazaar.services.datastorage.datastore_manager import getDataStoreManager
+import os
 import uuid
-from django.core.files.storage import FileSystemStorage
-
 
 # Create your views here.
 def index(request):
@@ -23,265 +19,267 @@ def index(request):
         username = request.user.username
     return render(request, 'index.html', {'username': username})
 
-def loginUser(request):
-    if request.method=='POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
-        user = authenticate(username=username, password=password)
-        
-        if user is not None:
-            # A backend authenticated the credentials
-            login(request, user)
-            return redirect('/')
-        else:
-            # No backend authenticated the credentials
-            # messages.alert(request, 'Invalid username or password.')
-            return render(request, 'login.html')
-
-    return render(request, 'login.html', {'user': request.user})
-
 def logoutUser(request):
     logout(request)
-    return redirect('/login')
+    return redirect('/login_register')
 
-
-def register(request):
-    if request.method == 'POST':
-        user = UserCreationForm(request.POST)
-        if user.is_valid():
-            username = request.POST.get('username')
-            password = request.POST.get('password1')
-            
-            user = User.objects.create_user(username=username,password=password)
-            user.save()
-            return redirect('/login')
-    else:
-        user = UserCreationForm()
-    return render(request, 'register.html')
-
-@login_required
-def results(request):
-    # Retrieve the username
+def datastore(request):
     username = request.user.username
+    # Handle form submissions for adding or removing datastores
+    if request.method == 'POST':
+        if 'add_datastore' in request.POST:
+            database_type = request.POST.get('database')
+            if database_type == 'filesystem':
+                path = request.POST.get('destination_path')
+                datastore_name = request.POST.get('datastore_name')
+                manager = getDataStoreManager()
+                datastore_id = uuid.uuid4()
+                manager.addLocalFSDatastore(datastore_id,path)
+                new_local_fs = LocalFSDatastores(
+                    UUID=str(datastore_id),  
+                    Name=datastore_name,
+                    Type = "filesystem",
+                    Connected=True,
+                    Directory_Path=path 
+                )
+                new_local_fs.save()
 
-    # Define the path to the user's workspace directory
-    user_workspace_dir = os.path.join(settings.MEDIA_ROOT, 'workspace', username)
+            elif database_type == 'mongodb':
+                host = request.POST.get('host_mongo')
+                port = request.POST.get('port_mongo')
+                username = request.POST.get('username_mongo')
+                password = request.POST.get('password_mongo')
+                database = request.POST.get('database_mongo')
+                datastore_name = request.POST.get('datastore_name_mongo')
+                datastore_id = uuid.uuid4()
+                manager = getDataStoreManager()
+                manager.addMongoDBDatastore(str(datastore_id), username, password, host, port, database)
 
-    # Fetch existing workspaces for the user
-    existing_workspaces = []
-    if os.path.exists(user_workspace_dir):
-        workspace_list = os.listdir(user_workspace_dir)
-        for workspace in workspace_list:
-            workspace_number = workspace.split('_')[1]
-            workspace_content = {
-                'workspace_number': workspace_number,
-                'name': workspace,
-                'pca_plot': None,  # Initialize pca_plot to None
-                'table_headers': [],
-                'tabular_data': []
-            }
-            workspace_path = os.path.join(user_workspace_dir, workspace)
-            if os.path.isdir(workspace_path):
-                files = os.listdir(workspace_path)
-                if 'pca_plot.png' in files:
-                    # Construct the path to pca_plot for the workspace
-                    workspace_content['pca_plot'] = fetch_pca_plot_path(username, workspace_number)
-                # Look for any CSV file in the workspace directory
-                csv_files = [file for file in files if file.endswith('.csv')]
-                if csv_files:
-                    csv_file_path = os.path.join(workspace_path, csv_files[0])
-                    with open(csv_file_path, 'r') as csv_file:
-                        csv_reader = csv.reader(csv_file)
-                        workspace_content['table_headers'] = next(csv_reader, [])
-                        workspace_content['tabular_data'] = list(csv_reader)
-            existing_workspaces.append(workspace_content)
+                new_mongodb = MongoDBDatastores(
+                    UUID=str(datastore_id),
+                    Name=datastore_name,
+                    Type="mongodb",
+                    Connected=True,
+                    Host=host,
+                    Port=port,
+                    Username=username,
+                    Password=password,
+                    Database=database
+                )
+                new_mongodb.save()
+                
+        elif 'remove_datastore' in request.POST:
+            datastore_id = request.POST.get('datastore_id')
+            manager = getDataStoreManager()
+            
+            try:
+                manager.removeDataStore(datastore_id)
+                Datastores.objects.filter(UUID=datastore_id).delete()
+                messages.success(request, "Datastore removed successfully.")
+            except ProtectedError as e:
+                # Here we catch and handle the protected error
+                return render(request, 'datastore.html', {
+                    'protected_error': "Cannot delete this datastore because it is still referenced by other objects.",
+                    'datastores': Datastores.objects.all()
+                })
+        
+        elif 'connect_datastore' in request.POST:
+            datastore_id = request.POST.get('connect_datastore')
+            try:
+                datastore = Datastores.objects.get(UUID=datastore_id)
+                datastore.Connected = True
+                datastore.save()
+                messages.success(request, f"{datastore.Name} connected successfully.")
+            except Datastores.DoesNotExist:
+                messages.error(request, "Datastore not found.")
 
-    # Pass the list of existing workspaces to the template
-    return render(request, 'results.html', {'username': username, 'existing_workspaces': existing_workspaces})
+        elif 'disconnect_datastore' in request.POST:
+            datastore_id = request.POST.get('disconnect_datastore')
+            try:
+                datastore = Datastores.objects.get(UUID=datastore_id)
+                datastore.Connected = False
+                datastore.save()
+                messages.success(request, f"{datastore.Name} disconnected successfully.")
+            except Datastores.DoesNotExist:
+                messages.error(request, "Datastore not found.")
 
 
-def fetch_pca_plot_path(username, workspace_number):
-    # # Construct the path to the PCA plot image relative to the static directory
-    return f'/static/workspace/{username}/workspace_{workspace_number}/pca_plot.png'
-
-
-# Function to handle copying files to favorites
-def copy_to_favorites(filename, source_folder, username, visibility):
-    if visibility == 'public':
-        source_path = os.path.join(settings.MEDIA_ROOT, 'datasets', 'public', filename)
-    else:
-        source_path = os.path.join(settings.MEDIA_ROOT, 'datasets', username, 'private', filename)
+    datastores = Datastores.objects.all()
+    return render(request, 'datastore.html', {'datastores': datastores, 'username': username})
     
-    destination_path = os.path.join(settings.MEDIA_ROOT, 'datasets', username, 'favorites', filename)
-    os.makedirs(os.path.dirname(destination_path), exist_ok=True)  # Create directories if not exists
-    
-    # Copy the file
-    with open(source_path, 'rb') as source:
-        with open(destination_path, 'wb') as destination:
-            destination.write(source.read())
+def login_register(request):
+    login_form_visible = True
+    register_form_visible = False
 
-# Function to handle deleting files
-def delete_file(filename, folder, username):
-    file_path = os.path.join(settings.MEDIA_ROOT, 'datasets', username, folder, filename)
-    if os.path.exists(file_path):
-        os.remove(file_path)
+    if request.method == 'POST':
+        if 'login_submit' in request.POST:
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('/')
+            else:
+                messages.error(request, 'Invalid username or password.')
+
+        elif 'register_submit' in request.POST:
+            username = request.POST.get('username')
+            password1 = request.POST.get('password1')
+            password2 = request.POST.get('password2')
+
+            if password1 != password2:
+                messages.error(request, 'Passwords do not match.')
+                register_form_visible = True
+                login_form_visible = False
+
+            elif len(password1) < 8:
+                messages.error(request, 'Password must be at least 8 characters long.')
+                register_form_visible = True
+                login_form_visible = False
+
+            elif password1.isdigit():
+                messages.error(request, 'Password cannot be entirely numeric.')
+                register_form_visible = True
+                login_form_visible = False
+
+            elif User.objects.filter(username=username).exists():
+                messages.error(request, 'Username already exists.')
+                register_form_visible = True
+                login_form_visible = False
+
+            else:
+                # Create user if all checks pass
+                user = User.objects.create_user(username=username, password=password1)
+                user.save()
+                messages.success(request, 'Account created successfully. You can now login.')
+                return redirect('/login_register')
+
+    # If GET request or form submission didn't succeed, render the login/register form
+    return render(request, 'login_register.html', {'login_form_visible': login_form_visible, 'register_form_visible': register_form_visible})
+
 
 @login_required
 def datasets(request):
     username = request.user.username
-    user_datasets_dir = os.path.join(settings.MEDIA_ROOT, 'datasets', username)
-    os.makedirs(user_datasets_dir, exist_ok=True)  # Create user's directory if not exists
+    user_instance = User.objects.get(username=username) 
+    upload_time = None  
+    if request.method == 'POST':
+        try:
+            # Handling file upload and dataset creation
+            if 'dname' in request.FILES and 'description' in request.POST and 'repo' in request.POST:
+                # Get the start time from session or calculate it based on form submission
+                start_time = float(request.session.get('uploadStartTime', time.time() * 1000)) / 1000
+                dname = request.FILES.get('dname')
+                description = request.POST['description']
+                repo = request.POST['repo']
+                datastore = request.POST['datastore']
+                datastore_instance = Datastores.objects.get(UUID=datastore)
+                
+                manager = getDataStoreManager()
+                datastore = manager.getDatastore(datastore)
+                datasetid = datastore.putDataset(dname)
+                
+                metadata = Datasets(
+                    Username=user_instance,
+                    Name=dname.name,
+                    UUID=datasetid,
+                    Datastore_UUID = datastore_instance,
+                    Description=description,
+                    Repository=repo,
+                    Created=timezone.now().date(), 
+                )
+                metadata.save()
+                end_time = time.time()
+                upload_time = end_time - start_time
+                
+                messages.info(request, f"File uploaded in {upload_time:.4f} seconds.")
+                return redirect('datasets')  # Redirect to avoid resubmission of form
+                
+            elif 'like_file' in request.POST or 'dislike_file' in request.POST:
+                action = 'like_file' if 'like_file' in request.POST else 'dislike_file'
+                file_id = request.POST[action]
+                dataset = Datasets.objects.get(UUID=file_id)
+                if action == 'like_file':
+                    dataset.Likes += 1
+                else:
+                    dataset.Dislikes += 1
+                dataset.save()
+                return redirect('datasets')
 
-    # Create public directory if it doesn't exist
-    public_dir = os.path.join(settings.MEDIA_ROOT, 'datasets', 'public')
-    os.makedirs(public_dir, exist_ok=True)
+            elif 'copy_to_favorites' in request.POST:
+                file_id = request.POST['copy_to_favorites']
+                dataset = Datasets.objects.get(UUID=file_id)
+                if not Datasets.objects.filter(Username=user_instance, UUID=file_id, Repository='favorites').exists():
+                    dataset.pk = None
+                    dataset.Repository = 'favorites'
+                    dataset.save()
+                return redirect('datasets') 
 
-    # Create user's private and favorites directories
-    user_private_dir = os.path.join(user_datasets_dir, 'private')
-    os.makedirs(user_private_dir, exist_ok=True)
-    user_favorite_dir = os.path.join(user_datasets_dir, 'favorites')
-    os.makedirs(user_favorite_dir, exist_ok=True)
+            elif 'delete_file' in request.POST:
+                file_id = request.POST['delete_file']
+                dataset = Datasets.objects.get(UUID=file_id)
+                dataset.delete()
+                return redirect('datasets')
+            
+            # Handling download action
+            elif 'download_file' in request.POST:
+                start_time = float(request.session.get('uploadStartTime', time.time() * 1000)) / 1000
+                dataset_UUID = request.POST['download_file']
+                dataset = Datasets.objects.get(UUID=dataset_UUID)
+                manager = getDataStoreManager()
+                datastore_instance = dataset.Datastore_UUID
+                datastore = manager.getDatastore(str(datastore_instance.UUID))
+                file_obj = datastore.getDataset(str(dataset.UUID))
+                if file_obj is None:
+                    messages.info(request, f"File {dataset.Name} not found.")
+                    return redirect('datasets')
+                end_time = time.time()
+                fetch_time = end_time - start_time
+                response = FileResponse(file_obj, as_attachment=True, filename=dataset.Name)
+                return response   
 
-    # List public files
-    public_files = os.listdir(public_dir)
+        except Exception as e:
+            messages.error(request, "No Datastore Connected")
+            return redirect('datasets') 
 
-    # List user's private and favorite files
-    private_files = os.listdir(os.path.join(user_datasets_dir, 'private'))
-    favorite_files = os.listdir(os.path.join(user_datasets_dir, 'favorites'))
+    # Query the Metadata table for different categories
+    public_datasets = Datasets.objects.filter(Repository='public')
+    private_datasets = Datasets.objects.filter(Username=user_instance, Repository='private')
+    favorite_datasets = Datasets.objects.filter(Username=user_instance, Repository='favorites')
+    datastores = Datastores.objects.all()
 
-    datasets = {
-        'public': public_files,
-        'private': private_files,
-        'favorites': favorite_files
+    context = {
+        'public_datasets': public_datasets,
+        'private_datasets': private_datasets,
+        'favorite_datasets': favorite_datasets,
+        'datastores': datastores,
+        'username': username,  # Include username in the context
+        'upload_time': upload_time,
+        'user_instance': request.user,  # Current logged-in user
+
     }
 
-    if request.method == 'POST':
-        # Handle copying to favorites
-        if 'copy_to_favorites' in request.POST:
-            filename = request.POST['copy_to_favorites']
-            source_folder = request.POST['source_folder']
-            visibility = request.POST['visibility']
-            copy_to_favorites(filename, source_folder, username, visibility)
-
-        # Handle file deletion
-        if 'delete_file' in request.POST:
-            filename = request.POST['delete_file']
-            folder = request.POST['folder']
-            delete_file(filename, folder, username)
-
-        # Handle file uploads
-        uploaded_file = request.FILES.get('dataFile')
-        if uploaded_file:
-            # Check if the visibility is set to public or private
-            visibility = request.POST.get('visibility')
-            if visibility == 'public':
-                destination_folder = public_dir
-            else:
-                destination_folder = user_private_dir
-
-            destination_path = os.path.join(destination_folder, uploaded_file.name)
-            with open(destination_path, 'wb+') as destination:
-                for chunk in uploaded_file.chunks():
-                    destination.write(chunk)
-
-            # Optionally, you can save the file path to the database for later use
-
-            # Update the datasets dictionary based on visibility
-            if visibility == 'public':
-                public_files.append(uploaded_file.name)
-            else:
-                private_files.append(uploaded_file.name)
-
-    return render(request, 'datasets.html', {'datasets': datasets, 'username': username})
-
-
-def download_file(request, file, folder, visibility):
-    if request.method == 'POST':
-        username = request.user.username
-        if visibility == 'public':
-            file_path = os.path.join(settings.MEDIA_ROOT, 'datasets', 'public', file)
-        else:
-            file_path = os.path.join(settings.MEDIA_ROOT, 'datasets', username, folder, file)
-        
-        return FileResponse(open(file_path, 'rb'), as_attachment=True)
-    
-
-
-def update_reaction(request):
-    if request.method == 'POST':
-        file = request.POST.get('file')
-        reaction = request.POST.get('reaction')
-
-        # For demonstration purposes, just returning a success message and updated counts
-        num_likes = 0  # Replace with actual number of likes for the file
-        num_dislikes = 0  # Replace with actual number of dislikes for the file
-        if reaction == 'like':
-            num_likes += 1
-        elif reaction == 'dislike':
-            num_dislikes += 1
-        return JsonResponse({'success': True, 'message': 'Reaction updated successfully', 'num_likes': num_likes, 'num_dislikes': num_dislikes}, status=200)
-    else:
-        return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)
-    
+    return render(request, 'datasets.html', context)
 
 @login_required
-def upload(request):
+def workspaces(request):
     username = request.user.username
-    uploaded_file_name = None  # Placeholder for uploaded file name
-    column_names = None  # Placeholder for column names
-    
-    if request.method == 'POST':
-        uploaded_file = request.FILES.get('dataFile')
-        if uploaded_file:
-            # Find the next available workspace number
-            user_workspace_dir = os.path.join(settings.MEDIA_ROOT, 'workspace', username)
+    user_instance = User.objects.get(username=username)
+    # Query the Metadata table for different categories
+    public_datasets = Datasets.objects.filter(Repository='public')
+    private_datasets = Datasets.objects.filter(Username=user_instance, Repository='private')
+    favorite_datasets = Datasets.objects.filter(Username=user_instance, Repository='favorites')
 
-            # Check if the user's workspace directory exists
-            if not os.path.exists(user_workspace_dir):
-                os.makedirs(user_workspace_dir, exist_ok=True)
+    # Create a dictionary to pass the datasets to the template
+    datasets = {
+        'Public': public_datasets,
+        'Private': private_datasets,
+        'Favorites': favorite_datasets
+    }
 
-            existing_workspaces = os.listdir(user_workspace_dir)
-            if existing_workspaces:
-                # Extract the numbers from workspace names and find the maximum
-                workspace_numbers = [int(workspace.split('_')[1]) for workspace in existing_workspaces if workspace.startswith('workspace_')]
-                next_workspace_number = max(workspace_numbers) + 1 if workspace_numbers else 1
-            else:
-                next_workspace_number = 1
-            
-            # Create the directory for the new workspace
-            new_workspace_dir = os.path.join(user_workspace_dir, f'workspace_{next_workspace_number}')
-            os.makedirs(new_workspace_dir, exist_ok=True)
+    context = {
+        'datasets': datasets,
+        'username': username  # Include username in the context
+    }
 
-            # Save the uploaded file directly into the new workspace directory
-            fs = FileSystemStorage(location=new_workspace_dir)
-            fs.save(uploaded_file.name, uploaded_file)
-            uploaded_file_name = uploaded_file.name
-            
-            # Read the CSV file to extract column names
-            try:
-                with fs.open(uploaded_file.name, 'r') as file:
-                    reader = csv.reader(file)
-                    column_names = next(reader)  # Get the header row
-            except Exception as e:
-                # Handle any errors that might occur during file reading
-                print("Error reading CSV file:", e)
-            # Render upload.html with uploaded file name and column names
-            return render(request, 'upload.html', {'username': username,'uploaded_file_name': uploaded_file_name, 'column_names': column_names})
-
-    return render(request, 'upload.html', {'username': username,'uploaded_file_name': None, 'column_names': None})
-
-
-def serve_pca_plot(request, username, workspace_number):
-    # Construct the path to the PCA plot image
-    pca_plot_path = os.path.join(settings.MEDIA_ROOT, 'workspace', username, f'workspace_{workspace_number}', 'pca_plot.png')
-
-    # Check if the file exists
-    if os.path.exists(pca_plot_path):
-        # Serve the file as a response
-        return FileResponse(open(pca_plot_path, 'rb'), content_type='image/png')
-    else:
-        # Return a 404 response if the file does not exist
-        return HttpResponseNotFound("PCA plot not found")
-    
-
+    return render(request, 'workspaces.html', context)

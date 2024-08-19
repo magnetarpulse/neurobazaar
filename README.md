@@ -10,11 +10,11 @@ Interactive Visualization Platform for Machine Learning and Data Science Dataset
 
 ## Requirements and Setup
 
-In order to run the Neurobazaar Platform you need to have at least Python **3.11** installed on your computer.
+In order to run the Neurobazaar Platform you need to have Python and the GCC compiler installed on your computer.
 
 This software uses VTK version 9.3.1.
 
-This software has been developed and tested with Python **3.11** on Ubuntu 22.04 LTS.
+This software has been developed and tested with Python **3.11** and GCC **12.3** on Ubuntu 22.04 LTS Server Edition.
 
 ### Ubuntu Required Packages
 
@@ -36,25 +36,32 @@ sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 120
 
 All of the required Python packages are installed in a Python Virtual Environment. The first step is to create the virtual environment and the second step is to load/activate the environment. The first step has to be run only once.
 
-Create the Python Virtual Environment on Ubuntu 22.04 LTS:  
+Create the Python Virtual Environment:  
 ```
-python3.11 -m venv .venv  
+python3.11 -m venv .venv
 ```
 
-Load/activate the Python Virtual Environment in Ubuntu 22.04 LTS: 
+Load/activate the Python Virtual Environment: 
 ```
 source .venv/bin/activate
 ```
 
 ### VTK Setup
 
+This project requires VTK to be built manually in order to enable offscreen and headless rendering.
+
 Before you can build VTK, you need to initalize the VTK submodule.
 
 ```
 git submodule init
 git submodule update
+```
+
+Compile and install the VTK modules:
+
+```
 mkdir build
-cmake -GNinja -DCMAKE_INSTALL_PREFIX=.venv -DVTK_WRAP_PYTHON=ON -DVTK_SMP_IMPLEMENTATION_TYPE=STDThread -DVTK_USE_COCOA=OFF -DVTK_USE_X=OFF -DVTK_USE_WIN32_OPENGL=OFF -DVTK_OPENGL_HAS_OSMESA=ON -DVTK_OPENGL_USE_EGL=OFF -DVTK_DEFAULT_RENDER_WINDOW_OFFSCREEN=ON -DVTK_DEFAULT_RENDER_WINDOW_HEADLESS=ON -DVTK_GROUP_ENABLE_Web:STRING=WANT -S vtk/ -B build/
+cmake -GNinja -DCMAKE_INSTALL_PREFIX=$VIRTUAL_ENV -DVTK_WRAP_PYTHON=ON -DVTK_SMP_IMPLEMENTATION_TYPE=STDThread -DVTK_USE_COCOA=OFF -DVTK_USE_X=OFF -DVTK_USE_WIN32_OPENGL=OFF -DVTK_OPENGL_HAS_OSMESA=ON -DVTK_OPENGL_USE_EGL=OFF -DVTK_DEFAULT_RENDER_WINDOW_OFFSCREEN=ON -DVTK_DEFAULT_RENDER_WINDOW_HEADLESS=ON -DVTK_GROUP_ENABLE_Web:STRING=WANT -S vtk/ -B build/
 cmake --build build
 cmake --build build --target install
 ```
@@ -70,10 +77,14 @@ python -m pip install -r requirements.txt
 
 Migrate the Django database (only required to run once):
 ```
+python manage.py makemigrations home
+```
+```
 python manage.py migrate
 ```
 
-Start the Django server:
+**Start the Django Server**:  
+Start the server to access the Neurobazaar Platform locally:
 ```
-python manage.py runserver   
+python manage.py runserver
 ```

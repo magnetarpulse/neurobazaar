@@ -1,4 +1,5 @@
 django
+pymongo
 numpy
 matplotlib
 pandas

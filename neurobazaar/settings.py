@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 import pathlib
+# from .datastore_manager import getDataStoreManager
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
@@ -81,6 +82,13 @@ DATABASES = {
     }
 }
 
+# Datastore
+
+DATASTORE = {
+    'default': {
+        'PATH': os.path.join(BASE_DIR, 'datastore')
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -137,3 +145,5 @@ STATICFILES_DIRS = [
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = '/login_register'

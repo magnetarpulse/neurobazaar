@@ -13,7 +13,6 @@
 
 <!-- Results Section -->
 <section id="results" class="page-section">
-
     <div class="container">
         <div class="text-center">
             <h2 class="section-heading text-uppercase">Workspaces</h2>
@@ -93,6 +92,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.min.js"></script>
 
 <script>
     $(document).ready(function(){
@@ -115,6 +115,11 @@
 
         // Handle Add Workspace button click
         $('.add-visualization').click(function(){
+        // Counter for unique workspace IDs
+        var workspaceCounter = 0;
+
+        // Handle Add Workspace button click
+        $('.add-workspace').click(function(){
             workspaceCounter++;
             var newWorkspaceId = 'workspace' + workspaceCounter;
 
@@ -168,7 +173,7 @@
                         {% for category, files in datasets.items %}
                             <optgroup label="{{ category }}">
                                 {% for file in files %}
-                                    <option value="{{ file.dname }}" data-did="{{ file.did }}">{{ file.dname }}</option>
+                                    <option value="{{ file.UUID }}">{{ file.Name }}</option>
                                 {% endfor %}
                             </optgroup>
                         {% endfor %}
@@ -199,6 +204,11 @@
             } else {
                 console.error('WebSocket connection is not open.');
             }
+            var selectedDataset = $('#datasetSelect').val();
+            var visualizationType = $('input[name="visualizationType"]:checked').val();
+            
+            // Display alert with the collected information
+            alert('Username: ' + username + '\nSelected Visualization Type: ' + visualizationType + '\nSelected File: ' + selectedDataset);
 
             // Close the modal
             var modal = bootstrap.Modal.getInstance(document.getElementById('visualizationOptionsModal'));

@@ -76,9 +76,6 @@ Migrate the Django database (only required to run once or when the models have b
 python manage.py makemigrations home
 ```
 ```
-python manage.py makemigrations home
-```
-```
 python manage.py migrate
 ```
 

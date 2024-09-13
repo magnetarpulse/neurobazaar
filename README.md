@@ -16,6 +16,9 @@ This software uses VTK version 9.3.1.
 
 This software has been developed and tested with Python **3.11** and GCC **12.3** on Ubuntu 22.04 LTS Server Edition.
 
+To install and manage Node.js installations you can use Node Version Manager. Use the following link to install the latest version of NVM:
+https://github.com/nvm-sh/nvm
+
 ### Ubuntu Required Packages
 
 You need to install the following packages:
@@ -75,7 +78,7 @@ python -m pip install -r requirements.txt
 
 ## How to Build and Run
 
-Migrate the Django database (only required to run once):
+Migrate the Django database (only required to run once or when the models have been changed):
 ```
 python manage.py makemigrations home
 ```
@@ -83,7 +86,26 @@ python manage.py makemigrations home
 python manage.py migrate
 ```
 
-**Start the Django Server**:  
+Install the Node.js packages (only required to run once or when the Javascript/Vue applications change):
+```
+npm install
+```
+
+Build the static Javascript frontend code (only required to run once or when the Javascript/Vue applications change):
+```
+npm run build
+```
+
+Start the Trame server:
+```
+python trame/server.py --server
+```
+
+If running in development mode start the Node.js server (do not run this command if running server in production mode):
+```
+npm run dev
+```
+
 Start the server to access the Neurobazaar Platform locally:
 ```
 python manage.py runserver

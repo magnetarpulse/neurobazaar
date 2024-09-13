@@ -103,7 +103,6 @@ def datastore(request):
             except Datastores.DoesNotExist:
                 messages.error(request, "Datastore not found.")
 
-
     datastores = Datastores.objects.all()
     return render(request, 'datastore.html', {'datastores': datastores, 'username': username})
     
@@ -156,7 +155,6 @@ def login_register(request):
 
     # If GET request or form submission didn't succeed, render the login/register form
     return render(request, 'login_register.html', {'login_form_visible': login_form_visible, 'register_form_visible': register_form_visible})
-
 
 @login_required
 def datasets(request):

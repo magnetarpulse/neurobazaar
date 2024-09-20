@@ -1,0 +1,3 @@
+[submodule "external/VTK"]
+	path = external/VTK
+	url = https://gitlab.kitware.com/vtk/vtk.git

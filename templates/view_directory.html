@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}View Directory{% endblock title %}
+
+{% block body %}
+<header class="masthead">
+    <div class="container">
+        <div class="masthead-heading">Files in Collection: {{ collection_name }}</div>
+    </div>
+</header>
+
+<section class="page-section bg-light">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Files in Collection</h2>
+        </div>
+
+        <!-- Loop through each folder in the folder structure -->
+        {% for folder, files in folder_structure.items %}
+            <div class="folder-section">
+                <h4 class="text-center">Folder: {{ folder }}</h4>
+
+                <!-- Display images and other files in a grid layout -->
+                <div class="row">
+                    {% for file in files %}
+                    <div class="col-md-4 mb-4"> <!-- 3 columns per row -->
+                        <div class="card">
+                            <div class="card-body text-center">
+                                {% if file.is_image %}
+                                <!-- Display base64 encoded image -->
+                                <img src="data:image/jpeg;base64,{{ file.encoded_image }}" alt="{{ file.file_name }}" class="img-fluid" style="max-height: 200px;">
+                                {% else %}
+                                <!-- Provide a download link for non-image files -->
+                                <a href="{{ file.file_path }}" download>Download {{ file.file_name }}</a>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer text-center">
+                                <p>{{ file.file_name }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <hr>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
+
+
+<style>
+    .img-fluid {
+        max-width: 100%; /* Ensure images don’t overflow */
+        height: auto;
+    }
+</style>
+   

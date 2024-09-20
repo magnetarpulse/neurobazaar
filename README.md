@@ -3,41 +3,100 @@
 
 Authors and Contributors:
 - Alexandru Iulian Orhean 2024 (aorhean@depaul.edu)  
+- Huy Quoc Nguyen 2024 (hnguye83@depaul.edu)
+- Vivek Shravan Gupta 2024 (vgupta16@depaul.edu)  
 
 Interactive Visualization Platform for Machine Learning and Data Science Datasets.
 
 ## Requirements and Setup
 
-### Install Python
+In order to run the Neurobazaar Platform you need to have Python **3.11** installed on your computer.
 
-In order to run the Neurobazaar Platform you need to have at least Python **3.11** installed on your computer.
+This software uses VTK version 9.3.1.
 
-For Windows 10 this software has been tested with Python **3.11.5**.
+This software has been developed and tested with Python **3.11** on Ubuntu 22.04 LTS.
 
-### Set up the Python Virtual Environment
+### Ubuntu Required Packages
 
-All of the required Python packages are installed in a Python Virtual Environment.
+You need to install the following packages:
 
-To create the Python Virtual Environment in Windows 10 use the following command (you only need to create it once):
 ```
-py -3.11 -m venv .venv
-```
-
-To load/activate the Python Virtual Environment in Windows 10 Powershell use the following command:
-```
-.venv/Scripts/Activate.ps1
-```
-
-To load/activate the Python Virtual Environment in Windows 10 CMD use the following command:
-```
-.venv/Scripts/activate.bat
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+sudo apt install g++-12 python3.11 python3.11-venv libpython3.11-dev build-essential cmake cmake-curses-gui mesa-common-dev mesa-utils libosmesa6-dev freeglut3-dev ninja-build 
+sudo update-alternatives --remove-all gcc
+sudo update-alternatives --remove-all g++
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 110
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 120
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 110
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 120
 ```
 
-### Install the Python Required Packages
+### Python Virtual Environment Setup
 
-To install the required Python packages inside the loaded/activated virtual enviroment run the following command:
+All of the required Python packages are installed in a Python Virtual Environment. The first step is to create the virtual environment and the second step is to load/activate the environment. The first step has to be run only once.
+
+Create the Python Virtual Environment on Ubuntu 22.04 LTS:  
+```
+python3.11 -m venv .venv
 ```
 
+Load/activate the Python Virtual Environment in Ubuntu 22.04 LTS: 
+```
+source .venv/bin/activate
+```
+
+### VTK Setup
+
+Before you can build VTK, you need to initalize the VTK submodule.
+
+```
+git submodule init
+git submodule update
+mkdir build
+cmake -GNinja -DCMAKE_INSTALL_PREFIX=$VIRTUAL_ENV -DVTK_WRAP_PYTHON=ON -DVTK_SMP_IMPLEMENTATION_TYPE=STDThread -DVTK_USE_COCOA=OFF -DVTK_USE_X=OFF -DVTK_USE_WIN32_OPENGL=OFF -DVTK_OPENGL_HAS_OSMESA=ON -DVTK_OPENGL_USE_EGL=OFF -DVTK_DEFAULT_RENDER_WINDOW_OFFSCREEN=ON -DVTK_DEFAULT_RENDER_WINDOW_HEADLESS=ON -DVTK_GROUP_ENABLE_Web:STRING=WANT -S vtk/ -B build/
+cmake --build build
+cmake --build build --target install
+```
+
+### Install the Python Dependencies/Packages
+
+Install the dependecies/packages on the loaded/activated virtual environment:
+```
+python -m pip install -r requirements.txt
 ```
 
 ## How to Build and Run
+
+Before starting the server, ensure that the Django database is correctly set up by performing migrations and creating a superuser for administrative access. Follow these steps:
+
+1. **Prepare Database Migrations**:  
+   Initialize database migrations needed for the Django models:
+```
+python manage.py makemigrations
+```
+
+2. **Apply Migrations**:  
+Apply the prepared migrations to the database:
+```
+python manage.py migrate
+```
+
+
+3. **Create Superuser**:  
+Create an administrative user to access the Django admin panel:
+```
+python manage.py createsuperuser
+```
+
+When prompted:
+- Username: `any_username` (choose any username you prefer)
+- Email Address: (can be left blank)
+- Password: `add_your_password` (enter a password of your choice)
+- Confirm the password by re-entering it. If prompted, you can press 'y' to bypass password validation, or re-enter the password if you prefer not to bypass.
+
+4. **Start the Django Server**:  
+Start the server to access the Neurobazaar Platform locally:
+```
+python manage.py runserver
+```

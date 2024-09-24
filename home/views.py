@@ -397,3 +397,11 @@ def workspaces(request):
     }
 
     return render(request, 'workspaces.html', context)
+
+
+# for visualization server manager.
+
+@login_required
+def visualization_server_manager(request):
+    username = request.user.username
+    return render(request, 'visualization_server_manager.html', {'username': username})

@@ -12,5 +12,6 @@ urlpatterns = [
     path('datasets/', views.datasets, name='datasets'),
     path('datasets/view_directory/<uuid:collections_uuid>/', views.view_directory, name='view_directory'),
     path('datastore/', views.datastore, name='datastore'),
+    path('visualization_server_manager/', views.visualization_server_manager, name='visualization_server_manager'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

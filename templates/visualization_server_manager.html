@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Datastore{% endblock title %}
+{% block nav4 %} d-none {% endblock nav4 %}
+{% block body %}
+
+<!-- Masthead-->
+<header class="masthead">
+    <div class="container">
+        <div class="masthead-heading">Set up the Visualization Service Servers</div>
+    </div> 
+</header>
+
+<!-- Sub Header -->
+<section id="results" class="page-section">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Servers</h2>
+        </div>
+</section>
+
+<!-- Forwarding use iframe -->
+<iframe src="http://localhost:8080/index.html" style="width:100%; height:100vh;"></iframe>
+
+{% endblock body %}

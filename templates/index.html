@@ -3,355 +3,152 @@
 {% block title %}Home{% endblock title %}
 
 {% block body %}
-<!-- Masthead-->
-<header class="masthead" style="padding-top: 180px; padding-bottom: 90px;">
-    <div class="container">
-        <div class="masthead-heading" style="font-size: 2.5rem; font-weight: bold; margin-bottom: 10px;">Welcome to Neurobazaar</div> <!-- Reduced margin-bottom -->
-        <div class="masthead-subheading" style="font-size: 1.2rem; font-weight: lighter; text-align: left; margin-top: 0;"> <!-- Reduced margin-top -->
-            Neurobazaar is a cutting-edge platform designed to simplify the interaction with and visualization of large datasets and machine learning models. Built for performance, it leverages advanced computing to optimize data handling and streamline workflows. Users can explore complex data effortlessly, with real-time visual insights and seamless integration. Neurobazaar also offers intelligent features like Out-of-Distribution detection to enhance model accuracy and performance.  
-        </div>
-        <a class="btn btn-primary btn-xl text-uppercase" href="#services" style="margin-top: 30px; border-radius: 25px; padding: 15px 35px; font-weight: bold;">
-            Tell Me More
-        </a>
+<!-- Header with Background Image and Overlay Content -->
+<header class="header-bg">
+    <div class="container text-center header-content">
+        <h1 class="header-heading">If it's not responsive, it's not working</h1>
+        <p class="header-subheading">It's hard to iterate fast enough on massive model training when your experiment tracker lags behind you. Neurobazaar makes it easy to monitor months-long jobs and visualize massive amounts of data in almost real-time - with 100% accuracy. Without crashing the UI. So you can find failing runs in less time - and eliminate wasted spend.</p>
+        <a class="btn btn-primary btn-lg" href="#services">Sign Up</a>
+        <a class="btn btn-outline-light btn-lg" href="#watch-demo">Watch a 2-min demo</a>
     </div>
 </header>
 
-<!-- Services-->
-<section class="page-section bg-light" id="services">
-    <div class="container">
+<!-- Services -->
+<section class="page-section" id="services">
+    <div class="container animate-fadeIn">
         <div class="text-center">
-            <h2 class="section-heading text-uppercase" style="font-weight: bold; letter-spacing: 1.2px;">Services</h2>
-            <h3 class="section-subheading text-muted" style="font-size: 1.1rem;">Explore our range of offerings designed to meet your data analysis, visualization, and management needs.</h3>
+            <h2 class="section-heading text-uppercase">Services</h2>
+            <h3 class="section-subheading text-muted">Explore our range of offerings designed to meet your data analysis, model evaluation, and visualization needs.</h3>
         </div>
         <div class="row text-center">
-            <!-- First Row: Data Analysis and Datastore Management -->
-            <div class="col-md-6 mb-4">
-                <div class="feature-box p-4" style="border-radius: 10px; background-color: #f8f9fa; box-shadow: 0px 4px 10px rgba(0,0,0,0.1);">
-                    <span class="fa-stack fa-4x mb-3 icon-hover">
-                        <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                        <i class="fas fa-solid fa-chart-line fa-stack-1x fa-inverse"></i>
-                    </span>
-                    <h4 class="my-3" style="font-weight: bold;">Data Analysis</h4>
-                    <p class="text-muted">We offer comprehensive data analysis services to help you extract meaningful insights from your datasets.</p>
-                </div>
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-solid fa-chart-line fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Data Analysis</h4>
+                <p class="text-muted">We offer comprehensive data analysis services to help you extract meaningful insights from your datasets.</p>
             </div>
-            <div class="col-md-6 mb-4">
-                <div class="feature-box p-4" style="border-radius: 10px; background-color: #f8f9fa; box-shadow: 0px 4px 10px rgba(0,0,0,0.1);">
-                    <span class="fa-stack fa-4x mb-3 icon-hover">
-                        <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                        <i class="fas fa-solid fa-database fa-stack-1x fa-inverse"></i>
-                    </span>
-                    <h4 class="my-3" style="font-weight: bold;">Datastore Management</h4>
-                    <p class="text-muted">Manage your datasets and collections using our flexible datastore system. Upload, store, and retrieve data across Filesystem and MongoDB.</p>
-                </div>
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-solid fa-list-check fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Model Evaluation</h4>
+                <p class="text-muted">Our experts will evaluate your machine learning models to assess their performance and identify areas for improvement.</p>
             </div>
-            <!-- Second Row: Interactive Visualization and OoD Detection -->
-            <div class="col-md-6 mb-4">
-                <div class="feature-box p-4" style="border-radius: 10px; background-color: #f8f9fa; box-shadow: 0px 4px 10px rgba(0,0,0,0.1);">
-                    <span class="fa-stack fa-4x mb-3 icon-hover">
-                        <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                        <i class="fas fa-solid fa-chart-area fa-stack-1x fa-inverse"></i>
-                    </span>
-                    <h4 class="my-3" style="font-weight: bold;">Interactive Visualization</h4>
-                    <p class="text-muted">Visualize your datasets and models interactively with intuitive tools designed for deeper insights.</p>
-                </div>
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-solid fa-check fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Fairness Assessment</h4>
+                <p class="text-muted">We provide fairness assessments for your models to ensure they do not exhibit bias or discrimination.</p>
             </div>
-            <div class="col-md-6 mb-4">
-                <div class="feature-box p-4" style="border-radius: 10px; background-color: #f8f9fa; box-shadow: 0px 4px 10px rgba(0,0,0,0.1);">
-                    <span class="fa-stack fa-4x mb-3 icon-hover">
-                        <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                        <i class="fas fa-solid fa-shield-alt fa-stack-1x fa-inverse"></i>
-                    </span>
-                    <h4 class="my-3" style="font-weight: bold;">OoD Detection</h4>
-                    <p class="text-muted">Detect out-of-distribution data to ensure your models perform well on new, unseen data.</p>
-                </div>
+        </div>
+        <div class="row text-center mt-4">
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-solid fa-database fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Datastore Management</h4>
+                <p class="text-muted">Manage your datasets and collections using our flexible datastore system. Upload, store, and retrieve data across Filesystem and MongoDB.</p>
+            </div>
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-solid fa-chart-area fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Interactive Visualization</h4>
+                <p class="text-muted">Visualize your datasets and models interactively with intuitive tools designed for deeper insights.</p>
+            </div>
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-solid fa-shield-alt fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">OoD Detection</h4>
+                <p class="text-muted">Detect out-of-distribution data to ensure your models perform well on new, unseen data.</p>
             </div>
         </div>
     </div>
 </section>
 
-
-<!-- How it Works Section-->
-<!-- How it Works Section-->
-<section class="page-section" id="howitworks">
-    <div class="container">
+<!-- Portfolio -->
+<section class="page-section bg-light" id="portfolio">
+    <div class="container animate-fadeIn">
         <div class="text-center">
-            <h2 class="section-heading text-uppercase" style="font-weight: bold; letter-spacing: 1.2px;">How It Works</h2>
-            <h3 class="section-subheading text-muted" style="font-size: 1.1rem;">Discover how easy it is to manage and visualize your data with Neurobazaar.</h3>
+            <h2 class="section-heading text-uppercase">Models Available</h2>
+            <h3 class="section-subheading text-muted">Analyze the performance of different machine learning algorithms to evaluate their effectiveness in solving your data science problems.</h3>
         </div>
         <div class="row">
-            <div class="col-md-3 text-center">
-                <img src="/static/assets/img/upload_dataset.png" class="img-fluid" alt="Upload Data">
-                <h4 class="my-3">Upload Data</h4>
-                <p class="text-muted">Easily upload your datasets directly to our secure cloud storage or through integrations with existing databases.</p>
+            <div class="col-lg-4 col-sm-6 mb-4">
+                <!-- Portfolio item 1-->
+                <div class="portfolio-item">
+                    <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal1">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
+                        </div>
+                        <img class="img-fluid" src="/static/assets/img/KNN.webp" alt="..." />
+                    </a>
+                    <div class="portfolio-caption">
+                        <div class="portfolio-caption-heading">K-Nearest Neighbors (KNN)</div>
+                        <div class="portfolio-caption-subheading text-muted">Assess the performance of the KNN algorithm using your dataset. Explore various hyperparameters to optimize model performance.</div>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-3 text-center">
-                <img src="/static/assets/img/upload_collections.png" class="img-fluid" alt="Upload Collections">
-                <h4 class="my-3">Upload Collections</h4>
-                <p class="text-muted">Upload image collections as directories linked to datasets, enhancing insights with visual context that supports diverse analytical needs, from anomaly detection to feature verification.</p>
+            <div class="col-lg-4 col-sm-6 mb-4">
+                <!-- Portfolio item 2-->
+                <div class="portfolio-item">
+                    <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal2">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
+                        </div>
+                        <img class="img-fluid" src="/static/assets/img/Decision Tree.jpeg" alt="..." />
+                    </a>
+                    <div class="portfolio-caption">
+                        <div class="portfolio-caption-heading">Decision Trees</div>
+                        <div class="portfolio-caption-subheading text-muted">Evaluate the performance of decision tree models on your data. Gain insights into feature importance and model interpretability.</div>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-3 text-center">
-                <img src="/static/assets/img/search.svg" class="img-fluid" alt="View Collections">
-                <h4 class="my-3">View Datasets & Collections</h4>
-                <p class="text-muted">Browse and manage all your datasets and collections through our intuitive interface, ensuring easy access to all your data.</p>
+            <div class="col-lg-4 col-sm-6 mb-4">
+                <!-- Portfolio item 3-->
+                <div class="portfolio-item">
+                    <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal3">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
+                        </div>
+                        <img class="img-fluid" src="/static/assets/img/RF.webp" alt="..." />
+                    </a>
+                    <div class="portfolio-caption">
+                        <div class="portfolio-caption-heading">Random Forest</div>
+                        <div class="portfolio-caption-subheading text-muted">Investigate the performance of Random Forest models for robust and accurate predictions. Explore ensemble learning techniques.</div>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-3 text-center">
-                <img src="/static/assets/img/visualize.svg" class="img-fluid" alt="Visualize Data">
-                <h4 class="my-3">Visualize & Analyze</h4>
-                <p class="text-muted">Interact with your data through customized visualizations that offer meaningful insights and easy data interpretation.</p>
+            <div class="col-lg-4 col-sm-6 mb-4 mb-lg-0">
+                <!-- Portfolio item 4-->
+                <div class="portfolio-item">
+                    <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal4">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
+                        </div>
+                        <img class="img-fluid" src="/static/assets/img/SVM.webp" alt="..." />
+                    </a>
+                    <div class="portfolio-caption">
+                        <div class="portfolio-caption-heading">Support Vector Machines (SVM)</div>
+                        <div class="portfolio-caption-subheading text-muted">Evaluate the performance of SVM models on your data. Explore kernel functions and hyperparameters to optimize model performance.</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-
-<!-- Technology Overview Section-->
-<section class="page-section" id="technology">
-    <div class="container">
-        <div class="text-center">
-            <h2 class="section-heading text-uppercase" style="font-weight: bold; letter-spacing: 1.2px;">Technology Overview</h2>
-            <h3 class="section-subheading text-muted" style="font-size: 1.1rem;">Explore the cutting-edge technologies that power Neurobazaar.</h3>
-        </div>
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="tech p-4">
-                    <h4 class="my-3">Advanced Data Storage</h4>
-                    <p class="text-muted">Neurobazaar utilizes MongoDB and an integrated filesystem for robust data management. The platform is designed for easy integration of new databases, allowing users to expand capabilities by simply extending a class and implementing required methods.</p>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="tech p-4">
-                    <h4 class="my-3">Scalable Cloud Infrastructure</h4>
-                    <p class="text-muted">Hosted on Chameleon Cloud, Neurobazaar is built with scalability at its core. Users can easily scale their operations to meet specific needs, ensuring flexibility and performance in data handling.</p>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="tech p-4">
-                    <h4 class="my-3">Cutting-edge Visualization</h4>
-                    <p class="text-muted">Neurobazaar leverages powerful visualization tools such as matplotlib, plotly, and notably VTK for 2D visualizations. Our innovative use of VTK delivers faster visual outputs than any other platform, setting a new standard in data visualization technologies.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- Team Section with Horizontal Scrolling -->
-<section class="page-section bg-light" id="team">
-    <div class="container">
-        <div class="text-center">
-            <h2 class="section-heading text-uppercase">Meet Our Team</h2>
-            <h3 class="section-subheading text-muted">Our team combines expertise in computer science and data analysis to deliver cutting-edge solutions.</h3>
-        </div>
-        <div class="horizontal-scroll" style="overflow-x: auto; overflow-y: hidden; white-space: nowrap;">
-            <div class="d-flex flex-row flex-nowrap">
-                <!-- Team Member Example -->
-                <div class="team-member-box" style="display: inline-block; margin: 20px; padding: 10px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <img class="rounded-circle" src="/static/assets/img/daniela.jpg" alt="Daniela Stan Raicu" style="width: 150px; height: 150px;">
-                    <h4>Daniela Stan Raicu</h4>
-                    <p class="text-muted">Professor</p>
-                    <p class="text-muted">DePaul University</p>
-                    <div class="social-links">
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Daniela Twitter Profile"><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Daniela Facebook Profile"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Daniela LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-
-                <div class="team-member-box" style="display: inline-block; margin: 20px; padding: 10px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <img class="rounded-circle" src="/static/assets/img/jacob.jpg" alt="Jacob D. Furst" style="width: 150px; height: 150px;">
-                    <h4>Jacob D. Furst</h4>
-                    <p class="text-muted">Professor</p>
-                    <p class="text-muted">DePaul University</p>
-                    <div class="social-links">
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Jacob Twitter Profile"><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Jacob Facebook Profile"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Jacob LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-
-                <div class="team-member-box" style="display: inline-block; margin: 20px; padding: 10px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <img class="rounded-circle" src="/static/assets/img/Roselyne.jpg" alt="Jacob D. Furst" style="width: 150px; height: 150px;">
-                    <h4>Roselyne Tchoua</h4>
-                    <p class="text-muted">Assistant Professor</p>
-                    <p class="text-muted">DePaul University</p>
-                    <div class="social-links">
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Jacob Twitter Profile"><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Jacob Facebook Profile"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Jacob LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-
-                <div class="team-member-box" style="display: inline-block; margin: 20px; padding: 10px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <img class="rounded-circle" src="/static/assets/img/alexandru.jpg" alt="Alexandru Orhean" style="width: 150px; height: 150px;">
-                    <h4>Alexandru Orhean</h4>
-                    <p class="text-muted">Assistant Professor</p>
-                    <p class="text-muted">DePaul University</p>
-                    <div class="social-links">
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Alexandru Twitter Profile"><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Alexandru Facebook Profile"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Alexandru LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-
-                <!-- Additional team members -->
-                <div class="team-member-box" style="display: inline-block; margin: 20px; padding: 10px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <img class="rounded-circle" src="/static/assets/img/nandhini.jpeg" alt="Nandhini Gulasingam" style="width: 150px; height: 150px;">
-                    <h4>Nandhini Gulasingam</h4>
-                    <p class="text-muted">Instructor</p>
-                    <p class="text-muted">DePaul University</p>
-                    <div class="social-links">
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Nandhini Twitter Profile"><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Nandhini Facebook Profile"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Nandhini LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-
-                <div class="team-member-box" style="display: inline-block; margin: 20px; padding: 10px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <img class="rounded-circle" src="/static/assets/img/rushikesh.jpeg" alt="Rushikesh Suryawanshi" style="width: 150px; height: 150px;">
-                    <h4>Rushikesh Suryawanshi</h4>
-                    <p class="text-muted">MS Computer Science</p>
-                    <p class="text-muted">DePaul University</p>
-                    <div class="social-links">
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Rushikesh Twitter Profile"><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Rushikesh Facebook Profile"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Rushikesh LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-
-                <div class="team-member-box" style="display: inline-block; margin: 20px; padding: 10px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <img class="rounded-circle" src="/static/assets/img/huy.jpg" alt="Huy Nguyen" style="width: 150px; height: 150px;">
-                    <h4>Huy Nguyen</h4>
-                    <p class="text-muted">BS Computer Science</p>
-                    <p class="text-muted">DePaul University</p>
-                    <div class="social-links">
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Huy Twitter Profile"><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Huy Facebook Profile"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Huy LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-
-                <div class="team-member-box" style="display: inline-block; margin: 20px; padding: 10px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <img class="rounded-circle" src="/static/assets/img/nimisha.jpeg" alt="Nimisha Bhoir" style="width: 150px; height: 150px;">
-                    <h4>Nimisha Bhoir</h4>
-                    <p class="text-muted">MS Computer Science</p>
-                    <p class="text-muted">DePaul University</p>
-                    <div class="social-links">
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Nimisha Twitter Profile"><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Nimisha Facebook Profile"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Nimisha LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-
-                <div class="team-member-box" style="display: inline-block; margin: 20px; padding: 10px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <img class="rounded-circle" src="/static/assets/img/vivek.jpeg" alt="Vivek Gupta" style="width: 150px; height: 150px;">
-                    <h4>Vivek Gupta</h4>
-                    <p class="text-muted">MS Computer Science</p>
-                    <p class="text-muted">DePaul University</p>
-                    <div class="social-links">
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Vivek Twitter Profile"><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Vivek Facebook Profile"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Vivek LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-
-                <div class="team-member-box" style="display: inline-block; margin: 20px; padding: 10px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <img class="rounded-circle" src="/static/assets/img/areena.png" alt="Areena Mahek" style="width: 150px; height: 150px;">
-                    <h4>Areena Mahek</h4>
-                    <p class="text-muted">MS Computer Science</p>
-                    <p class="text-muted">DePaul University</p>
-                    <div class="social-links">
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Areena Twitter Profile"><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Areena Facebook Profile"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Areena LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-
-                <div class="team-member-box" style="display: inline-block; margin: 20px; padding: 10px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <img class="rounded-circle" src="/static/assets/img/default.png" alt="Prem Kumar Gadwal" style="width: 150px; height: 150px;">
-                    <h4>Prem Kumar Gadwal</h4>
-                    <p class="text-muted">MS Computer Science</p>
-                    <p class="text-muted">DePaul University</p>
-                    <div class="social-links">
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Prem Twitter Profile"><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Prem Facebook Profile"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-dark btn-social mx-1" href="#!" aria-label="Prem LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="text-center mt-4">
-            <a class="btn btn-primary" href="{% url 'team_details' %}">Click to know more</a>
-        </div>
-    </div>
-</section>
-
-        <!-- Contact-->
-        <section class="page-section" id="contact">
-            <div class="container">
-                <div class="text-center">
-                    <h2 class="section-heading text-uppercase">Contact Us</h2>
-                    <h3 class="section-subheading text-muted">Have questions? Drop us a message.</h3>
-                </div>
-                <!-- * * * * * * * * * * * * * * *-->
-                <!-- * * SB Forms Contact Form * *-->
-                <!-- * * * * * * * * * * * * * * *-->
-                <!-- This form is pre-integrated with SB Forms.-->
-                <!-- To make this form functional, sign up at-->
-                <!-- https://startbootstrap.com/solution/contact-forms-->
-                <!-- to get an API token!-->
-                <form id="contactForm" data-sb-form-api-token="API_TOKEN">
-                    <div class="row align-items-stretch mb-5">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <!-- Name input-->
-                                <input class="form-control" id="name" type="text" placeholder="Your Name *" data-sb-validations="required" />
-                                <div class="invalid-feedback" data-sb-feedback="name:required">A name is required.</div>
-                            </div>
-                            <div class="form-group">
-                                <!-- Email address input-->
-                                <input class="form-control" id="email" type="email" placeholder="Your Email *" data-sb-validations="required,email" />
-                                <div class="invalid-feedback" data-sb-feedback="email:required">An email is required.</div>
-                                <div class="invalid-feedback" data-sb-feedback="email:email">Email is not valid.</div>
-                            </div>
-                            <div class="form-group mb-md-0">
-                                <!-- Phone number input-->
-                                <input class="form-control" id="phone" type="tel" placeholder="Your Phone *" data-sb-validations="required" />
-                                <div class="invalid-feedback" data-sb-feedback="phone:required">A phone number is required.</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group form-group-textarea mb-md-0">
-                                <!-- Message input-->
-                                <textarea class="form-control" id="message" placeholder="Your Message *" data-sb-validations="required"></textarea>
-                                <div class="invalid-feedback" data-sb-feedback="message:required">A message is required.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Submit success message-->
-                    <!---->
-                    <!-- This is what your users will see when the form-->
-                    <!-- has successfully submitted-->
-                    <div class="d-none" id="submitSuccessMessage">
-                        <div class="text-center text-white mb-3">
-                            <div class="fw-bolder">Form submission successful!</div>
-                            To activate this form, sign up at
-                            <br />
-                            <a href="https://startbootstrap.com/solution/contact-forms">https://startbootstrap.com/solution/contact-forms</a>
-                        </div>
-                    </div>
-                    <!-- Submit error message-->
-                    <!---->
-                    <!-- This is what your users will see when there is-->
-                    <!-- an error submitting the form-->
-                    <div class="d-none" id="submitErrorMessage"><div class="text-center text-danger mb-3">Error sending message!</div></div>
-                    <!-- Submit Button-->
-                    <div class="text-center"><button class="btn btn-primary btn-xl text-uppercase disabled" id="submitButton" type="submit">Send Message</button></div>
-                </form>
-            </div>
-        </section>
-        
-
-<!-- Footer-->
-<footer class="footer py-4">
+<!-- Footer -->
+<footer class="footer">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-4 text-lg-start">Copyright &copy; Neurobazaar 2024</div>
@@ -367,177 +164,4 @@
         </div>
     </div>
 </footer>
-
-
-<style>
-
-    /* General Body Styles */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern Font */
-    color: #333; /* Subtle Text Color for Better Readability */
-    line-height: 1.6; /* Improved Line Spacing */
-    background: #f4f4f4; /* Light Background for a Fresher Look */
-}
-
-/* Header Styles */
-header.masthead {
-    
-    padding-top: 100px;
-    padding-bottom: 100px;
-}
-
-.masthead-heading {
-    font-size: 3rem; /* Larger Font Size for Headings */
-    font-weight: 700; /* Bolder Font Weight */
-}
-
-.masthead-subheading {
-    font-size: 1.5rem; /* Increased Font Size for Subheading */
-    opacity: 0.9; /* Slightly Transparent for Layering Effect */
-    margin-bottom: 30px; /* More Space Below Subheading */
-}
-
-/* Buttons */
-.btn-primary {
-    background-color: #0056b3; /* Custom Primary Color */
-    border: none; /* No Border */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* Subtle Shadow for 3D Effect */
-    transition: background-color 0.3s, transform 0.3s; /* Smooth Transition for Hover Effects */
-}
-
-.btn-primary:hover, .btn-primary:focus {
-    background-color: #003580; /* Darker on Hover */
-    transform: translateY(-3px); /* Slight Raise on Hover */
-}
-
-/* Service Section Enhancements */
-.section-heading {
-    letter-spacing: 2px; /* More Spacing Between Letters */
-    color: #333; /* Dark Text for Better Legibility */
-}
-
-.feature-box {
-    transition: all 0.3s ease-in-out; /* Smooth Transition for All Hover Effects */
-    cursor: pointer; /* Cursor Pointer to Suggest Interactivity */
-}
-
-.feature-box:hover {
-    box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* Larger Shadow on Hover for Pop Effect */
-    transform: scale(1.05); /* Slightly Larger on Hover */
-}
-
-/* Team Section Improvements */
-.team-member-box {
-    transition: box-shadow 0.3s ease-in-out, transform 0.2s ease; /* Smooth Transformations */
-}
-
-.team-member-box:hover {
-    transform: translateY(-5px); /* Raise Box on Hover */
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2); /* Increased Shadow for Depth */
-}
-
-/* Footer Enhancements */
-footer.footer {
-    background: #333; /* Dark Background for Footer */
-    color: #f8f9fa; /* Light Text Color */
-    padding: 20px 0; /* Padding Adjustment */
-}
-
-/* Link Adjustments */
-a {
-    color: #007bff; /* Bright Blue for Links for Better Visibility */
-    transition: color 0.3s; /* Smooth Color Transition */
-}
-
-a:hover {
-    color: #0056b3; /* Darker Shade on Hover */
-}
-
-
-</style>
-
-<style>
-    .horizontal-scroll {
-        overflow-x: auto;  /* Enables horizontal scrolling */
-        overflow-y: hidden;  /* Hides vertical scrollbar */
-        white-space: nowrap;  /* Ensures inline-block elements don't wrap */
-        padding: 20px 0;  /* Padding for top and bottom */
-    }
-
-    .team-member-box {
-        display: inline-block;  /* Ensures the boxes line up horizontally */
-        width: 260px;  /* Uniform width for all boxes */
-        min-height: 350px;  /* Minimum height to accommodate content */
-        padding: 20px;  /* Padding inside the boxes */
-        margin: 0 10px;  /* Horizontal margin between boxes */
-        background: #ffffff;  /* White background */
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);  /* Shadow for 3D effect */
-        text-align: center;  /* Centers the content */
-        border-radius: 10px;  /* Rounded corners */
-        vertical-align: top;  /* Aligns items at the top */
-        position: relative;  /* Needed for absolute positioning inside */
-    }
-    
-    .team-member-box img {
-        width: 150px;  /* Fixed width for images */
-        height: 150px;  /* Fixed height for images */
-        border-radius: 50%;  /* Circle shape */
-        object-fit: cover;  /* Covers the frame without distortion */
-        margin-bottom: 10px;  /* Space below the image */
-    }
-
-    .team-member-box h4 {
-        font-size: 18px;  /* Adequate font size for names */
-        overflow: hidden;  /* Prevents overflow */
-        text-overflow: ellipsis;  /* Ellipsis for overflowed text */
-        white-space: nowrap;  /* No wrapping to the next line */
-    }
-
-    .team-member-box p {
-        font-size: 14px;  /* Smaller font size for secondary text */
-        margin-bottom: 5px;  /* Margin below each paragraph */
-    }
-
-    .social-links {
-        position: absolute;  /* Positions social links at the bottom */
-        bottom: 20px;  /* Distance from the bottom */
-        width: 100%;  /* Full width of the box */
-    }
-
-    .btn-social {
-        width: 35px;  /* Size of the buttons */
-        height: 35px;  /* Match width for square appearance */
-        display: inline-flex;  /* Flex to center contents */
-        align-items: center;  /* Center items vertically */
-        justify-content: center;  /* Center items horizontally */
-        font-size: 14px;  /* Icon size */
-    }
-</style>
-
-
-
-<style>
-    /* Hover Effects for Icons */
-    .icon-hover:hover .fa-stack-1x {
-        color: #17a2b8; /* Change icon color on hover */
-        transform: scale(1.1); /* Slightly increase size */
-        transition: all 0.3s ease-in-out;
-    }
-
-    .feature-box {
-        transition: transform 0.3s ease;
-    }
-
-    .feature-box:hover {
-        transform: translateY(-10px); /* Lift the box slightly on hover */
-    }
-</style>
-
-<style>
-    .btn:hover {
-        background-color: #fff;
-        color: #007bff;
-        transition: background-color 0.3s, color 0.3s;
-    }
-</style>
 {% endblock body %}

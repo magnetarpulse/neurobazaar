@@ -212,7 +212,7 @@ if __name__ == "__main__":
             # histogram_app = BaseHistogramApp("my_histogram_app", port)
             # task = loop.create_task(histogram_app.start_new_server_async())
 
-            bin_count_histogram_app = BaseRangeCountHistogram("Interactive Histogram using Trame-Matplotlib", port, "/home/demo/neurobazaar/MaxSlices_newMode_Manuf_Int.csv", "Area")
+            bin_count_histogram_app = BaseRangeCountHistogram("OoD Analyzer", port, "/home/demo/neurobazaar/MaxSlices_newMode_Manuf_Int.csv", "Area")
             task = loop.create_task(bin_count_histogram_app.start_server_async())
 
             loop.run_until_complete(task)

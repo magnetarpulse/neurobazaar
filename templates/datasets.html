@@ -1,0 +1,777 @@
+{% extends 'base.html' %}
+
+{% block title %}Datasets{% endblock title %}
+{% block nav4 %} d-none {% endblock nav4 %}
+{% block body %}
+
+<!-- Masthead-->
+<header class="masthead">
+    <div class="container">
+        <div class="masthead-heading">Explore and Manage Datasets & Collections</div>
+    </div>
+</header>
+
+<!-- Navigation Bar for datasets -->
+<nav class="navbar datasets-navbar bg-dark text-white">
+    <div class="container-fluid d-flex justify-content-center">
+        <!-- Nav Links -->
+        <div class="nav-item p-3" onclick="showSection('uploadDatasetsSection')">Upload Datasets</div>
+        <div class="nav-item p-3" onclick="showSection('uploadCollectionsSection')">Upload Collections</div>
+        <div class="nav-item p-3" onclick="showSection('viewDatasetsSection')">View Datasets</div>
+        <div class="nav-item p-3" onclick="showSection('viewCollectionsSection')">View Collections</div>
+    </div>
+</nav>
+
+<!-- Sections for Content -->
+<section id="uploadDatasetsSection" class="content-section d-none">
+    <!-- Upload Datasets Section -->
+    <section id="uploaddataset" class="page-section bg-light" style="padding: 60px 0;">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h2 class="section-heading text-uppercase" style="font-weight: bold; letter-spacing: 1.2px;">Upload Your Datasets</h2>
+                <p class="text-muted">Easily upload your datasets with metadata and repository options.</p>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card shadow p-4" style="border-radius: 15px; border: none;">
+                        <h4 class="mb-3 text-center" style="font-weight: bold;">Upload Datasets</h4>
+                        <form action="{% url 'datasets' %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <!-- Hidden field to identify the form -->
+                            <input type="hidden" name="form_type" value="dataset_upload">
+                            <!-- For individual file uploads -->
+                            <div class="mb-3">
+                                <input type="file" class="form-control" id="singleFile" name="dataset_file" required>
+                                <label for="singleFile" class="form-label mt-2">Select Dataset File</label>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="3" placeholder="Add a brief description" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="repo" class="form-label">Repository</label>
+                                <select class="form-select" name="repo" id="repo">
+                                    <option value="public" selected>Public</option>
+                                    <option value="private">Private</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="datastore" class="form-label">Select Datastore</label>
+                                <select class="form-select" name="datastore" id="datastore">
+                                    {% for datastore in datastores %}
+                                        <option value="{{ datastore.UUID }}">{{ datastore.Name }} | {{ datastore.Type }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">Upload Dataset</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+
+<section id="uploadCollectionsSection" class="content-section d-none">
+    <!-- Upload Collections Section -->
+    <section id="uploadcollection" class="page-section bg-light" style="padding: 60px 0;">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h2 class="section-heading text-uppercase" style="font-weight: bold; letter-spacing: 1.2px;">Upload Your Collections</h2>
+                <p class="text-muted">Organize datasets into collections for easier management.</p>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card shadow p-4" style="border-radius: 15px; border: none;">
+                        <h4 class="mb-3 text-center" style="font-weight: bold;">Upload Collections</h4>
+                        <form action="{% url 'datasets' %}" method="post" enctype="multipart/form-data" id="uploadCollectionForm">
+                            {% csrf_token %}
+                            <input type="hidden" name="form_type" value="collection_upload">
+                            <!-- For directory uploads -->
+                            <div class="mb-3">
+                                <input type="file" class="form-control" id="filepicker" name="collection_files" webkitdirectory directory multiple required>
+                                <label for="filepicker" class="form-label mt-2">Select Directory</label>
+                            </div>
+                            <div class="mb-3">
+                                <label for="dataset_uuid" class="form-label">Select Related Dataset</label>
+                                <select class="form-select" name="dataset_uuid" id="dataset_uuid">
+                                    {% for file in datasets %}
+                                        <option value="{{ file.UUID }}">{{ file.Name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="collection_description" class="form-label">Description</label>
+                                <textarea class="form-control" id="collection_description" name="description" rows="3" placeholder="Add a brief description" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="repo" class="form-label">Repository</label>
+                                <select class="form-select" name="repo" id="collection_repo">
+                                    <option value="public" selected>Public</option>
+                                    <option value="private">Private</option>
+                                </select>
+                            </div>
+                            <input type="hidden" name="relative_paths" id="relativePaths" value="">
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-lg w-100" onclick="captureRelativePaths()">Upload Collection</button>
+                            </div>
+                        </form>
+                        <output id="output" class="mt-3"></output>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+
+<!-- View Datasets Section -->
+<!-- View Datasets Section -->
+<section id="viewDatasetsSection" class="content-section d-none">
+    <section class="page-section bg-light">
+        <div class="container text-center">
+            <h2 class="section-heading text-uppercase" style="font-weight: bold; letter-spacing: 1.2px;">Datasets</h2>
+            <p class="text-muted" style="font-size: 1rem;">Manage and interact with your uploaded datasets</p>
+        </div>
+
+        <!-- Subgroup Buttons for Datasets -->
+        <div class="container mt-4 mb-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8 text-center">
+                    <button id="publicBtn_dataset" class="btn btn-outline-primary dataset-btn active rounded-pill px-4" onclick="showSubgroup('public', 'dataset')">Public</button>
+                    <button id="privateBtn_dataset" class="btn btn-outline-primary dataset-btn rounded-pill px-4" onclick="showSubgroup('private', 'dataset')">Private</button>
+                    <button id="favouritesBtn_dataset" class="btn btn-outline-primary dataset-btn rounded-pill px-4" onclick="showSubgroup('favourites', 'dataset')">Favourites</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Datasets Table -->
+        <div class="container table-container">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center" style="width: 30%;">Dataset Name</th>
+                            <th class="text-center" style="width: 40%;">Description</th>
+                            <th class="text-center" style="width: 30%;">Actions</th>
+                        </tr>
+                    </thead>
+                    <!-- Public Datasets -->
+                    <tbody id="public_dataset" class="dataset-group">
+                        {% for file in public_datasets %}
+                        <tr>
+                            <td class="text-center">{{ file.Name }}</td>
+                            <td class="text-center">{{ file.Description }}</td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-outline-success me-2" onclick="likeFile('{{ file.id }}')" title="Like">
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger me-2" onclick="dislikeFile('{{ file.id }}')" title="Dislike">
+                                        <i class="fas fa-thumbs-down"></i>
+                                    </button>
+                                    <form action="{% url 'datasets' %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="copy_to_favorites" value="{{ file.id }}">
+                                        <button type="submit" class="btn btn-outline-warning me-2" title="Add to Favorites">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    </form>
+                                    <form onsubmit="event.preventDefault(); startDownload('{{ file.UUID }}');" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-info" title="Download">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                    <!-- Private Datasets -->
+                    <tbody id="private_dataset" class="dataset-group d-none">
+                        {% for file in private_datasets %}
+                        <tr>
+                            <td class="text-center">{{ file.Name }}</td>
+                            <td class="text-center">{{ file.Description }}</td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <!-- Same button group as above -->
+                                    <button class="btn btn-outline-success me-2" onclick="likeFile('{{ file.id }}')" title="Like">
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger me-2" onclick="dislikeFile('{{ file.id }}')" title="Dislike">
+                                        <i class="fas fa-thumbs-down"></i>
+                                    </button>
+                                    <form action="{% url 'datasets' %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="copy_to_favorites" value="{{ file.id }}">
+                                        <button type="submit" class="btn btn-outline-warning me-2" title="Add to Favorites">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    </form>
+                                    <form onsubmit="event.preventDefault(); startDownload('{{ file.UUID }}');" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-info" title="Download">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                    <!-- Favourite Datasets -->
+                    <tbody id="favourites_dataset" class="dataset-group d-none">
+                        {% for file in favorite_datasets %}
+                        <tr>
+                            <td class="text-center">{{ file.Name }}</td>
+                            <td class="text-center">{{ file.Description }}</td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <!-- Same button group as above -->
+                                    <button class="btn btn-outline-success me-2" onclick="likeFile('{{ file.id }}')" title="Like">
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger me-2" onclick="dislikeFile('{{ file.id }}')" title="Dislike">
+                                        <i class="fas fa-thumbs-down"></i>
+                                    </button>
+                                    <form action="{% url 'datasets' %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="copy_to_favorites" value="{{ file.id }}">
+                                        <button type="submit" class="btn btn-outline-warning me-2" title="Add to Favorites">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    </form>
+                                    <form onsubmit="event.preventDefault(); startDownload('{{ file.UUID }}');" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-info" title="Download">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</section>
+
+<!-- View Collections Section -->
+<section id="viewCollectionsSection" class="content-section d-none">
+    <section class="page-section bg-light">
+        <div class="container text-center">
+            <h2 class="section-heading text-uppercase" style="font-weight: bold; letter-spacing: 1.2px;">Collections</h2>
+            <p class="text-muted" style="font-size: 1rem;">Explore and manage your collections</p>
+        </div>
+
+        <!-- Subgroup Buttons for Collections -->
+        <div class="container mt-4 mb-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8 text-center">
+                    <button id="publicBtn_collection" class="btn btn-outline-primary collection-btn active rounded-pill px-4" onclick="showSubgroup('public', 'collection')">Public</button>
+                    <button id="privateBtn_collection" class="btn btn-outline-primary collection-btn rounded-pill px-4" onclick="showSubgroup('private', 'collection')">Private</button>
+                    <button id="favouritesBtn_collection" class="btn btn-outline-primary collection-btn rounded-pill px-4" onclick="showSubgroup('favourites', 'collection')">Favourites</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Collections Table -->
+        <div class="container table-container">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center" style="width: 50%;">Collection Name</th>
+                            <th class="text-center" style="width: 50%;">Actions</th>
+                        </tr>
+                    </thead>
+                    <!-- Public Collections -->
+                    <tbody id="public_collection" class="collection-group">
+                        {% for directory in public_collections %}
+                        <tr>
+                            <td class="text-center">{{ directory.Collection_Name }}</td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'view_directory' directory.Collections_UUID %}" class="btn btn-outline-info me-2" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <form onsubmit="event.preventDefault(); startDownload('{{ directory.Collections_UUID }}');" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-info" title="Download">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                    <!-- Private Collections -->
+                    <tbody id="private_collection" class="collection-group d-none">
+                        {% for directory in private_collections %}
+                        <tr>
+                            <td class="text-center">{{ directory.Collection_Name }}</td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'view_directory' directory.Collections_UUID %}" class="btn btn-outline-info me-2" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <form onsubmit="event.preventDefault(); startDownload('{{ directory.Collections_UUID }}');" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-info" title="Download">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                    <!-- Favourite Collections -->
+                    <tbody id="favourites_collection" class="collection-group d-none">
+                        {% for directory in favorite_collections %}
+                        <tr>
+                            <td class="text-center">{{ directory.Collection_Name }}</td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'view_directory' directory.Collections_UUID %}" class="btn btn-outline-info me-2" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <form onsubmit="event.preventDefault(); startDownload('{{ directory.Collections_UUID }}');" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-info" title="Download">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</section>
+
+
+<!-- Explore Datasets & Collections Section with Enhancements -->
+<section class="page-section bg-light" id="explore-datasets" style="padding: 60px 0;">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase" style="font-weight: bold; letter-spacing: 1.2px;">Explore & Manage</h2>
+            <h3 class="section-subheading text-muted" style="font-size: 1.1rem;">Discover powerful features to help you manage your datasets and collections seamlessly.</h3>
+        </div>
+        <div class="row text-center">
+            <!-- Upload Datasets -->
+            <div class="col-md-3 mb-4">
+                <div class="feature-box p-4" style="border-radius: 10px; background-color: #f8f9fa; box-shadow: 0px 4px 10px rgba(0,0,0,0.1);">
+                    <span class="fa-stack fa-4x mb-3 icon-hover">
+                        <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fas fa-upload fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="my-3" style="font-weight: bold;">Upload Datasets</h4>
+                    <p class="text-muted">Easily upload datasets, manage metadata, and choose the datastore for your files.</p>
+                </div>
+            </div>
+            <!-- Upload Collections -->
+            <div class="col-md-3 mb-4">
+                <div class="feature-box p-4" style="border-radius: 10px; background-color: #f8f9fa; box-shadow: 0px 4px 10px rgba(0,0,0,0.1);">
+                    <span class="fa-stack fa-4x mb-3 icon-hover">
+                        <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fas fa-folder-open fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="my-3" style="font-weight: bold;">Upload Collections</h4>
+                    <p class="text-muted">Organize directories of datasets into collections for better management and retrieval.</p>
+                </div>
+            </div>
+            <!-- View Datasets -->
+            <div class="col-md-3 mb-4">
+                <div class="feature-box p-4" style="border-radius: 10px; background-color: #f8f9fa; box-shadow: 0px 4px 10px rgba(0,0,0,0.1);">
+                    <span class="fa-stack fa-4x mb-3 icon-hover">
+                        <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fas fa-eye fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="my-3" style="font-weight: bold;">View Datasets</h4>
+                    <p class="text-muted">Browse and manage datasets, filtering between public, private, and favorite categories.</p>
+                </div>
+            </div>
+            <!-- View Collections -->
+            <div class="col-md-3 mb-4">
+                <div class="feature-box p-4" style="border-radius: 10px; background-color: #f8f9fa; box-shadow: 0px 4px 10px rgba(0,0,0,0.1);">
+                    <span class="fa-stack fa-4x mb-3 icon-hover">
+                        <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fas fa-th-list fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="my-3" style="font-weight: bold;">View Collections</h4>
+                    <p class="text-muted">Explore and interact with directories and collections in an intuitive way.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Footer-->
+<footer class="footer py-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-4 text-lg-start">Copyright &copy; Neurobazaar 2024</div>
+            <div class="col-lg-4 my-3 my-lg-0">
+                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a class="link-dark text-decoration-none me-3" href="#!">Privacy Policy</a>
+                <a class="link-dark text-decoration-none" href="#!">Terms of Use</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    /* Add this style to align buttons */
+    .use-button {
+        margin-right: 10px; /* Adjust as needed */
+    }
+</style>
+
+<style>
+    .portfolio-item {
+        display: inline-block; /* Display inline-block so they align horizontally */
+        margin: 10px; /* Add margin for spacing between items */
+        padding: 15px; /* Add padding for spacing within items */
+        vertical-align: top; /* Align to the top of the container */
+        position: relative; /* Position relative for absolute positioning of buttons */
+    }
+
+    .heart-button {
+        position: absolute;
+        top: 10px;
+        left: 10px; /* Adjusted to be on the top left corner */
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #000;
+    }
+
+    .cross-button {
+        position: absolute;
+        top: 10px;
+        right: 10px; /* Kept on the top right corner */
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #000;
+    }
+
+    /* Ensure text alignment is centered */
+    .text-center {
+        text-align: center; /* Ensure the text is horizontally centered */
+        margin-top: 20px; /* Optional: add space above the heading if needed */
+    }
+
+</style>
+
+<style>
+    /* Add specific styles for the datasets navbar to isolate it */
+    .datasets-navbar {
+        margin-top: 00px; /* Add margin to create space from the top navbar */
+        width: 100%;
+        background-color: #343a40; /* Dark background */
+        display: flex;
+    }
+    
+    .datasets-navbar .nav-item {
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: white;
+        text-align: center;
+        flex: 1; /* Equal width for each section */
+        padding: 15px;
+        border-right: 1px solid #495057; /* Separator between sections */
+    }
+    
+    .datasets-navbar .nav-item:last-child {
+        border-right: none;
+    }
+    
+    .datasets-navbar .nav-item:hover {
+        background-color: #495057; /* Darken on hover */
+    }
+    
+    .content-section {
+        padding: 10px;  /* Reduce the padding inside the content sections */
+        margin-top: -10px; /* Reduce the space between the navbar and the sections */
+    }
+</style>
+
+<!-- Hover Effects for Icons -->
+<style>
+    .icon-hover:hover .fa-stack-1x {
+        color: #17a2b8; /* Change icon color on hover */
+        transform: scale(1.1); /* Slightly increase size */
+        transition: all 0.3s ease-in-out;
+    }
+    
+    .feature-box {
+        transition: transform 0.3s ease;
+    }
+    
+    .feature-box:hover {
+        transform: translateY(-10px); /* Lift the box slightly on hover */
+    }
+</style>
+
+<!--new style for the tables and upload datasets and collections -->
+<style>
+    /* Styling for the Subgroup Buttons */
+    .dataset-btn, .collection-btn {
+        font-size: 1.1rem;
+        padding: 10px 20px;
+        margin: 5px;
+        border-radius: 5px;
+    }
+    
+    .dataset-btn.active, .collection-btn.active {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    /* Table Styling */
+    .table {
+        width: 100%;
+        margin-top: 20px;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    
+    .table thead {
+        background-color: #343a40;
+        color: white;
+    }
+
+    .table thead th {
+        color: white;
+        font-size: 1.2rem; /* Make the header font slightly larger */
+        padding: 20px; /* Increase padding to make the header larger */
+        text-align: center;
+        vertical-align: middle;
+        font-weight: bold; /* Add some weight to make it stand out */
+    }
+    
+    .table tbody tr {
+        transition: background-color 0.2s ease;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f2f2f2;
+    }
+    
+    .table tbody td {
+        text-align: center;
+        padding: 15px;
+        vertical-align: middle;
+    }
+    
+    .table tbody td .btn {
+        margin: 5px;
+        transition: all 0.3s ease;
+    }
+    
+    .table tbody td .btn:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Action Buttons */
+    .table tbody td .btn-outline-primary {
+        color: #007bff;
+        border-color: #007bff;
+    }
+    
+    .table tbody td .btn-outline-primary:hover {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .table tbody td .btn-outline-success {
+        color: #28a745;
+        border-color: #28a745;
+    }
+    
+    .table tbody td .btn-outline-success:hover {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .table tbody td .btn-outline-danger {
+        color: #dc3545;
+        border-color: #dc3545;
+    }
+    
+    .table tbody td .btn-outline-danger:hover {
+        background-color: #dc3545;
+        color: white;
+    }
+    
+    .table tbody td .btn-outline-info {
+        color: #17a2b8;
+        border-color: #17a2b8;
+    }
+    
+    .table tbody td .btn-outline-info:hover {
+        background-color: #17a2b8;
+        color: white;
+    }
+    
+    /* Adjust table container and padding */
+    .content-section {
+        padding: 40px 0;
+    }
+    
+    .table-container {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Button group styling for toggling */
+    .btn-outline-primary.dataset-btn.active, .btn-outline-primary.collection-btn.active {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .btn-outline-primary.dataset-btn, .btn-outline-primary.collection-btn {
+        font-weight: bold;
+    }
+    
+</style>
+
+
+
+
+
+<script>
+    function captureRelativePaths() {
+        const paths = [];
+        const files = filepicker.files;
+
+        for (const file of files) {
+            paths.push(file.webkitRelativePath || file.name);
+            output.textContent += `${file.webkitRelativePath}\n`; // Display the relative paths
+        }
+
+        document.getElementById('relativePaths').value = JSON.stringify(paths);
+    }
+</script>
+
+<script>
+    function startDownload(fileUUID) {
+        const startTime = Date.now();
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{% url "datasets" %}';
+        form.style.display = 'none';
+
+        const csrfTokenInput = document.createElement('input');
+        csrfTokenInput.name = 'csrfmiddlewaretoken';
+        csrfTokenInput.value = '{{ csrf_token }}';
+        form.appendChild(csrfTokenInput);
+
+        const fileUUIDInput = document.createElement('input');
+        fileUUIDInput.type = 'hidden';
+        fileUUIDInput.name = 'download_file';
+        fileUUIDInput.value = fileUUID;
+        form.appendChild(fileUUIDInput);
+
+        document.body.appendChild(form);
+
+        form.submit();
+
+        const checkInterval = 50;
+        const intervalId = setInterval(() => {
+            const endTime = Date.now();
+            const downloadTime = (endTime - startTime) / 1000;
+
+            if (downloadTime > 0) {
+                clearInterval(intervalId);
+                alert(`Download completed in approximately ${downloadTime.toFixed(2)} seconds.`);
+            }
+        }, checkInterval);
+    }
+</script>
+
+<!-- Script for showing/hiding sections -->
+<script>
+    function showSection(sectionId) {
+        document.getElementById('uploadDatasetsSection').classList.add('d-none');
+        document.getElementById('uploadCollectionsSection').classList.add('d-none');
+        document.getElementById('viewDatasetsSection').classList.add('d-none');
+        document.getElementById('viewCollectionsSection').classList.add('d-none');
+
+        document.getElementById(sectionId).classList.remove('d-none');
+    }
+</script>
+
+<!-- Script for managing subgroups (public, private, favourites) -->
+<script>
+    function showSubgroup(subgroup, type) {
+        // Hide all groups for the specified type (either 'dataset' or 'collection')
+        document.querySelectorAll(`.${type}-group`).forEach(group => group.classList.add('d-none'));
+
+        // Show the selected group
+        document.getElementById(`${subgroup}_${type}`).classList.remove('d-none');
+
+        // Set active button
+        document.querySelectorAll(`.${type}-btn`).forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`${subgroup}Btn_${type}`).classList.add('active');
+    }
+</script>
+
+
+{% if messages %}
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadModalLabel">Status: </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        $('#uploadModal').modal('show');
+    });
+</script>
+<script>
+    $(document).ready(function(){
+        $(".close").click(function(){
+            $("#uploadModal").modal('hide');
+        });
+    });
+</script>  
+{% endif %}
+
+{% endblock body %}

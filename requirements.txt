@@ -1,0 +1,16 @@
+django
+pymongo
+numpy
+matplotlib
+pandas
+scikit-learn
+trame
+trame-client
+trame-components
+trame-matplotlib
+trame-server
+trame-vtk
+trame-vuetify
+dask[complete]
+dask-histogram
+boost-histogram

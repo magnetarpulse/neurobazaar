@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Workspaces{% endblock title %}
+{% block nav3 %} d-none {% endblock nav3 %}
+{% block body %}
+{% load static %}
+
+<!-- Masthead -->
+<header class="masthead">
+    <div class="container">
+        <div class="masthead-heading">Workspaces</div>
+    </div>
+</header>
+
+<!-- Results Section -->
+<section id="results" class="page-section">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Workspaces</h2>
+        </div>
+
+        <!-- Dropdown to select workspace -->
+        <div class="form-group">
+            <label for="workspaceDropdown">Select Workspace:</label>
+            <select id="workspaceDropdown" class="form-select">
+                <option value="" disabled selected>Select a workspace</option>
+            </select>
+        </div>
+
+        <!-- Button to add new workspace -->
+        <button id="addWorkspaceButton" class="btn btn-primary">Add Workspace</button>
+
+        <!-- Container for workspaces -->
+        <div id="workspacesContainer"></div>
+    </div>
+</section>
+
+<!-- Ensure jQuery is included -->
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Counter for unique workspace IDs and initial port number
+        var workspaceCounter = 0;
+        var initialPort = 8088;
+
+        // Handle Add Workspace button click
+        $('#addWorkspaceButton').click(function () {
+            if (workspaceCounter >= 5) {
+                alert('Maximum of 5 workspaces reached.');
+                return;
+            }
+
+            workspaceCounter++;
+            var newWorkspaceId = 'workspace' + workspaceCounter;
+            var portNumber = initialPort + workspaceCounter - 1;  // Calculate the port number
+
+            // Create new workspace with iframe
+            var newWorkspace = $(
+                '<section id="' + newWorkspaceId + '" class="page-section" style="display:none;">' +
+                '<div class="container">' +
+                '<div class="text-center">' +
+                '<h2 class="section-heading text-uppercase">Workspace ' + workspaceCounter + '</h2>' +
+                '</div>' +
+                '<div class="row">' +
+                '<div class="col-lg-12">' +
+                '<iframe src="http://localhost:' + portNumber + '/index.html" style="width:100%; height:100vh;"></iframe>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</section>'
+            );
+
+            // Append new workspace to container
+            $('#workspacesContainer').append(newWorkspace);
+
+            // Add new workspace to the dropdown
+            $('#workspaceDropdown').append(
+                '<option value="' + newWorkspaceId + '">Workspace ' + workspaceCounter + '</option>'
+            );
+        });
+
+        // Handle workspace selection change
+        $('#workspaceDropdown').change(function () {
+            var selectedWorkspace = $(this).val();
+
+            // Hide all workspaces
+            $('#workspacesContainer section').hide();
+
+            // Show the selected workspace
+            $('#' + selectedWorkspace).show();
+        });
+    });
+</script>
+{% endblock body %}

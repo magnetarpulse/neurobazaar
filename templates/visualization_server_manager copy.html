@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Datastore{% endblock title %}
+{% block nav4 %} d-none {% endblock nav4 %}
+{% block body %}
+
+<!-- Masthead-->
+<header class="masthead">
+    <div class="container">
+        <div class="masthead-heading">Set up the Visualization Service Servers</div>
+    </div>
+</header>
+
+<!-- Sub Header -->
+<section id="results" class="page-section">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Servers</h2>
+        </div>
+</section>
+
+<!-- Server Manager Interface -->
+<div id="serverManagerApp">
+    <v-app>
+        <v-container>
+            <v-row>
+                <v-col cols="auto">
+                    <v-btn color="primary" @click="startNewServer">Start New Server</v-btn>
+                </v-col>
+            </v-row>
+            <v-card>
+                <v-card-text>Active Servers:</v-card-text>
+                <v-list shaped>
+                    <v-list-item v-for="(server, idx) in serverList" :key="idx">
+                        <v-list-item-icon>
+                            <v-icon :color="levelToColor[server.status]">mdi-server</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-title>{{ server.port }} - {{ server.status }}</v-list-item-title>
+                        </v-list-item-content>
+                        <v-btn icon @click="stopServer(server.port)">
+                            <v-icon :color="levelToColor[server.status]">mdi-stop</v-icon>
+                        </v-btn>
+                    </v-list-item>
+                </v-list>
+            </v-card>
+        </v-container>
+    </v-app>
+</div>
+
+<!-- Include Vue and Vuetify -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@2.5.10/dist/vuetify.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/vuetify@2.5.10/dist/vuetify.min.css" rel="stylesheet">
+
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    new Vue({
+        el: '#serverManagerApp',
+        vuetify: new Vuetify(),
+        data: {
+            serverList: [],
+            levelToColor: {
+                'Running': 'green',
+                'Stopped': 'red'
+            }
+        },
+        methods: {
+            startNewServer() {
+                $.ajax({
+                    url: '/trame/start_new_server',
+                    method: 'POST',
+                    success: (response) => {
+                        this.serverList = response.server_list;
+                    },
+                    error: (xhr, status, error) => {
+                        console.error("Error starting new server:", error);
+                    }
+                });
+            },
+            stopServer(port) {
+                $.ajax({
+                    url: '/trame/stop_server',
+                    method: 'POST',
+                    data: { port: port },
+                    success: (response) => {
+                        this.serverList = response.server_list;
+                    },
+                    error: (xhr, status, error) => {
+                        console.error("Error stopping server:", error);
+                    }
+                });
+            }
+        },
+        created() {
+            // Fetch initial server list
+            $.ajax({
+                url: '/trame/get_server_list',
+                method: 'GET',
+                success: (response) => {
+                    this.serverList = response.server_list;
+                },
+                error: (xhr, status, error) => {
+                    console.error("Error fetching server list:", error);
+                }
+            });
+        }
+    });
+</script>
+
+{% endblock body %}

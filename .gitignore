@@ -1,0 +1,9 @@
+.venv
+**/__pycache__/
+db.sqlite3
+build
+datastore
+.idea
+node_modules
+collectedstatic
+node_modules

@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}Server Manager{% endblock title %}
+{% block body %}
+<header class="masthead">
+    <div class="container">
+        <div class="masthead-heading">Visualization Server Manager</div>
+    </div>
+</header>
+
+<section id="servers" class="page-section">
+    <div class="container">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Manage Servers</h2>
+        </div>
+
+        <!-- Button to start new server -->
+        <div class="text-center">
+            <button id="start-server-btn" class="btn btn-primary">Start New Server</button>
+        </div>
+
+        <!-- Server list -->
+        <div class="text-center mt-4">
+            <h4>Active Servers</h4>
+            <ul id="server-list" class="list-group">
+                {% for server in server_list %}
+                <li class="list-group-item">
+                    Server on Port: {{ server.port }}
+                    <span class="badge bg-success">{{ server.status }}</span>
+                    <button class="btn btn-danger btn-sm stop-server-btn" data-port="{{ server.port }}">Stop</button>
+                </li>
+                {% empty %}
+                <li class="list-group-item">No active servers.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const startBtn = document.getElementById("start-server-btn");
+        const serverList = document.getElementById("server-list");
+
+        // Event listener for starting a new server
+        startBtn.addEventListener("click", function () {
+            fetch("{% url 'visualization_server_manager' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ action: "start" })
+            })
+                .then(response => response.json())
+                .then(data => updateServerList(data.server_list));
+        });
+
+        // Function to update the server list
+        function updateServerList(servers) {
+            serverList.innerHTML = "";  // Clear the list
+            if (servers.length > 0) {
+                servers.forEach(server => {
+                    const listItem = document.createElement("li");
+                    listItem.classList.add("list-group-item");
+                    listItem.innerHTML = `
+                        Server on Port: ${server.port} 
+                        <span class="badge bg-success">${server.status}</span>
+                        <button class="btn btn-danger btn-sm stop-server-btn" data-port="${server.port}">Stop</button>
+                    `;
+                    serverList.appendChild(listItem);
+                });
+
+                // Add stop functionality for each stop button
+                document.querySelectorAll(".stop-server-btn").forEach(button => {
+                    button.addEventListener("click", function () {
+                        const port = this.getAttribute("data-port");
+                        fetch("{% url 'visualization_server_manager' %}", {
+                            method: "POST",
+                            headers: {
+                                "X-CSRFToken": "{{ csrf_token }}",
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ action: "stop", port: port })
+                        })
+                            .then(response => response.json())
+                            .then(data => updateServerList(data.server_list));
+                    });
+                });
+            } else {
+                const noServerItem = document.createElement("li");
+                noServerItem.classList.add("list-group-item");
+                noServerItem.textContent = "No active servers.";
+                serverList.appendChild(noServerItem);
+            }
+        }
+
+        // Initial server list update when the page loads
+        fetch("{% url 'get_server_list' %}")
+            .then(response => response.json())
+            .then(data => updateServerList(data.server_list));
+    });
+</script>
+{% endblock body %}

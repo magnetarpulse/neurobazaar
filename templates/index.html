@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock title %}
+
+{% block body %}
+<!-- Header with Background Image and Overlay Content -->
+<header class="header-bg">
+    <div class="container text-center header-content">
+        <h1 class="header-heading">If it's not responsive, it's not working</h1>
+        <p class="header-subheading">It's hard to iterate fast enough on massive model training when your experiment tracker lags behind you. Neurobazaar makes it easy to monitor months-long jobs and visualize massive amounts of data in almost real-time - with 100% accuracy. Without crashing the UI. So you can find failing runs in less time - and eliminate wasted spend.</p>
+        <a class="btn btn-primary btn-lg" href="#services">Sign Up</a>
+        <a class="btn btn-outline-light btn-lg" href="#watch-demo">Watch a 2-min demo</a>
+    </div>
+</header>
+
+<!-- Services -->
+<section class="page-section" id="services">
+    <div class="container animate-fadeIn">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Services</h2>
+            <h3 class="section-subheading text-muted">Explore our range of offerings designed to meet your data analysis, model evaluation, and visualization needs.</h3>
+        </div>
+        <div class="row text-center">
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-solid fa-chart-line fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Data Analysis</h4>
+                <p class="text-muted">We offer comprehensive data analysis services to help you extract meaningful insights from your datasets.</p>
+            </div>
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-solid fa-list-check fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Model Evaluation</h4>
+                <p class="text-muted">Our experts will evaluate your machine learning models to assess their performance and identify areas for improvement.</p>
+            </div>
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-solid fa-check fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Fairness Assessment</h4>
+                <p class="text-muted">We provide fairness assessments for your models to ensure they do not exhibit bias or discrimination.</p>
+            </div>
+        </div>
+        <div class="row text-center mt-4">
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-solid fa-database fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Datastore Management</h4>
+                <p class="text-muted">Manage your datasets and collections using our flexible datastore system. Upload, store, and retrieve data across Filesystem and MongoDB.</p>
+            </div>
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-solid fa-chart-area fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Interactive Visualization</h4>
+                <p class="text-muted">Visualize your datasets and models interactively with intuitive tools designed for deeper insights.</p>
+            </div>
+            <div class="col-md-4">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-solid fa-shield-alt fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">OoD Detection</h4>
+                <p class="text-muted">Detect out-of-distribution data to ensure your models perform well on new, unseen data.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Portfolio -->
+<section class="page-section bg-light" id="portfolio">
+    <div class="container animate-fadeIn">
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Models Available</h2>
+            <h3 class="section-subheading text-muted">Analyze the performance of different machine learning algorithms to evaluate their effectiveness in solving your data science problems.</h3>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-sm-6 mb-4">
+                <!-- Portfolio item 1-->
+                <div class="portfolio-item">
+                    <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal1">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
+                        </div>
+                        <img class="img-fluid" src="/static/assets/img/KNN.webp" alt="..." />
+                    </a>
+                    <div class="portfolio-caption">
+                        <div class="portfolio-caption-heading">K-Nearest Neighbors (KNN)</div>
+                        <div class="portfolio-caption-subheading text-muted">Assess the performance of the KNN algorithm using your dataset. Explore various hyperparameters to optimize model performance.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6 mb-4">
+                <!-- Portfolio item 2-->
+                <div class="portfolio-item">
+                    <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal2">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
+                        </div>
+                        <img class="img-fluid" src="/static/assets/img/Decision Tree.jpeg" alt="..." />
+                    </a>
+                    <div class="portfolio-caption">
+                        <div class="portfolio-caption-heading">Decision Trees</div>
+                        <div class="portfolio-caption-subheading text-muted">Evaluate the performance of decision tree models on your data. Gain insights into feature importance and model interpretability.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6 mb-4">
+                <!-- Portfolio item 3-->
+                <div class="portfolio-item">
+                    <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal3">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
+                        </div>
+                        <img class="img-fluid" src="/static/assets/img/RF.webp" alt="..." />
+                    </a>
+                    <div class="portfolio-caption">
+                        <div class="portfolio-caption-heading">Random Forest</div>
+                        <div class="portfolio-caption-subheading text-muted">Investigate the performance of Random Forest models for robust and accurate predictions. Explore ensemble learning techniques.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6 mb-4 mb-lg-0">
+                <!-- Portfolio item 4-->
+                <div class="portfolio-item">
+                    <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal4">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
+                        </div>
+                        <img class="img-fluid" src="/static/assets/img/SVM.webp" alt="..." />
+                    </a>
+                    <div class="portfolio-caption">
+                        <div class="portfolio-caption-heading">Support Vector Machines (SVM)</div>
+                        <div class="portfolio-caption-subheading text-muted">Evaluate the performance of SVM models on your data. Explore kernel functions and hyperparameters to optimize model performance.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-4 text-lg-start">Copyright &copy; Neurobazaar 2024</div>
+            <div class="col-lg-4 my-3 my-lg-0">
+                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a class="link-dark text-decoration-none me-3" href="#!">Privacy Policy</a>
+                <a class="link-dark text-decoration-none" href="#!">Terms of Use</a>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock body %}

@@ -26,6 +26,10 @@ def index(request):
         username = request.user.username
     return render(request, 'index.html', {'username': username})
 
+
+def team_details(request):
+    return render(request, 'team-details.html')
+
 def logoutUser(request):
     logout(request)
     return redirect('/login_register')

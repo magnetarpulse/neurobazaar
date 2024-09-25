@@ -11,6 +11,7 @@ urlpatterns = [
     path('workspaces/', views.workspaces, name='workspaces'),
     path('datasets/', views.datasets, name='datasets'),
     path('datasets/view_directory/<uuid:collections_uuid>/', views.view_directory, name='view_directory'),
-    path('datastore/', views.datastore, name='datastore'),
+path('team-details/', views.team_details, name='team_details'),
+path('datastore/', views.datastore, name='datastore'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

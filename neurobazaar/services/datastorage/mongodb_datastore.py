@@ -1,14 +1,13 @@
-from msilib import Binary
 from uuid import UUID
 import uuid
 from neurobazaar.services.datastorage.abstract_datastore import AbstractDatastore, DatastoreType
 from django.core.files.uploadedfile import UploadedFile
-from bson import UUIDLegacy
+from bson.binary import Binary
+import uuid
 
 from pymongo import MongoClient
 from gridfs import GridFS
 import logging
-
 
 class MongoDBDatastore(AbstractDatastore):
     def __init__(self, username: str, password: str, host: str, port: str, database: str):
@@ -32,7 +31,8 @@ class MongoDBDatastore(AbstractDatastore):
         """Uploads a dataset to GridFS and returns the unique dataset UUID as a string."""
         try:
             datasetUUID =uuid.uuid4()
-            self._fs.put(uploadedFile, _id=datasetUUID)
+            uuid_bin = Binary.from_uuid(datasetUUID)
+            self._fs.put(uploadedFile, _id=uuid_bin)
             return datasetUUID
         except Exception as e:
             logging.error(f"Failed to upload dataset: {e}")
@@ -42,7 +42,7 @@ class MongoDBDatastore(AbstractDatastore):
         """Returns a GridFSFile object if the dataset exists, otherwise returns None."""
         try:
             uuid_obj = uuid.UUID(datasetUUID)
-            uuid_bin = UUIDLegacy(uuid_obj)
+            uuid_bin = Binary(uuid_obj.bytes, 4)
             if self._fs.exists({"_id": uuid_bin}):
                 return self._fs.get(uuid_bin)
             else:
@@ -61,4 +61,3 @@ class MongoDBDatastore(AbstractDatastore):
         except Exception as e:
             logging.error(f"Failed to delete dataset: {e}")
             raise
-

@@ -32,7 +32,7 @@ from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
 from abc import abstractmethod
 
 ## ================================================================= ## 
-## Visualization service. Histogramming sub service. The base class. ##         
+## Visualization service. Demo of the BaseHistogramApp class. Tested ##         
 ## ================================================================= ##
 
 @TrameApp()

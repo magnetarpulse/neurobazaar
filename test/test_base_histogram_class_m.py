@@ -118,7 +118,7 @@ class BaseHistogramApp:
         label_props_x.SetFontSize(font_size)
         label_props_y.SetFontSize(font_size)
         
-        self.chart.GetAxis(0).SetBehavior(standard_vtk.vtkAxis.FIXED)
+        # self.chart.GetAxis(0).SetBehavior(standard_vtk.vtkAxis.FIXED)
         self.chart.GetAxis(1).SetMinimum(0)
         self.chart.GetAxis(1).SetMaximum(7000)
         self.chart.GetAxis(1).SetBehavior(standard_vtk.vtkAxis.FIXED)
@@ -679,27 +679,5 @@ class ServerManager:
         self.servers_manager.start(port=port)
 
 if __name__ == "__main__":
-    import sys
-
-    server_manager = ServerManager()
-    
-    if "--launch_server" in sys.argv:
-        # Get the list of ports from the command line arguments
-        ports = [int(arg) for arg in sys.argv[sys.argv.index("--launch_server") + 1:]]
-        print("Ports: ", ports)
-
-        # Create a new event loop
-        loop = asyncio.get_event_loop()
-
-        for port in ports:
-            histogram_app = BaseHistogramApp("Interactive Visualization", port)
-            
-            # Create a new asyncio Task inside the event loop
-            task = loop.create_task(histogram_app.start_new_server_async())
-
-            print("The type of task is:", type(task))
-
-            # Run the Task and wait for it to complete
-            loop.run_until_complete(task)
-    else:
-        server_manager.start(port=1234)
+    app = BaseHistogramApp("Histogram", 8000)
+    app.start_new_server_immediately()

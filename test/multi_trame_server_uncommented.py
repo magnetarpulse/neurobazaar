@@ -68,7 +68,6 @@ class BaseHistogramApp:
             self.renderWindow, trame_server=self.server, ref="view"
         )
         
-
         self.setup_layout()
     
     # ---------------------------------------------------------------------------------------------
@@ -131,8 +130,7 @@ class BaseHistogramApp:
         self.renderWindow = self.view.GetRenderWindow()
         self.view.GetRenderWindow().SetSize(800, 600)
 
-        
-    
+           
     # ---------------------------------------------------------------------------------------------
     # Method using VTK to update histogram and render it on the server-side
     # ---------------------------------------------------------------------------------------------
@@ -142,8 +140,18 @@ class BaseHistogramApp:
         if self.np_data is None:
             # Handle the case when there is no data
             print("No data available to update the histogram.")
-            return  # Or set a default histogram state if needed
-
+            # Clear the histogram data
+            self.arrX.Reset()
+            self.arrY.Reset()
+        
+            # Optionally set axis limits to zero to hide the plot
+            self.chart.GetAxis(0).SetMaximum(0)  # Hide x-axis
+            self.chart.GetAxis(1).SetMaximum(0)  # Hide y-axis
+        
+            # Update the client view to reflect that there is no data
+            self.update_the_client_view()
+            return  # Exit the method to prevent further processing
+            
         # Proceed with creating the Dask array if data is available
         self.dask_data = da.from_array(self.np_data, chunks='auto')
 
@@ -316,8 +324,7 @@ class BaseHistogramApp:
     @change("bins")
     def on_bins_change(self, bins, **kwargs):
         self.update_histogram(bins)
-            
-        
+             
 
     # ---------------------------------------------------------------------------------------------
     # State change handler for file_input
@@ -372,7 +379,6 @@ class BaseHistogramApp:
         self.dask_data = None  # Or whatever is needed to clear the plot
         self.server.state.bins = 5  # Set bins to 1
         self.update_histogram(self.server.state.bins)
-
 
 
     # ---------------------------------------------------------------------------------------------
@@ -435,8 +441,7 @@ class BaseHistogramApp:
                     dense=True,
                     style="padding-top: 20px;",
                     color="rgb(22, 29, 111)",
-                    
-                    
+                       
                 )
                 vuetify.VSpacer()
                 
@@ -445,8 +450,8 @@ class BaseHistogramApp:
                     label="Upload CSV File",
                     accept=".csv",
                     style="padding-top: 20px;",
-                   
-                        
+                    clear_icon="mdi-delete",
+                     
                 )
                 vuetify.VSpacer()
                 vuetify.VSelect(

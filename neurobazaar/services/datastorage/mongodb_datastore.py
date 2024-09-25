@@ -1,3 +1,4 @@
+'''
 from msilib import Binary
 from uuid import UUID
 import uuid
@@ -62,3 +63,4 @@ class MongoDBDatastore(AbstractDatastore):
             logging.error(f"Failed to delete dataset: {e}")
             raise
 
+'''

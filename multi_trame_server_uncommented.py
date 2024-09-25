@@ -472,7 +472,7 @@ class ServerManager:
         self.servers_manager = get_server("Server_Manager", client_type="vue2")
         self.control_state, self.control_ctrl = self.servers_manager.state, self.servers_manager.controller
         self.servers = {}
-        self.next_port = 5456
+        self.next_port = 8090
         self.control_state.server_list = []
 
         # Define the color mapping for server status

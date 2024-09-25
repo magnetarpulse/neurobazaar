@@ -11,3 +11,6 @@ trame-matplotlib
 trame-server
 trame-vtk
 trame-vuetify
+dask[complete]
+dask-histogram
+boost-histogram

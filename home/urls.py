@@ -11,7 +11,12 @@ urlpatterns = [
     path('workspaces/', views.workspaces, name='workspaces'),
     path('datasets/', views.datasets, name='datasets'),
     path('datasets/view_directory/<uuid:collections_uuid>/', views.view_directory, name='view_directory'),
+<<<<<<< HEAD
 path('team-details/', views.team_details, name='team_details'),
 path('datastore/', views.datastore, name='datastore'),
+=======
+    path('datastore/', views.datastore, name='datastore'),
+    path('visualization_server_manager/', views.visualization_server_manager, name='visualization_server_manager'),
+>>>>>>> ab13196187ef32c9f455734a54b96c1975355f39
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

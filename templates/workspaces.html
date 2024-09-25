@@ -2,8 +2,9 @@
 {% block title %}Workspaces{% endblock title %}
 {% block nav3 %} d-none {% endblock nav3 %}
 {% block body %}
+{% load static %}
 
-<!-- Masthead-->
+<!-- Masthead -->
 <header class="masthead">
     <div class="container">
         <div class="masthead-heading">Workspaces</div>
@@ -17,163 +18,79 @@
             <h2 class="section-heading text-uppercase">Workspaces</h2>
         </div>
 
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" id="workspaceTabs" role="tablist">
-            <!-- Add workspace button -->
-            <li class="nav-item">
-                <div class="dropdown">
-                    <button class="btn btn-link nav-link dropdown-toggle" type="button" id="addWorkspaceDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        Add Workspace
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="addWorkspaceDropdown">
-                        <li><button class="dropdown-item add-visualization" type="button">Visualization</button></li>
-                        <li><button class="dropdown-item add-model" type="button" disabled>Model</button></li>
-                    </ul>
-                </div>
-            </li>
-        </ul>
-        <br>
-        <br>
-
-        <!-- Dynamic workspace content -->
-        <div id="workspaceContent">
-            <!-- Each workspace tab content -->
-            <div class="tab-content">
-                <!-- Placeholder for initial workspace content -->
-            </div>
+        <!-- Dropdown to select workspace -->
+        <div class="form-group">
+            <label for="workspaceDropdown">Select Workspace:</label>
+            <select id="workspaceDropdown" class="form-select">
+                <option value="" disabled selected>Select a workspace</option>
+            </select>
         </div>
+
+        <!-- Button to add new workspace -->
+        <button id="addWorkspaceButton" class="btn btn-primary">Add Workspace</button>
+
+        <!-- Container for workspaces -->
+        <div id="workspacesContainer"></div>
     </div>
 </section>
 
-<!-- Visualization Options Modal -->
-<div class="modal fade" id="visualizationOptionsModal" tabindex="-1" aria-labelledby="visualizationOptionsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="visualizationOptionsModalLabel">Select Visualization Options</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Visualization options will be dynamically populated here -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="submitVisualizationOptions">Submit</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Footer-->
-<footer class="footer py-4">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-4 text-lg-start">Copyright &copy; Neurobazaar 2024</div>
-            <div class="col-lg-4 my-3 my-lg-0">
-                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-            </div>
-            <div class="col-lg-4 text-lg-end">
-                <a class="link-dark text-decoration-none me-3" href="#!">Privacy Policy</a>
-                <a class="link-dark text-decoration-none" href="#!">Terms of Use</a>
-            </div>
-        </div>
-    </div>
-</footer>
-
 <!-- Ensure jQuery is included -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
 
 <script>
     $(document).ready(function(){
-        var username = "{{ username }}"; // Replace with how your backend provides the username
-
-        // Counter for unique workspace IDs
+        // Counter for unique workspace IDs and initial port number
         var workspaceCounter = 0;
+        var initialPort = 8088;
 
         // Handle Add Workspace button click
-        $('.add-workspace').click(function(){
+        $('#addWorkspaceButton').click(function(){
+            if (workspaceCounter >= 5) {
+                alert('Maximum of 5 workspaces reached.');
+                return;
+            }
+
             workspaceCounter++;
             var newWorkspaceId = 'workspace' + workspaceCounter;
+            var portNumber = initialPort + workspaceCounter - 1;  // Calculate the port number
 
-            // Create new workspace tab and content
-            var newWorkspaceTab = $('<li class="nav-item"><a class="nav-link" id="' + newWorkspaceId + '-tab" data-bs-toggle="tab" href="#' + newWorkspaceId + '" role="tab" aria-controls="' + newWorkspaceId + '" aria-selected="false">Workspace ' + workspaceCounter + '<button class="btn-close close-workspace" type="button" aria-label="Close"></button></a></li>');
-            var newWorkspacePane = $('<div class="tab-pane fade" id="' + newWorkspaceId + '" role="tabpanel"></div>');
+            // Create new workspace with iframe
+            var newWorkspace = $(
+                '<section id="' + newWorkspaceId + '" class="page-section" style="display:none;">' +
+                    '<div class="container">' +
+                        '<div class="text-center">' +
+                            '<h2 class="section-heading text-uppercase">Workspace ' + workspaceCounter + '</h2>' +
+                        '</div>' +
+                        '<div class="row">' +
+                            '<div class="col-lg-12">' +
+                                '<iframe src="http://localhost:' + portNumber + '/index.html" style="width:100%; height:100vh;"></iframe>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</section>'
+            );
 
-            // Append new workspace tab and pane
-            $('#workspaceTabs').append(newWorkspaceTab);
-            $('.tab-content').append(newWorkspacePane);
+            // Append new workspace to container
+            $('#workspacesContainer').append(newWorkspace);
 
-            // Activate new workspace tab
-            $('#' + newWorkspaceId + '-tab').tab('show');
-        }); 
-
-        // Handle Close Workspace button click
-        $(document).on('click', '.close-workspace', function(){
-            var workspaceId = $(this).closest('a').attr('href');
-            $(workspaceId).remove();
-            $(this).closest('li').remove();
-            $('#workspaceTabs a:last').tab('show');
+            // Add new workspace to the dropdown
+            $('#workspaceDropdown').append(
+                '<option value="' + newWorkspaceId + '">Workspace ' + workspaceCounter + '</option>'
+            );
         });
 
-        // Handle Add Visualization button click
-        $(document).on('click', '.add-visualization', function(){
-            // Show the modal
-            var modal = new bootstrap.Modal(document.getElementById('visualizationOptionsModal'));
-            modal.show();
+        // Handle workspace selection change
+        $('#workspaceDropdown').change(function(){
+            var selectedWorkspace = $(this).val();
 
-            // Populate the modal with visualization options
-            var visualizationOptions = `
-                <h4>Select Visualization Type</h4>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="visualizationType" id="scatterPlot" value="scatter">
-                    <label class="form-check-label" for="scatterPlot">
-                        Scatter Plot
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="visualizationType" id="histogram" value="histogram">
-                    <label class="form-check-label" for="histogram">
-                        Histogram
-                    </label>
-                </div>
+            // Hide all workspaces
+            $('#workspacesContainer section').hide();
 
-                <!-- Dataset selection -->
-                <div class="mb-3">
-                    <label for="datasetSelect" class="form-label">Choose Dataset</label>
-                    <select class="form-select" id="datasetSelect">
-                        <option value="" selected disabled>Select dataset...</option>
-                        {% for category, files in datasets.items %}
-                            <optgroup label="{{ category }}">
-                                {% for file in files %}
-                                    <option value="{{ category }}/{{ file }}">{{ file }}</option>
-                                {% endfor %}
-                            </optgroup>
-                        {% endfor %}
-                    </select>
-                </div>
-
-            `;
-
-            $('.modal-body').html(visualizationOptions);
-        });
-
-        // Handle Submit button click
-        $('#submitVisualizationOptions').click(function(){
-            var selectedDataset = $('#datasetSelect').val();
-            var visualizationType = $('input[name="visualizationType"]:checked').val();
-            
-            // Display alert with the collected information
-            alert('Username: ' + username + '\nSelected Visualization Type: ' + visualizationType + '\nSelected File: ' + selectedDataset);
-
-            // Close the modal
-            var modal = bootstrap.Modal.getInstance(document.getElementById('visualizationOptionsModal'));
-            modal.hide();
+            // Show the selected workspace
+            $('#' + selectedWorkspace).show();
         });
     });
 </script>
-
 {% endblock body %}

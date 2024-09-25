@@ -145,7 +145,7 @@ class BaseRangeCountHistogram:
             self.state.range_item.append(remaining_range)
 
         print("Ranges: ", self.state.range_item)
-        server.state.dirty("range_item")  
+        self.server.state.dirty("range_item")  
 
     # ---------------------------------------------------------------------------------------------
     # Method to update the threshold.

@@ -331,7 +331,7 @@ class BaseRangeCountHistogram:
     @abstractmethod   
     async def start_server_async(self):
         print(f"Starting Server_Manager at http://localhost:{self.port}/index.html")
-        return await self.server.start(exec_mode="main", port=self.port)
+        return await self.server.start(exec_mode="task", port=self.port)
 
     # ---------------------------------------------------------------------------------------------
     # Method to kill a server. Child/derived classes should implement this method

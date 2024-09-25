@@ -1,5 +1,11 @@
 # For multi-server management, also for system management 
 import os
+import sys
+
+cwd = os.getcwd()
+index = cwd.index('neurobazaar')
+neurobazaar_dir = cwd[:index + len('neurobazaar')]
+sys.path.insert(0, neurobazaar_dir)
 
 # Core libraries for rendering
 from trame.app import get_server
@@ -16,8 +22,10 @@ import dask_histogram as dh
 import boost_histogram as bh
 from dask.distributed import Client
 
-# For reading CSV files
+# For manipulating CSV files
+import csv
 import tempfile
+from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
 
 # Base class for the histogram application
 from abc import abstractmethod
@@ -27,7 +35,7 @@ from abc import abstractmethod
 ## ================================================================= ##
 
 @TrameApp()
-class BaseHistogramApp:    
+class DemoBaseHistogram:    
 
     # ---------------------------------------------------------------------------------------------
     # Constructor for the BaseHistogramApp class.
@@ -43,7 +51,8 @@ class BaseHistogramApp:
         self.server.state.bins = 5 
         self.server.state.file_input = None
         self.server.state.selected_column = None
-        self.server.state.column_options = [] 
+        self.server.state.column_options = []
+        self.server.state.dataset_names = [] 
         
         self.data_min = None
         self.data_max = None
@@ -114,6 +123,7 @@ class BaseHistogramApp:
         if self.data_changed:
             self.dask_data = da.from_array(self.np_data, chunks='auto')
             self.data_changed = False
+            print("Data changed. Computing histogram data...")
 
         self.compute_histogram_data_with_dask(self.dask_data, bins)
 
@@ -284,24 +294,47 @@ class BaseHistogramApp:
         self.data_min = None
         self.data_max = None
         self.data_changed = True
-        if self.server.state.file_input and self.server.state.selected_column and selected_column:
+        if self.server.state.selected_column and selected_column:
             try:
-                content = self.server.state.file_input['content']
-                df, temp_path = self.dask_read_csv(content)  
-                
-                self.np_data =  self.compute_with_threads(df[self.server.state.selected_column])
-
+                self.np_data =  self.compute_with_threads(self.computed_df[self.server.state.selected_column])
                 self.update_histogram(self.server.state.bins)
-                
-                if temp_path and os.path.exists(temp_path):
-                    os.remove(temp_path)
-                else:
-                    pass
                     
             except KeyError as e:
                 print(f"KeyError: {e} - Check the structure of the CSV file.")
             except Exception as e:
                 print(f"An error occurred (selected_column): {e}")
+
+    # ---------------------------------------------------------------------------------------------
+    # State change handler for dataset_names
+    # ---------------------------------------------------------------------------------------------
+
+    @change("selected_dataset")
+    def compute_dataset(self, selected_dataset, **trame_scripts):
+        self.data_min = None
+        self.data_min = None
+        self.data_changed = True
+        try:
+            if selected_dataset is None:
+                print("No dataset selected.")
+                return
+            
+            csv_file_path = os.path.join(neurobazaar_dir, 'datasets_server', f"{selected_dataset}.csv")
+            df = dd.read_csv(csv_file_path, assume_missing=True)
+            self.computed_df = df
+
+            self.server.state.column_options = self.computed_df.columns.tolist()
+            self.on_column_options_change(self.server.state.column_options)
+            self.server.state.selected_column = self.server.state.column_options[0] 
+
+            selected_column_data = self.computed_df[self.server.state.selected_column] 
+            selected_column_data = self.compute_with_threads(selected_column_data)
+
+            self.np_data = selected_column_data
+
+            self.update_histogram(self.server.state.bins)
+        except Exception as e:
+            print("An error occurred while computing the dataset:")
+            print(e)
 
     # ---------------------------------------------------------------------------------------------
     # UI layout
@@ -324,16 +357,16 @@ class BaseHistogramApp:
                     thumb_size=20, 
                     style="padding-top: 20px;", 
                 )
-                vuetify.VFileInput(
-                    v_model=("file_input", None),
-                    label="Upload CSV File",
-                    accept=".csv",
+                vuetify.VSelect(
+                    v_model=("selected_dataset", None),
+                    items=("dataset_names",),
+                    label="Select Datasets",
                     style="padding-top: 20px;", 
                 )
                 vuetify.VSelect(
                     v_model=("selected_column", None),
                     items=("column_options",),
-                    label="Select Column",
+                    label="Select Columns",
                     style="padding-top: 20px;", 
                 )
 
@@ -345,6 +378,68 @@ class BaseHistogramApp:
                     self.client_view = vtk.VtkRemoteView(
                         self.renderWindow, trame_server=self.server, ref="view"
                     )
+
+    # ---------------------------------------------------------------------------------------------
+    # Get data from the user uploading to local file store, retrieved using LocalFSDatastore
+    # ---------------------------------------------------------------------------------------------
+
+    @abstractmethod
+    def get_data_from_user(self):
+        datastore_dir = os.path.join(neurobazaar_dir, 'datastore')
+        datastore = LocalFSDatastore(storeDirPath=datastore_dir)
+
+        uuids = os.listdir(datastore_dir)
+        print("UUIDs:", uuids)
+
+        uuid_to_name = {
+            uuids[0]: "MaxSlices_newMode_Manuf_Int",
+            uuids[1]: "MaxSlices_wOoDScore",
+            uuids[2]: "Patient_Level-Table_Test",
+            uuids[3]: "AllSlices_Manuf",
+            uuids[4]: "UCI_AIDS"
+        }
+
+        names = []
+        csv_files = []
+
+        for uuid in uuids:
+            dataset_file = datastore.getDataset(uuid)
+            if dataset_file is not None:
+                data = dataset_file.read()
+                print("Type of data:", type(data))
+                name = uuid_to_name[uuid]
+                print(f"Name: {name}")
+
+                data_list = data.decode('utf-8').split(',')
+
+                csv_file_path = os.path.join(neurobazaar_dir, 'datasets_server', f"{name}.csv")
+                with open(csv_file_path, 'w', newline='') as csv_file:
+                    writer = csv.writer(csv_file)
+                    writer.writerow(data_list)
+                    print(f"Data written to CSV file: {csv_file_path}")
+
+                with open(csv_file_path, 'r') as file:
+                    lines = file.read().replace('"', '')
+
+                with open(csv_file_path, 'w') as file:
+                    file.write(lines)
+
+                names.append(name)
+                csv_files.append(csv_file_path)
+            else:
+                print(f"No dataset found with UUID {uuid}")
+
+        return names, csv_files
+
+    # ---------------------------------------------------------------------------------------------
+    # Get the names of the datasets from the user (hard coded for now)
+    # ---------------------------------------------------------------------------------------------
+
+    @abstractmethod
+    def update_dataset_names(self):
+        names, _ = self.get_data_from_user()
+        self.server.state.dataset_names = names
+        print(self.server.state.dataset_names)
 
     # ---------------------------------------------------------------------------------------------
     # Method to start a new server (main). Not to be used in a multi-process environment
@@ -386,3 +481,27 @@ class BaseHistogramApp:
                 f.write(f"Calling {function_name} in {file_name} at line {line_number}\n")
         
         return self.trace_calls
+
+# ----------------------------------------------------------------------------- 
+# Main (Guard) # Commented out for import. Uncomment for testing
+# ----------------------------------------------------------------------------- 
+
+'''
+if __name__ == "__main__":
+    app = DemoBaseHistogram("Histogram", 8000)
+    print("Getting data from the user...")
+    names, csv_file = app.get_data_from_user()
+    app.update_dataset_names()
+    app.start_new_server_immediately()
+
+    # for files in csv_file:
+    #   if os.stat(files).st_size != 0:  
+    #        try:
+    #            df = dd.read_csv(files)
+    #            first_column = df.columns[0]
+    #            print(f"First column of {files}: {first_column}")
+    #        except pd.errors.ParserError as e:
+    #            print(f"Error reading {files}: {e}")
+    #    else:
+    #        print(f"File {files} is empty.")
+'''

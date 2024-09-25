@@ -3,6 +3,11 @@
 import os
 import sys
 
+cwd = os.getcwd()
+index = cwd.index('neurobazaar')
+neurobazaar_dir = cwd[:index + len('neurobazaar')]
+sys.path.insert(0, neurobazaar_dir)
+
 # Imports required for the server manager
 # For multi-server management
 import asyncio
@@ -36,8 +41,10 @@ import boost_histogram as bh
 from dask.distributed import Client
 
 # Imports required for the all histogram applications
-# For reading CSV files
+# For manipulating CSV files
+import csv
 import tempfile
+from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
 
 # Imports required for the all histogram applications
 # Base class for the histogram application
@@ -45,7 +52,8 @@ from abc import abstractmethod
 
 # Imported for the histogram application
 # from base_histogram_class import BaseHistogramApp
-from base_count_histogram_class import BaseRangeCountHistogram
+# from base_count_histogram_class import BaseRangeCountHistogram
+from demo_base_histogram import DemoBaseHistogram
 
 ## ================================================================== ## 
 ## Visualization service. Server Manager sub service. The base class. ##         
@@ -212,8 +220,13 @@ if __name__ == "__main__":
             # histogram_app = BaseHistogramApp("my_histogram_app", port)
             # task = loop.create_task(histogram_app.start_new_server_async())
 
-            bin_count_histogram_app = BaseRangeCountHistogram("OoD Analyzer", port, "/home/demo/neurobazaar/MaxSlices_newMode_Manuf_Int.csv", "Area")
-            task = loop.create_task(bin_count_histogram_app.start_server_async())
+            # bin_count_histogram_app = BaseRangeCountHistogram("OoD Analyzer", port, "/home/demo/neurobazaar/MaxSlices_newMode_Manuf_Int.csv", "Area")
+            # task = loop.create_task(bin_count_histogram_app.start_server_async())
+
+            demo_histogram_app = DemoBaseHistogram("Demo Histogram", port)
+            names, csv_file = demo_histogram_app.get_data_from_user()
+            demo_histogram_app.update_dataset_names()
+            task = loop.create_task(demo_histogram_app.start_new_server_async())
 
             loop.run_until_complete(task)
     else:

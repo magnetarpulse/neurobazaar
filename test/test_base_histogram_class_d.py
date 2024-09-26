@@ -26,7 +26,11 @@ from dask.distributed import Client
 # For manipulating CSV files
 import csv
 import tempfile
+
+# For fetching data 
 from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
+import threading
+import time
 
 # Base class for the histogram application
 from abc import abstractmethod
@@ -59,6 +63,7 @@ class BaseHistogramApp:
         self.data_max = None
         self.data_changed = True
         self.hist_cache = {}
+        self.previous_uuid_count = 0
         
         self.histogram_vtk() 
 
@@ -67,6 +72,9 @@ class BaseHistogramApp:
         )
 
         self.setup_layout()
+        self.flag = True
+        self.thread = threading.Thread(target=self.fetch_data_again)
+        self.thread.start()
     
     # ---------------------------------------------------------------------------------------------
     # Method using VTK to define histogram from data and render it
@@ -418,15 +426,32 @@ class BaseHistogramApp:
         datastore = LocalFSDatastore(storeDirPath=datastore_dir)
 
         uuids = os.listdir(datastore_dir)
+        current_uuid_count = len(uuids)
+
+        if current_uuid_count == self.previous_uuid_count:
+            print("No new datasets uploaded.")
+            return [], []  
+        
+        self.previous_uuid_count = current_uuid_count 
+
+        creation_times = [os.path.getctime(os.path.join(datastore_dir, uuid)) for uuid in uuids]
+        
+        print("creation_times:", creation_times)
+
+        uuids = [x for _, x in sorted(zip(creation_times, uuids))]
+
         print("UUIDs:", uuids)
 
-        uuid_to_name = {
-            uuids[0]: "MaxSlices_newMode_Manuf_Int",
-            uuids[1]: "MaxSlices_wOoDScore",
-            uuids[2]: "Patient_Level-Table_Test",
-            uuids[3]: "AllSlices_Manuf",
-            uuids[4]: "UCI_AIDS"
-        }
+        with open(os.path.join(neurobazaar_dir, 'dataset_names_server/dataset_names.txt'), 'r') as f:
+            names = f.read().splitlines()
+
+        names = [name.replace('.csv', '') for name in names]
+
+        print("Names:", names)
+
+        uuid_to_name = dict(zip(uuids, names))
+
+        print("UUID to name:", uuid_to_name)
 
         names = []
         csv_files = []
@@ -436,8 +461,12 @@ class BaseHistogramApp:
             if dataset_file is not None:
                 data = dataset_file.read()
                 print("Type of data:", type(data))
-                name = uuid_to_name[uuid]
-                print(f"Name: {name}")
+
+                if uuid in uuid_to_name:
+                    name = uuid_to_name[uuid]
+                    print(f"Name: {name}")
+                else:
+                    raise ValueError(f"No name found for UUID {uuid}")
 
                 data_list = data.decode('utf-8').split(',')
 
@@ -453,22 +482,32 @@ class BaseHistogramApp:
                 with open(csv_file_path, 'w') as file:
                     file.write(lines)
 
-                names.append(name)
+                self.server.state.dataset_names.append(name)
                 csv_files.append(csv_file_path)
+
+                print(f"Names: {names}")
             else:
                 print(f"No dataset found with UUID {uuid}")
-
-        return names, csv_files
+    
+    # ---------------------------------------------------------------------------------------------
+    # Fetch the data again
+    # ---------------------------------------------------------------------------------------------
+    
+    @abstractmethod
+    def fetch_data_again(self):
+        while self.flag:
+            time.sleep(10)
+            print("Fetching data again...")
+            self.get_data_from_user()
 
     # ---------------------------------------------------------------------------------------------
-    # Get the names of the datasets from the user (hard coded for now)
+    # Stop fetching data
     # ---------------------------------------------------------------------------------------------
 
     @abstractmethod
-    def update_dataset_names(self):
-        names, _ = self.get_data_from_user()
-        self.server.state.dataset_names = names
-        print(self.server.state.dataset_names)
+    def stop_fetching_data(self):
+        self.flag = False
+        self.thread.join()
 
     # ---------------------------------------------------------------------------------------------
     # Method to start a new server (main). Not to be used in a multi-process environment
@@ -516,19 +555,6 @@ class BaseHistogramApp:
 # ----------------------------------------------------------------------------- 
 
 if __name__ == "__main__":
-    app = BaseHistogramApp("Histogram", 8000)
-    print("Getting data from the user...")
-    names, csv_file = app.get_data_from_user()
-    app.update_dataset_names()
+    app = BaseHistogramApp("Histogram", 8080)
+    app.get_data_from_user()
     app.start_new_server_immediately()
-
-    # for files in csv_file:
-    #   if os.stat(files).st_size != 0:  
-    #        try:
-    #            df = dd.read_csv(files)
-    #            first_column = df.columns[0]
-    #            print(f"First column of {files}: {first_column}")
-    #        except pd.errors.ParserError as e:
-    #            print(f"Error reading {files}: {e}")
-    #    else:
-    #        print(f"File {files} is empty.")

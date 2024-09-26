@@ -5,7 +5,7 @@ from django.shortcuts import render
 from home.models import LocalFSDatastores, MongoDBDatastores
 from neurobazaar.services.datastorage.abstract_datastore import AbstractDatastore
 from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
-# from neurobazaar.services.datastorage.mongodb_datastore import MongoDBDatastore
+from neurobazaar.services.datastorage.mongodb_datastore import MongoDBDatastore
 from django.db.models.deletion import ProtectedError
 
 import threading

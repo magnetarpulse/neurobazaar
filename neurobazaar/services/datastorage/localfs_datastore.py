@@ -8,12 +8,14 @@ class LocalFSDatastore(AbstractDatastore):
     def __init__(self, storeDirPath: str):
         super().__init__(DatastoreType.LocalFSDatastore)
         self._storeDirPath = storeDirPath
+        self._original_filenames = {} 
         
         if not os.path.exists(storeDirPath):
             os.makedirs(storeDirPath)
     
     def putDataset(self,uploadedFile: UploadedFile) -> str:
         datasetUUID = uuid.uuid4()
+        self._original_filenames[str(datasetUUID)] = uploadedFile.name 
         destinationPath = os.path.join(self._storeDirPath, str(datasetUUID))
         with open(destinationPath, 'wb') as fileout:
             for chunk in iter(lambda: uploadedFile.read(1048576), b''):
@@ -54,3 +56,6 @@ class LocalFSDatastore(AbstractDatastore):
             return collection_dir_path
         else:
             return None
+    
+    def getOriginalFilename(self, datasetUUID: str) -> str:
+        return self._original_filenames.get(datasetUUID)

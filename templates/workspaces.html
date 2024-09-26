@@ -41,11 +41,9 @@
 
 <script>
     $(document).ready(function(){
-        // Counter for unique workspace IDs and initial port number
         var workspaceCounter = 0;
-        var initialPort = 8088;
+        var initialPort = 5459;
 
-        // Handle Add Workspace button click
         $('#addWorkspaceButton').click(function(){
             if (workspaceCounter >= 5) {
                 alert('Maximum of 5 workspaces reached.');
@@ -54,9 +52,8 @@
 
             workspaceCounter++;
             var newWorkspaceId = 'workspace' + workspaceCounter;
-            var portNumber = initialPort + workspaceCounter - 1;  // Calculate the port number
+            var portNumber = initialPort + workspaceCounter - 1;  
 
-            // Create new workspace with iframe
             var newWorkspace = $(
                 '<section id="' + newWorkspaceId + '" class="page-section" style="display:none;">' +
                     '<div class="container">' +
@@ -72,23 +69,18 @@
                 '</section>'
             );
 
-            // Append new workspace to container
             $('#workspacesContainer').append(newWorkspace);
 
-            // Add new workspace to the dropdown
             $('#workspaceDropdown').append(
                 '<option value="' + newWorkspaceId + '">Workspace ' + workspaceCounter + '</option>'
             );
         });
 
-        // Handle workspace selection change
         $('#workspaceDropdown').change(function(){
             var selectedWorkspace = $(this).val();
 
-            // Hide all workspaces
             $('#workspacesContainer section').hide();
 
-            // Show the selected workspace
             $('#' + selectedWorkspace).show();
         });
     });

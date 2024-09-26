@@ -23,14 +23,14 @@ import tempfile
 from abc import abstractmethod
 
 ## ================================================================= ## 
-## Visualization service. Histogramming sub service. The base class. ##         
+## Base class. The most basic histogramming application. Standalone. ##         
 ## ================================================================= ##
 
 @TrameApp()
-class BaseHistogramApp:    
+class BasicHistogramApp:    
 
     # ---------------------------------------------------------------------------------------------
-    # Constructor for the BaseHistogramApp class.
+    # Constructor for the BasicHistogramApp class.
     # --------------------------------------------------------------------------------------------- 
 
     def __init__(self, name, port, np_data=None):

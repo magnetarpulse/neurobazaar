@@ -31,14 +31,14 @@ from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
 from abc import abstractmethod
 
 ## ================================================================= ## 
-## Visualization service. Histogramming sub service. The base class. ##         
+## Base class. Generalized histogramming supported. Needs database.  ##         
 ## ================================================================= ##
 
 @TrameApp()
-class DemoBaseHistogram:    
+class GenericHistogramApp:    
 
     # ---------------------------------------------------------------------------------------------
-    # Constructor for the BaseHistogramApp class.
+    # Constructor for the GenericHistogramApp class.
     # --------------------------------------------------------------------------------------------- 
 
     def __init__(self, name, port, np_data=None):
@@ -123,7 +123,6 @@ class DemoBaseHistogram:
         if self.data_changed:
             self.dask_data = da.from_array(self.np_data, chunks='auto')
             self.data_changed = False
-            print("Data changed. Computing histogram data...")
 
         self.compute_histogram_data_with_dask(self.dask_data, bins)
 
@@ -333,8 +332,7 @@ class DemoBaseHistogram:
 
             self.update_histogram(self.server.state.bins)
         except Exception as e:
-            print("An error occurred while computing the dataset:")
-            print(e)
+            print(f"An error occurred while computing the dataset:\n{e}")
 
     # ---------------------------------------------------------------------------------------------
     # UI layout
@@ -389,7 +387,6 @@ class DemoBaseHistogram:
         datastore = LocalFSDatastore(storeDirPath=datastore_dir)
 
         uuids = os.listdir(datastore_dir)
-        print("UUIDs:", uuids)
 
         uuid_to_name = {
             uuids[0]: "MaxSlices_newMode_Manuf_Int",
@@ -406,9 +403,7 @@ class DemoBaseHistogram:
             dataset_file = datastore.getDataset(uuid)
             if dataset_file is not None:
                 data = dataset_file.read()
-                print("Type of data:", type(data))
                 name = uuid_to_name[uuid]
-                print(f"Name: {name}")
 
                 data_list = data.decode('utf-8').split(',')
 
@@ -416,7 +411,6 @@ class DemoBaseHistogram:
                 with open(csv_file_path, 'w', newline='') as csv_file:
                     writer = csv.writer(csv_file)
                     writer.writerow(data_list)
-                    print(f"Data written to CSV file: {csv_file_path}")
 
                 with open(csv_file_path, 'r') as file:
                     lines = file.read().replace('"', '')
@@ -447,7 +441,7 @@ class DemoBaseHistogram:
 
     @abstractmethod
     def start_new_server_immediately(self):
-        print(f"Starting {self.server.name} at http://localhost:{self.port}/index.html")
+        print(f"Starting {self.server.name} immediately at http://localhost:{self.port}/index.html")
         self.server.start(exec_mode="main", port=self.port)
 
     # ---------------------------------------------------------------------------------------------
@@ -456,7 +450,7 @@ class DemoBaseHistogram:
 
     @abstractmethod
     async def start_new_server_async(self):
-        print(f"Starting {self.server.name} at http://localhost:{self.port}/index.html")
+        print(f"Starting {self.server.name} (async) at http://localhost:{self.port}/index.html")
         return await self.server.start(exec_mode="task", port=self.port)
 
     # ---------------------------------------------------------------------------------------------
@@ -481,27 +475,3 @@ class DemoBaseHistogram:
                 f.write(f"Calling {function_name} in {file_name} at line {line_number}\n")
         
         return self.trace_calls
-
-# ----------------------------------------------------------------------------- 
-# Main (Guard) # Commented out for import. Uncomment for testing
-# ----------------------------------------------------------------------------- 
-
-'''
-if __name__ == "__main__":
-    app = DemoBaseHistogram("Histogram", 8000)
-    print("Getting data from the user...")
-    names, csv_file = app.get_data_from_user()
-    app.update_dataset_names()
-    app.start_new_server_immediately()
-
-    # for files in csv_file:
-    #   if os.stat(files).st_size != 0:  
-    #        try:
-    #            df = dd.read_csv(files)
-    #            first_column = df.columns[0]
-    #            print(f"First column of {files}: {first_column}")
-    #        except pd.errors.ParserError as e:
-    #            print(f"Error reading {files}: {e}")
-    #    else:
-    #        print(f"File {files} is empty.")
-'''

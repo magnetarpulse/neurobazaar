@@ -13,14 +13,14 @@ from trame.decorators import TrameApp, change
 from abc import abstractmethod
 
 ## ================================================================== ## 
-## Visualization service. Finds the counts in ranges. The base class. ##         
+## Base class. Analyzes bin counts in a given range. Uses matplotlib. ##         
 ## ================================================================== ##
 
 @TrameApp()
-class BaseRangeCountHistogram:
+class BaseAnalyzerCountHistogram:
 
     # ---------------------------------------------------------------------------------------------
-    # Constructor for the BaseRangeCountHistogram class.
+    # Constructor for the BaseAnalyzerCountHistogram class.
     # --------------------------------------------------------------------------------------------- 
 
     def __init__(self, name, port, csv_path = "", data_column = None):
@@ -144,7 +144,6 @@ class BaseRangeCountHistogram:
             }
             self.state.range_item.append(remaining_range)
 
-        print("Ranges: ", self.state.range_item)
         self.server.state.dirty("range_item")  
 
     # ---------------------------------------------------------------------------------------------
@@ -162,13 +161,11 @@ class BaseRangeCountHistogram:
                     prev_item_threshold = self.state.subset_items[i - 1]["threshold"]
                     
                     if new_threshold <= float(prev_item_threshold):
-                        print(f"Threshold should be greater than previous threshold value: {prev_item_threshold}")
                         return  
 
                 if i < len(self.state.subset_items) - 1:
                     next_item_threshold = self.state.subset_items[i + 1]["threshold"]
                     if new_threshold >= float(next_item_threshold):
-                        print(f"Threshold should be less than the next threshold value: {next_item_threshold}")
                         return  
 
                 item["threshold"] = new_threshold
@@ -198,7 +195,6 @@ class BaseRangeCountHistogram:
         self.server.state.dirty("subset_items") 
         # self.ctrl.dirty("subset_items")
 
-        print("Subset Items added:", self.state.subset_items)
         self.update_range_count()
 
     # ---------------------------------------------------------------------------------------------
@@ -229,8 +225,6 @@ class BaseRangeCountHistogram:
 
             self.server.state.dirty("range_item")
             # self.ctrl.dirty("subset_items")
-
-            print(f"Subset at index {index} removed")
     
     # ---------------------------------------------------------------------------------------------
     # State change handler to update the chart.
@@ -321,7 +315,7 @@ class BaseRangeCountHistogram:
 
     @abstractmethod   
     def start_server_immediately(self):
-        print(f"Starting Server_Manager at http://localhost:{self.port}/index.html")
+        print(f"Starting OoD Analyzer server immediately at http://localhost:{self.port}/index.html")
         self.server.start(exec_mode="main", port=self.port)
 
     # ---------------------------------------------------------------------------------------------
@@ -330,7 +324,7 @@ class BaseRangeCountHistogram:
 
     @abstractmethod   
     async def start_server_async(self):
-        print(f"Starting Server_Manager at http://localhost:{self.port}/index.html")
+        print(f"Starting OoD Analyzer server (async) at http://localhost:{self.port}/index.html")
         return await self.server.start(exec_mode="task", port=self.port)
 
     # ---------------------------------------------------------------------------------------------
@@ -356,16 +350,3 @@ class BaseRangeCountHistogram:
     @abstractmethod
     def fetch_data(self):
         pass
-
-# ----------------------------------------------------------------------------- 
-# Main (Guard) # Commented out for import. Uncomment for testing
-# ----------------------------------------------------------------------------- 
-'''
-if __name__ == "__main__":
-    server = BaseRangeCountHistogram("Test", 1235, "/home/demo/neurobazaar/MaxSlices_newMode_Manuf_Int.csv", "Area") # Testing passed
-    # server = BaseRangeCountHistogram("Test", 1235, "/home/demo/neurobazaar/MaxSlices_newMode_Manuf_Int.csv") # Testing passed 
-    # server = BaseRangeCountHistogram("Test", 1235) # Testing passed 
-    fig = server.update_plot()
-    server.html_figure.update(fig)
-    server.start_server_immediately()
-'''

@@ -91,13 +91,13 @@
                 <p class="text-muted">Upload image collections as directories linked to datasets, enhancing insights with visual context that supports diverse analytical needs, from anomaly detection to feature verification.</p>
             </div>
             <div class="col-md-3 text-center">
-                <img src="/static/assets/img/view_dataset.png" class="img-fluid" alt="View Collections">
+                <img src="/static/assets/img/view_dataset.png" class="img-fluid" alt="View Collections" style="margin-bottom: 30px; margin-top: 10px;">
                 <img src="/static/assets/img/view_collection.png" class="img-fluid" alt="View Collections">
                 <h4 class="my-3">View Datasets & Collections</h4>
                 <p class="text-muted">Browse and manage all your datasets and collections through our intuitive interface, ensuring easy access to all your data.</p>
             </div>
             <div class="col-md-3 text-center">
-                <img src="/static/assets/img/visualization.png" class="img-fluid" alt="Visualize Data">
+                <img src="/static/assets/img/visualization.png" class="img-fluid" alt="Visualize Data" style="margin-bottom: 50px; margin-top: 70px;">
                 <h4 class="my-3">Visualize & Analyze</h4>
                 <p class="text-muted">Interact with your data through customized visualizations that offer meaningful insights and easy data interpretation.</p>
             </div>
@@ -349,7 +349,33 @@
                 </form>
             </div>
         </section>
+  
+        <div class="powered-by-chameleon">
+            <a href="https://www.chameleoncloud.org" target="_blank" style="text-decoration: none;">
+                <img src="/static/assets/img/chameleon.png" alt="Powered by Chameleon Cloud" style="max-width: 75px;"> <!-- Reduced size -->
+                <span style="display: block; font-size: 11px; color: #333; text-align: center;">Powered by Chameleon Cloud</span>
+            </a>
+        </div>
         
+        <style>
+            .powered-by-chameleon {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background-color: white;
+                border: 1px solid #ddd;
+                padding: 8px; /* Reduced padding */
+                border-radius: 8px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                z-index: 1000;
+            }
+        
+            .powered-by-chameleon:hover {
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                transform: translateY(-3px); /* Slight lift on hover */
+            }
+        </style>        
+               
 
 <!-- Footer-->
 <footer class="footer py-4">

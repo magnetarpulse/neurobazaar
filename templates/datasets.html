@@ -302,12 +302,10 @@
                                     <a href="{% url 'view_directory' directory.Collections_UUID %}" class="btn btn-outline-info me-2" title="View">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <form onsubmit="event.preventDefault(); startDownload('{{ directory.Collections_UUID }}');" class="d-inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-outline-info" title="Download">
-                                            <i class="fas fa-download"></i>
-                                        </button>
-                                    </form>
+                                    <!-- Download Button -->
+                                    <a href="{% url 'download_collection' directory.Collections_UUID %}" class="btn btn-outline-info" title="Download">
+                                        <i class="fas fa-download"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>

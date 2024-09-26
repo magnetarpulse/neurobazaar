@@ -14,6 +14,7 @@ urlpatterns = [
     path('team-details/', views.team_details, name='team_details'),
     path('datastore/', views.datastore, name='datastore'),
     path('datastore/', views.datastore, name='datastore'),
+    path('download_collection/<uuid:collection_uuid>/', views.download_collection, name='download_collection'),
     path('visualization_server_manager/', views.visualization_server_manager, name='visualization_server_manager'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

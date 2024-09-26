@@ -17,6 +17,8 @@ import uuid
 import json
 
 from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
+import shutil
+from django.http import HttpResponse, Http404
 
 
 # Create your views here.
@@ -33,6 +35,43 @@ def team_details(request):
 def logoutUser(request):
     logout(request)
     return redirect('/login_register')
+
+def download_collection(request, collection_uuid):
+    try:
+        # Retrieve collection metadata from the database
+        collection = Collections.objects.get(Collections_UUID=collection_uuid)
+        datastore_instance = collection.Datastore_UUID
+
+        # Retrieve the appropriate datastore
+        manager = getDataStoreManager()
+        datastore = manager.getDatastore(str(datastore_instance.UUID))
+
+        if not datastore:
+            raise Http404("Datastore not found.")
+
+        # Get the path of the collection
+        collection_path = datastore.getCollection(str(collection_uuid))
+        if not collection_path:
+            raise Http404("Collection not found.")
+
+        # Temporary path for the zip file
+        zip_path = os.path.join('/tmp', f"{collection_uuid}.zip")
+
+        # Create a zip file
+        shutil.make_archive(zip_path.replace('.zip', ''), 'zip', collection_path)
+
+        # Serve the zip file
+        with open(zip_path, 'rb') as f:
+            response = HttpResponse(f, content_type='application/zip')
+            response['Content-Disposition'] = f'attachment; filename="{collection_uuid}.zip"'
+            return response
+
+    except Collections.DoesNotExist:
+        raise Http404("Collection metadata not found.")
+    finally:
+        # Clean up the created zip file
+        if os.path.exists(zip_path):
+            os.remove(zip_path)
 
 def datastore(request):
     username = request.user.username

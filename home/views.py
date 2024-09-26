@@ -1,5 +1,5 @@
-import time
-from django.http import FileResponse
+# Django imports
+from django.http import FileResponse, HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -7,18 +7,27 @@ from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.db.models.deletion import ProtectedError
-
 from home.models import Collections, Files, Datastores, LocalFSDatastores, MongoDBDatastores
 
+# Datastore manager
 from neurobazaar.services.datastorage.datastore_manager import getDataStoreManager
+from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
 
+# System management
+import shutil
+import sys
 import os
+
+# Get the root directory of the project
+cwd = os.getcwd()
+index = cwd.index('neurobazaar')
+neurobazaar_dir = cwd[:index + len('neurobazaar')]
+sys.path.insert(0, neurobazaar_dir)
+
+# Other imports
+import time
 import uuid
 import json
-
-from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
-import shutil
-from django.http import HttpResponse, Http404
 
 
 # Create your views here.
@@ -226,6 +235,9 @@ def datasets(request):
                 metadata.save()
                 end_time = time.time()
                 upload_time = end_time - start_time
+
+                with open(os.path.join(neurobazaar_dir, 'dataset_names_server/dataset_names.txt'), 'a') as f:
+                    f.write(dname.name + os.linesep)
                 
                 messages.info(request, f"File uploaded in {upload_time:.4f} seconds.")
                 return redirect('datasets')  # Redirect to avoid resubmission of form

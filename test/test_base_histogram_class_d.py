@@ -29,7 +29,6 @@ import tempfile
 
 # For fetching data 
 from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
-import threading
 import time
 
 # Base class for the histogram application
@@ -57,7 +56,8 @@ class BaseHistogramApp:
         self.server.state.file_input = None
         self.server.state.selected_column = None
         self.server.state.column_options = []
-        self.server.state.dataset_names = [] 
+        self.server.state.dataset_names = []
+        self.server.state.selected_dataset = []
         
         self.data_min = None
         self.data_max = None
@@ -72,9 +72,6 @@ class BaseHistogramApp:
         )
 
         self.setup_layout()
-        self.flag = True
-        self.thread = threading.Thread(target=self.fetch_data_again)
-        self.thread.start()
     
     # ---------------------------------------------------------------------------------------------
     # Method using VTK to define histogram from data and render it
@@ -388,6 +385,13 @@ class BaseHistogramApp:
                     thumb_size=20, 
                     style="padding-top: 20px;", 
                 )
+                vuetify.VBtn(
+                    "Fetch data now!",
+                    click=self.get_data_from_user,
+                    classes="ma-2",
+                    color="primary",
+                    dark=True,
+                )
                 # vuetify.VFileInput(
                 #     v_model=("file_input", None),
                 #     label="Upload CSV File",
@@ -453,9 +457,6 @@ class BaseHistogramApp:
 
         print("UUID to name:", uuid_to_name)
 
-        names = []
-        csv_files = []
-
         for uuid in uuids:
             dataset_file = datastore.getDataset(uuid)
             if dataset_file is not None:
@@ -483,31 +484,14 @@ class BaseHistogramApp:
                     file.write(lines)
 
                 self.server.state.dataset_names.append(name)
-                csv_files.append(csv_file_path)
 
-                print(f"Names: {names}")
+                self.server.state.dirty("dataset_names")
+
+                # self.setup_layout()
+
+                print(f"Dataset set names: {self.server.state.dataset_names}")
             else:
-                print(f"No dataset found with UUID {uuid}")
-    
-    # ---------------------------------------------------------------------------------------------
-    # Fetch the data again
-    # ---------------------------------------------------------------------------------------------
-    
-    @abstractmethod
-    def fetch_data_again(self):
-        while self.flag:
-            time.sleep(10)
-            print("Fetching data again...")
-            self.get_data_from_user()
-
-    # ---------------------------------------------------------------------------------------------
-    # Stop fetching data
-    # ---------------------------------------------------------------------------------------------
-
-    @abstractmethod
-    def stop_fetching_data(self):
-        self.flag = False
-        self.thread.join()
+                print(f"No dataset found with UUID {uuid}") 
 
     # ---------------------------------------------------------------------------------------------
     # Method to start a new server (main). Not to be used in a multi-process environment
@@ -556,5 +540,5 @@ class BaseHistogramApp:
 
 if __name__ == "__main__":
     app = BaseHistogramApp("Histogram", 8080)
-    app.get_data_from_user()
+    # app.get_data_from_user()
     app.start_new_server_immediately()

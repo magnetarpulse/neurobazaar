@@ -226,7 +226,7 @@ table_subset_range = {
 # Trame - Vue layout 
 # ----------------------------------------------------------------------------- 
 with SinglePageLayout(server) as layout:
-    layout.title.set_text("Interactive Histogram using Trame-Matplotlib")
+    layout.title.set_text("Ood Analyzer Interface using Trame-Matplotlib")
 
     with layout.toolbar:
         vuetify.VSpacer()

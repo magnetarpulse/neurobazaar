@@ -1,0 +1,300 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from trame.app import get_server
+from trame.ui.vuetify import SinglePageLayout
+from trame.widgets import vuetify, matplotlib, html
+
+# ----------------------------------------------------------------------------- 
+# Trame setup 
+# ----------------------------------------------------------------------------- 
+
+# Initialize the Trame server
+server = get_server(client_type="vue2")
+state, ctrl = server.state, server.controller
+
+# Load data
+#data = np.random.randn(1000)
+df = pd.read_csv("MaxSlices_wOoDScore.csv")
+data_column = "Log_Loss_ALL"
+data = df[data_column].values
+state.bins = 10
+state.subset_items = []
+state.range_item=[]
+
+
+
+# Function to calculate figure size
+def figure_size():
+    return {"figsize": (10, 6), "dpi": 80}
+
+
+# Function to update the plot
+def update_plot(extra_lines=None):
+    plt.close('all')
+    fig, ax = plt.subplots(**figure_size())
+
+    ax.hist(data, bins=state.bins, edgecolor='black')
+
+    # Create vertical lines for sections
+    y_limits = ax.get_ylim()  # Get the current y-axis limits to plot the vertical lines
+    colors= ['blue','green','red','orange','black']
+    if extra_lines: #if add_subset button is clicked
+        #for line in extra_lines:
+        for i,line in enumerate(extra_lines):
+            line_color = colors[i % len(colors)]
+            ax.plot([line, line], y_limits, color=line_color, linestyle='--')
+
+    ax.set_xlabel('OoD Scores')
+    ax.set_ylabel('Frequency')
+    return fig
+
+
+# to change the state of the plot
+@state.change("subset_items")
+def update_chart(**kwargs):
+    extra_lines = [float(item["threshold"]) for item in state.subset_items]
+    # Update the plot when the subset ranges change
+    fig = update_plot(extra_lines)
+    html_figure.update(fig)
+    
+
+def update_range_count():
+    state.range_item.clear()  # Clear previous range items
+    for i, item in enumerate(state.subset_items):
+        if i == 0:
+            start = float(0)  # Use negative infinity to capture all values below the first threshold
+        else:
+            start = state.subset_items[i - 1]["threshold"]
+        end = item["threshold"]
+
+        count_values = data[(data > start) & (data <= end)] if start < end else np.array([])
+
+        ranges = {
+            "index": i + 1,
+            "name": f"Subset{i + 1}",
+            "range": f"({float(start)} , {float(end)}]",
+            "count": f"{len(count_values)}"
+        }
+
+        state.range_item.append(ranges)
+
+    # Add a range for remaining items
+    if state.subset_items:
+        last_threshold = state.subset_items[-1]["threshold"]
+        remaining_values = data[data > last_threshold]
+        remaining_range = {
+            "index": len(state.subset_items) + 1,
+            "name": f"Subset{len(state.subset_items) + 1} (Remaining)",
+            "range": f"({float(last_threshold)} ,{max(data)} ]",
+            "count": f"{len(remaining_values)}"
+        }
+        state.range_item.append(remaining_range)
+
+    print("Ranges: ", state.range_item)
+    server.state.dirty("range_item")  # Refresh the state of the server to update the range table
+
+
+
+
+# to update the thresholds manually for that index
+def update_threshold(index, new_threshold): 
+    
+    new_threshold = float(new_threshold)  # Ensure the threshold is a float
+
+    for i, item in enumerate(state.subset_items):
+        if item["index"] == index:
+           
+            if i > 0: #if there is a previous item 
+                prev_item_threshold = state.subset_items[i - 1]["threshold"]
+                
+                if new_threshold <= float(prev_item_threshold):
+                    print(f"Threshold should be greater than previous threshold value: {prev_item_threshold}")
+                    return  
+
+            # Check if the new threshold is less than the next item (if there is a next item)
+            if i < len(state.subset_items) - 1:
+                next_item_threshold = state.subset_items[i + 1]["threshold"]
+                if new_threshold >= float(next_item_threshold):
+                    print(f"Threshold should be less than the next threshold value: {next_item_threshold}")
+                    return  
+
+            # Update the current threshold
+            item["threshold"] = new_threshold
+            break
+
+    update_range_count()  # Update the range and count
+    update_chart()  # Replot the chart with updated subset items
+
+
+# Bind this function to the controller
+ctrl.update_threshold = update_threshold
+    
+
+
+
+# Function to add a section with an extra line
+def add_subset():
+    original_val=[1,2,3,4]
+
+    if state.subset_items:
+        last_threshold = state.subset_items[-1]["threshold"]
+        new_line = last_threshold+1
+    else:
+        new_line = original_val[0]
+    
+    new_item = {"index": len(state.subset_items) + 1, "name": f"Subset{len(state.subset_items) + 1}", "threshold": float(new_line), "actions": "Remove"}
+    
+
+    state.subset_items.append(new_item)
+    server.state.dirty("subset_items") #refresh the state of server to update subset items
+    print("Subset Items added:",state.subset_items)
+    update_range_count()
+    
+    
+
+# removing and refresh the subset items and ranges
+def remove_subset(index):
+    if(index=="0"):
+        state.subset_items.pop(index)
+        state.range_item.pop(index)
+    
+    if 0 < index <= len(state.subset_items):  
+        state.subset_items.pop(index-1)  # starting index == 0
+        state.range_item.pop(index-1)
+
+        # Reindex remaining items
+        for i, item in enumerate(state.subset_items): 
+            item["index"] = i + 1  #refresh index
+            item["name"]=f"Subset{i+1}" #refresh subset name
+            
+        server.state.dirty("subset_items")  # Refresh changes
+        
+        for i, item in enumerate(state.range_item): 
+            item["index"] = i + 1  #refresh index
+            item["name"]=f"Subset{i+1}" #refresh subset name
+
+        update_range_count()
+        server.state.dirty("range_item")
+        print(f"Subset at index {index} removed")
+
+        
+# Binding this function to the controller
+ctrl.remove_subset = remove_subset
+
+
+# Define headers for the dynamic data table
+state.subset_config = [
+    {"text": "Index", "value": "index"},
+    {"text": "Name", "value": "name"},
+    {"text": "Threshold", "value": "threshold"},
+    {"text": "Actions", "value": "actions"},
+]
+
+
+table = {
+    "headers": ("subset_config", state.subset_config),
+    "items": ("subset_items", state.subset_items),
+    "search": ("query", ""),
+    "classes": "elevation-1 ma-4",
+    "multi_sort": True,
+    "dense": True,
+    "items_per_page": 5,
+}
+
+
+state.subset_range = [
+    {"text": "Index", "value": "index"},
+    {"text": "Name", "value": "name"},
+    {"text": "Range", "value": "range"},
+    {"text":"Count","value":"count"},
+    
+]
+
+table_subset_range = {
+    "headers": ("subset_range", state.subset_range),
+    "items": ("range_item", state.range_item),
+    "classes": "elevation-1 ma-4",
+    "multi_sort": True,
+    "dense": True,
+    "items_per_page": 5,
+}
+
+
+
+# ----------------------------------------------------------------------------- 
+# Trame - Vue layout 
+# ----------------------------------------------------------------------------- 
+with SinglePageLayout(server) as layout:
+    layout.title.set_text("Interactive Histogram using Trame-Matplotlib")
+
+    with layout.toolbar:
+        vuetify.VSpacer()
+        #vuetify.VTextField(
+        #    v_model=("query", ""),
+        #    placeholder="Search",
+        #    dense=True,
+        #    hide_details=True,
+        #)
+
+    with layout.content:
+        with vuetify.VContainer(fluid=True, classes="d-flex flex-row"):
+            # Column for the figure
+            with vuetify.VCol(cols="8"):
+                with vuetify.VRow():
+                    # Row 1: Matplotlib Figure
+                    html_figure = matplotlib.Figure(style="position: relative")
+                    ctrl.update_plot = html_figure.update
+
+
+                #with vuetify.VRow():
+                    # Row 2: Subset Ranges
+                    vuetify.VDataTable(**table_subset_range)
+                    
+                        
+            # Column for the dynamic grid table on the right
+            with vuetify.VCol(cols="4"):
+                with vuetify.VRow(classes="justify-center"):
+                    
+                        vuetify.VIcon("mdi-plus", 
+                                        color="blue", 
+                                        click=add_subset, 
+                                        style="border: 2px solid blue; border-radius: 50%; padding: 8px;",
+                                        classes="d-flex align-center justify-center",)
+
+                        
+                
+                with vuetify.VRow(classes="justify-center"):
+                    with vuetify.VDataTable(**table):
+                        with vuetify.Template(
+                        actions="{ item }",
+                        __properties=[("actions", "v-slot:item.actions")],
+                        ):
+                            vuetify.VIcon("mdi-delete",color="red", click=(ctrl.remove_subset, "[item.index]"),)  
+                            
+                    
+                        with vuetify.Template(
+                        threshold="{ item }",
+                        __properties=[("threshold", "v-slot:item.threshold")],
+                        ):
+                            vuetify.VTextField(
+                            v_model=("item.threshold",), 
+                            type="number",
+                            dense=True,
+                            hide_details=True,
+                            change=(ctrl.update_threshold, "[item.index, item.threshold]"),
+                            classes="d-flex align-center",
+                            step=0.1,
+                            
+                        )
+
+                    
+
+# ----------------------------------------------------------------------------- 
+# Main 
+# ----------------------------------------------------------------------------- 
+if __name__ == "__main__":
+    # Create initial static histogram
+    fig = update_plot()  # No lines initially
+    html_figure.update(fig)
+    server.start(port=1235) 

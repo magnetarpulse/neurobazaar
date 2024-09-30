@@ -405,52 +405,62 @@ class ServerManager:
     
     def start(self, port):
         print(f"Starting Server_Manager at http://localhost:{port}/index.html")
-        self.servers_manager.start(port=port)
+        self.servers_manager.start(port=port, open_browser=False, timeout=0)
+
+    # ---------------------------------------------------------------------------------------------
+    # Method to start launch the server manager
+    # ---------------------------------------------------------------------------------------------
+
+    def launch_server_manager(self):
+        if "--launch_basic_server" in sys.argv:
+            ports = [int(arg) for arg in sys.argv[sys.argv.index("--launch_basic_server") + 1:]]
+
+            loop = asyncio.get_event_loop()
+
+            for port in ports:
+                print("Starting Standalone Histogram server on port:", port)
+
+                basic_histogram_app = BasicHistogramApp("Standalone Histogram", port)
+                task = loop.create_task(basic_histogram_app.start_new_server_async())
+
+                loop.run_until_complete(task)
+
+        elif "--launch_general_server" in sys.argv:
+            ports = [int(arg) for arg in sys.argv[sys.argv.index("--launch_general_server") + 1:]]
+
+            loop = asyncio.get_event_loop()
+
+            for port in ports:
+                print("Starting Neurobazaar Histogram server on port:", port)
+
+                general_histogram_app = GenericHistogramApp("Neurobazaar Histogram", port)
+                task = loop.create_task(general_histogram_app.start_new_server_async())
+
+                loop.run_until_complete(task)
+                
+        elif "--launch_analyzer_server" in sys.argv:
+            ports = [int(arg) for arg in sys.argv[sys.argv.index("--launch_analyzer_server") + 1:]]
+
+            loop = asyncio.get_event_loop()
+
+            for port in ports:
+                print("Starting OoD Analyzer server on port:", port)
+
+                analyzer_histogram_app = BaseAnalyzerCountHistogram("OoD Analyzer", port, "/home/demo/neurobazaar/RF_2K_OODwcel.csv", "Log_Loss_ALL")
+                task = loop.create_task(analyzer_histogram_app.start_server_async())
+
+                loop.run_until_complete(task)
+        else:
+            self.start(port=8080)
 
 if __name__ == "__main__":
-    import sys
-
     server_manager = ServerManager()
-    
-    if "--launch_basic_server" in sys.argv:
-        ports = [int(arg) for arg in sys.argv[sys.argv.index("--launch_basic_server") + 1:]]
 
-        loop = asyncio.get_event_loop()
+    # Note: This will cause an error if you try to start a new application server, since the port is already in use. 
+    # Use the launcher instead.
+    # Start the server manager
+    server_manager.start(port=8080) 
 
-        for port in ports:
-            print("Starting Standalone Histogram server on port:", port)
-
-            basic_histogram_app = BasicHistogramApp("Standalone Histogram", port)
-            task = loop.create_task(basic_histogram_app.start_new_server_async())
-
-            loop.run_until_complete(task)
-
-    elif "--launch_general_server" in sys.argv:
-        ports = [int(arg) for arg in sys.argv[sys.argv.index("--launch_general_server") + 1:]]
-
-        loop = asyncio.get_event_loop()
-
-        for port in ports:
-            print("Starting Neurobazaar Histogram server on port:", port)
-
-            general_histogram_app = GenericHistogramApp("Neurobazaar Histogram", port)
-            names, csv_file = general_histogram_app.get_data_from_user()
-            general_histogram_app.update_dataset_names()
-            task = loop.create_task(general_histogram_app.start_new_server_async())
-
-            loop.run_until_complete(task)
-            
-    elif "--launch_analyzer_server" in sys.argv:
-        ports = [int(arg) for arg in sys.argv[sys.argv.index("--launch_analyzer_server") + 1:]]
-
-        loop = asyncio.get_event_loop()
-
-        for port in ports:
-            print("Starting OoD Analyzer server on port:", port)
-
-            analyzer_histogram_app = BaseAnalyzerCountHistogram("OoD Analyzer", port, "/home/demo/neurobazaar/MaxSlices_newMode_Manuf_Int_Real.csv", "Area")
-            task = loop.create_task(analyzer_histogram_app.start_server_async())
-
-            loop.run_until_complete(task)
-    else:
-        server_manager.start(port=8080)
+    # The launcher is used to start new application servers
+    # Remember to uncomment the server_manager.start(port=8080) line above 
+    # server_manager.launch_server_manager()

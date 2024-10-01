@@ -3,10 +3,10 @@
 
 Authors and Contributors:
 - Alexandru Iulian Orhean 2024 (aorhean@depaul.edu)  
-- Rushikesh Suryawanshi 2024 (rsuryawa@depaul.edu)
+- Rushikesh Rajendra Suryawanshi 2024 (rsuryawa@depaul.edu)
 - Huy Quoc Nguyen 2024 (hnguye83@depaul.edu)
 - Areena Mahek 2024 (amahek@depaul.edu)
-- Prem Gadwal 2024 (pgadwal@depaul.edu)
+- Prem Kumar Gadwal 2024 (pgadwal@depaul.edu)
 - Vivek Shravan Gupta 2024 (vgupta16@depaul.edu)  
 
 Powered by:

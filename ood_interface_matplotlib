@@ -32,7 +32,7 @@ class BaseRangeCountHistogram:
             raise ValueError("data_column argument is required when csv_path is provided")
 
         self.state.data_column = data_column if data_column else "Log_Loss_ALL"
-        self.state.item_column= item_column if item_column else "Texture"
+        self.state.item_column= item_column if item_column else "FilePath"
 
         self.state.bins = 10
         self.state.subset_items = []
@@ -76,7 +76,8 @@ class BaseRangeCountHistogram:
         }
 
         self.state.data_headers = [
-            {"text": "Name", "value": "name"},
+            #{"text": "Index", "value": "index"},
+            #{"text": "Name", "value": "name"},
             {"text": "Range", "value": "range"},
             {"text": "Data_Item", "value": "data_item"},
         ]
@@ -99,7 +100,9 @@ class BaseRangeCountHistogram:
                 raise ValueError("data_column argument is required when csv_path is provided")
             self.df = pd.read_csv(csv_path)
             self.data = self.df[data_column].values
-            self.item_list=self.df[item_column].values
+            self.item_list=self.df[item_column].tolist()
+            #print(type(self.item_list))
+            
 
         self.register_triggers()
         self.render_ui_layout()
@@ -210,26 +213,28 @@ class BaseRangeCountHistogram:
     # ---------------------------------------------------------------------------------------------
 
     def display_data(self):
-    #for item in state.range_item:
-    #    if "range" in item:
-    #        print(f"{item['range']}")
 
         self.state.data_items.clear()
         for i, item in enumerate(self.state.subset_items):
             
             if i == 0:
-                start = float(0)  # Use negative infinity to capture all values below the first threshold
+                start = float(0)  
             else:
                 start = self.state.subset_items[i - 1]["threshold"]
             end = item["threshold"]
 
-            data_values = self.data[(self.data > start) & (self.data <= end)] if start < end else np.array([])
+            if start < end:
+                mask = (self.data > start) & (self.data <= end)
+                data_values = [self.item_list[j] for j in range(len(self.data)) if mask[j]]
+            else:
+                data_values = []
+            
 
             items = {
                 "index": i + 1,
                 "name": f"Subset{i + 1}",
                 "range": f"({float(start)} , {float(end)}]",
-                "data_item": f"{data_values.tolist()}" #into a list
+                "data_item": f"{data_values}" 
             }
 
             self.state.data_items.append(items)
@@ -239,18 +244,20 @@ class BaseRangeCountHistogram:
             last_threshold = self.state.subset_items[-1]["threshold"]
             max_value = np.max(self.data)
                 
-            remaining_values = self.data[self.data > last_threshold] if last_threshold<max_value else np.array([])
+            remaining_mask = (self.data > last_threshold) & (self.data <= max_value)
+            remaining_values = [self.item_list[j] for j in range(len(self.data)) if remaining_mask[j]]
             
             remaining_item = {
-                #"index": len(state.subset_items) + 1,
+                "index": len(self.state.subset_items) + 1,
                 "name": f"Subset{len(self.state.subset_items) + 1} (Remaining)",
                 "range": f"({float(last_threshold)} , {max_value}]",
-                "data_item": f"{remaining_values.tolist()}"
+                "data_item": f"{remaining_values}"
             }
-        self.state.data_items.append(remaining_item)
 
-        server.state.dirty("data_items")  # Refresh the state of the server to update the range table
-        print(f"Data Items:{self.state.data_items}")
+            self.state.data_items.append(remaining_item)
+
+        server.state.dirty("data_items")  # Refresh the state of the server to update the data table
+        
 
 
     # ---------------------------------------------------------------------------------------------
@@ -286,6 +293,8 @@ class BaseRangeCountHistogram:
         if(index=="0"):
             self.state.subset_items.pop(index)
             self.state.range_item.pop(index)
+            self.display_data()
+
         
         if 0 < index <= len(self.state.subset_items):  
             self.state.subset_items.pop(index-1)  
@@ -306,6 +315,13 @@ class BaseRangeCountHistogram:
 
             self.server.state.dirty("range_item")
             # self.ctrl.dirty("subset_items")
+
+            #self.server.state.dirty("data_items")
+            self.display_data()
+            self.server.state.dirty("data_items")
+             
+
+            # self.ctrl.dirty("data_items")
 
             print(f"Subset at index {index} removed")
     
@@ -483,7 +499,7 @@ class BaseRangeCountHistogram:
 # ----------------------------------------------------------------------------- 
 
 if __name__ == "__main__":
-    server = BaseRangeCountHistogram("Test", 1235, "/home/cc/research_tests/MaxSlices_wOoDScore.csv", "Log_Loss_ALL","Texture") # Testing passed
+    server = BaseRangeCountHistogram("Ood Analyzer using Trame-Matplotlib", 1235, "/home/cc/research_tests/MaxSlices_wOoDScore.csv", "Log_Loss_ALL","FilePath") # Testing passed
     # server = BaseRangeCountHistogram("Test", 1235, "/home/demo/neurobazaar/MaxSlices_newMode_Manuf_Int.csv") # Testing passed 
     # server = BaseRangeCountHistogram("Test", 1235) # Testing passed 
     fig = server.update_plot()

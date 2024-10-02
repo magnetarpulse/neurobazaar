@@ -76,9 +76,6 @@ class BaseRangeCountHistogram:
         }
 
         self.state.data_headers = [
-            #{"text": "Index", "value": "index"},
-            #{"text": "Name", "value": "name"},
-            {"text": "Range", "value": "range"},
             {"text": "Data_Item", "value": "data_item"},
         ]
 
@@ -89,6 +86,7 @@ class BaseRangeCountHistogram:
             "multi_sort": True,
             "dense": False,
             "hide_default_footer":True,
+            "hide_default_header": True,
             "style":"overflow-x: auto;",
     
         }
@@ -106,6 +104,7 @@ class BaseRangeCountHistogram:
 
         self.register_triggers()
         self.render_ui_layout()
+
 
     # ---------------------------------------------------------------------------------------------
     # Method to get the figure size (static method).
@@ -135,7 +134,8 @@ class BaseRangeCountHistogram:
         ax.set_xlabel('OoD Scores')
         ax.set_ylabel('Frequency')
         return fig
-    
+
+
     # ---------------------------------------------------------------------------------------------
     # Method to update the range count.
     # ---------------------------------------------------------------------------------------------
@@ -171,7 +171,7 @@ class BaseRangeCountHistogram:
             }
             self.state.range_item.append(remaining_range)
 
-        print("Ranges: ", self.state.range_item)
+        #print("Ranges: ", self.state.range_item)
         self.server.state.dirty("range_item")  
 
 
@@ -183,28 +183,32 @@ class BaseRangeCountHistogram:
     def update_threshold(self, index, new_threshold): 
         
         new_threshold = float(new_threshold) 
+        max_value = np.max(self.data)
 
-        for i, item in enumerate(self.state.subset_items):
-            if item["index"] == index:
-            
-                if i > 0:
-                    prev_item_threshold = self.state.subset_items[i - 1]["threshold"]
-                    
-                    if new_threshold <= float(prev_item_threshold):
-                        print(f"Threshold should be greater than previous threshold value: {prev_item_threshold}")
-                        return  
+        if new_threshold<=max_value:
+            for i, item in enumerate(self.state.subset_items):
+                if item["index"] == index:
+                
+                    if i > 0:
+                        prev_item_threshold = self.state.subset_items[i - 1]["threshold"]
+                        
+                        if new_threshold <= float(prev_item_threshold):
+                            print(f"Threshold should be greater than previous threshold value: {prev_item_threshold}")
+                            return  
 
-                if i < len(self.state.subset_items) - 1:
-                    next_item_threshold = self.state.subset_items[i + 1]["threshold"]
-                    if new_threshold >= float(next_item_threshold):
-                        print(f"Threshold should be less than the next threshold value: {next_item_threshold}")
-                        return  
+                    if i < len(self.state.subset_items) - 1:
+                        next_item_threshold = self.state.subset_items[i + 1]["threshold"]
+                        if new_threshold >= float(next_item_threshold):
+                            print(f"Threshold should be less than the next threshold value: {next_item_threshold}")
+                            return  
 
-                item["threshold"] = new_threshold
-                break
+                    item["threshold"] = new_threshold
+                    break
 
-        self.update_range_count() 
-        self.update_chart() 
+            self.update_range_count() 
+            self.update_chart() 
+            self.display_data()
+            self.insert_row_above_data()
 
 
 
@@ -243,22 +247,39 @@ class BaseRangeCountHistogram:
         if self.state.subset_items:
             last_threshold = self.state.subset_items[-1]["threshold"]
             max_value = np.max(self.data)
+
+            if last_threshold<= max_value:
                 
-            remaining_mask = (self.data > last_threshold) & (self.data <= max_value)
-            remaining_values = [self.item_list[j] for j in range(len(self.data)) if remaining_mask[j]]
+                remaining_mask = (self.data > last_threshold) & (self.data <= max_value)
+                remaining_values = [self.item_list[j] for j in range(len(self.data)) if remaining_mask[j]]
             
-            remaining_item = {
-                "index": len(self.state.subset_items) + 1,
-                "name": f"Subset{len(self.state.subset_items) + 1} (Remaining)",
-                "range": f"({float(last_threshold)} , {max_value}]",
-                "data_item": f"{remaining_values}"
+                remaining_item = {
+                    "index": len(self.state.subset_items) + 1,
+                    "name": f"Subset{len(self.state.subset_items) + 1} (Remaining)",
+                    "range": f"({float(last_threshold)} , {max_value}]",
+                    "data_item": f"{remaining_values}"
+                }
+
+                self.state.data_items.append(remaining_item)
+
+            server.state.dirty("data_items")  # Refresh the state of the server to update the data table
+            
+
+    # ---------------------------------------------------------------------------------------------
+    # Method to add a threshold row before data row
+    # ---------------------------------------------------------------------------------------------
+
+    def insert_row_above_data(self):
+        updated_data_items=[]
+        for item in self.state.data_items:
+            new_row={"data_item":item['range']
             }
 
-            self.state.data_items.append(remaining_item)
+            updated_data_items.append(new_row)
+            updated_data_items.append(item)
 
-        server.state.dirty("data_items")  # Refresh the state of the server to update the data table
+        self.state.data_items=updated_data_items
         
-
 
     # ---------------------------------------------------------------------------------------------
     # Method to add a subset.
@@ -281,9 +302,10 @@ class BaseRangeCountHistogram:
         self.server.state.dirty("subset_items") 
         # self.ctrl.dirty("subset_items")
 
-        print("Subset Items added:", self.state.subset_items)
+        #print("Subset Items added:", self.state.subset_items)
         self.update_range_count()
         self.display_data()
+        self.insert_row_above_data()
 
     # ---------------------------------------------------------------------------------------------
     # Method to remove a subset.
@@ -294,6 +316,7 @@ class BaseRangeCountHistogram:
             self.state.subset_items.pop(index)
             self.state.range_item.pop(index)
             self.display_data()
+            self.insert_row_above_data()
 
         
         if 0 < index <= len(self.state.subset_items):  
@@ -305,8 +328,7 @@ class BaseRangeCountHistogram:
                 item["name"]=f"Subset{i+1}" 
                 
             self.server.state.dirty("subset_items") 
-            # self.ctrl.dirty("subset_items")
-
+          
             for i, item in enumerate(self.state.range_item): 
                 item["index"] = i + 1 
                 item["name"]=f"Subset{i+1}"
@@ -314,15 +336,11 @@ class BaseRangeCountHistogram:
             self.update_range_count()
 
             self.server.state.dirty("range_item")
-            # self.ctrl.dirty("subset_items")
-
-            #self.server.state.dirty("data_items")
+            
             self.display_data()
             self.server.state.dirty("data_items")
+            self.insert_row_above_data()
              
-
-            # self.ctrl.dirty("data_items")
-
             print(f"Subset at index {index} removed")
     
     # ---------------------------------------------------------------------------------------------
@@ -395,13 +413,13 @@ class BaseRangeCountHistogram:
                                 #vuetify.VDataTable(**table_data_items)
                                 with vuetify.VDataTable(**self.table_data_items):
                                     with vuetify.Template(
-                                    #    values="{ item }",
-                                    #    __properties=[("values", "v-slot:item.values")],
+                                        
                                     ):
                                 
                                         with html.Tr():
                                             for value in self.state.data_items:
-                                                html.Td(value, classes="pa-4") 
+                                                html.Td(value, classes="pa-4")
+                                                
 
                     
                                 

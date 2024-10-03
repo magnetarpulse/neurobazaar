@@ -23,6 +23,7 @@
             <label for="workspaceDropdown">Select Workspace:</label>
             <select id="workspaceDropdown" class="form-select">
                 <option value="" disabled selected>Select a workspace</option>
+                <!-- Active servers will be populated here -->
             </select>
         </div>
 
@@ -44,6 +45,41 @@
         // Counter for unique workspace IDs and initial port number
         var workspaceCounter = 0;
         var initialPort = 8088;
+
+        // Function to update the workspace dropdown with active servers
+        function updateWorkspaceDropdown(servers) {
+            var dropdown = $('#workspaceDropdown');
+            dropdown.find('option:not(:first)').remove();  // Clear existing options except the first one
+
+            if (servers.length > 0) {
+                servers.forEach(function(server) {
+                    dropdown.append(
+                        $('<option>', {
+                            value: 'server-' + server.port,
+                            text: 'Server on Port: ' + server.port + ' (' + server.status + ')'
+                        })
+                    );
+                });
+            } else {
+                dropdown.append($('<option>', {
+                    value: '',
+                    text: 'No active servers',
+                    disabled: true
+                }));
+            }
+        }
+
+        // Initial server list update when the page loads
+        $.ajax({
+            url: "{% url 'get_server_list' %}",
+            method: 'GET',
+            success: function(data) {
+                updateWorkspaceDropdown(data.server_list);
+            },
+            error: function(error) {
+                console.error('Error fetching server list:', error);
+            }
+        });
 
         // Handle Add Workspace button click
         $('#addWorkspaceButton').click(function () {
@@ -85,11 +121,23 @@
         $('#workspaceDropdown').change(function () {
             var selectedWorkspace = $(this).val();
 
-            // Hide all workspaces
-            $('#workspacesContainer section').hide();
+            if (selectedWorkspace.startsWith('server-')) {
+                // A server was selected
+                var port = selectedWorkspace.split('-')[1];
+                var iframe = $('<iframe>', {
+                    src: 'http://localhost:' + port + '/index.html',
+                    css: {
+                        width: '100%',
+                        height: '100vh'
+                    }
+                });
 
-            // Show the selected workspace
-            $('#' + selectedWorkspace).show();
+                $('#workspacesContainer').empty().append(iframe);
+            } else {
+                // An added workspace was selected
+                $('#workspacesContainer section').hide();
+                $('#' + selectedWorkspace).show();
+            }
         });
     });
 </script>

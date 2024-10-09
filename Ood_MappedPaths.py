@@ -45,6 +45,7 @@ class BaseRangeCountHistogram:
         self.state.range_item = []
         self.state.data_items=[]
         self.image_paths=[]
+        self.final_path=[]
         self.df = pd.DataFrame()
         self.html_figure = None
         self.data = []
@@ -239,7 +240,15 @@ class BaseRangeCountHistogram:
 
             if start < end:
                 mask = (self.data > start) & (self.data <= end)
-                data_values = [self.item_list[j] for j in range(len(self.data)) if mask[j]]
+
+                # Get the UIDs that match the mask
+                filtered_uids = [self.item_list[j] for j in range(len(self.data)) if mask[j]]
+                
+                data_values = [
+                    path for uid in filtered_uids 
+                    for path in self.final_path if uid in path
+                ]
+            
             else:
                 data_values = []
             
@@ -261,7 +270,13 @@ class BaseRangeCountHistogram:
             if last_threshold<= max_value:
                 
                 remaining_mask = (self.data > last_threshold) & (self.data <= max_value)
-                remaining_values = [self.item_list[j] for j in range(len(self.data)) if remaining_mask[j]]
+
+                remaining_uids = [self.item_list[j] for j in range(len(self.data)) if remaining_mask[j]]
+
+                remaining_values = [
+                    path for uid in remaining_uids 
+                    for path in self.final_path if uid in path
+                ]
             
                 remaining_item = {
                     "index": len(self.state.subset_items) + 1,
@@ -354,7 +369,7 @@ class BaseRangeCountHistogram:
             self.server.state.dirty("data_items")
             self.insert_row_above_data()
              
-            print(f"Subset at index {index} removed")
+            #(f"Subset at index {index} removed")
 
 
     # ---------------------------------------------------------------------------------------------
@@ -371,6 +386,8 @@ class BaseRangeCountHistogram:
                     else:
                         if full_path.endswith('.dcm'):
                             self.image_paths.append(full_path)
+                            
+
                             
 
     # ---------------------------------------------------------------------------------------------
@@ -403,8 +420,10 @@ class BaseRangeCountHistogram:
                 for i, (study_uid, series_uid, file_uid) in enumerate(zip(studies, series, files)):
                     # Compare first, second folder and file names
                     if study_uid == first_folder and series_uid == second_folder and file_uid == dcm_file:
-                        print(f"Match found: {study_uid}/{series_uid}/{file_uid}.dcm")
+                        #path = f"{study_uid}/{series_uid}/{file_uid}.dcm"
+                        self.final_path.append(dcm_path)
         
+        #print(f"Match found:{self.final_path}")
         #print(f"CSV path: {csv_path}")
         #print(f"Counted DICOM paths:{len(self.image_paths)}")
         

@@ -63,7 +63,7 @@ python -m pip install -r requirements.txt
 ### Execution
 
 ```
-python ood_interface_matplotlib
+python ood_interface_matplotlib.py
 ```
 
 

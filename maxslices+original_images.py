@@ -7,11 +7,20 @@ import os
 # Core libraries for rendering
 from trame.app import get_server
 from trame.ui.vuetify import SinglePageLayout
-from trame.widgets import vuetify, matplotlib,html
+from trame.widgets import vuetify, matplotlib, html
 from trame.decorators import TrameApp, change
+from trame.tools.app import Path
+from flask import send_from_directory
+from trame.assets.local import LocalFileManager
+from pathlib import Path
+import trame
+import base64
 
 # Base class for the histogram application
 from abc import abstractmethod
+
+# Import Flask for serving images
+from flask import Flask, send_from_directory
 
 ## ================================================================== ## 
 ## Visualization service. Finds the counts in ranges. The base class. ##         
@@ -28,7 +37,14 @@ class BaseRangeCountHistogram:
         self.server = get_server(name, client_type="vue2")
         self.port = port
         self.state, self.ctrl = self.server.state, self.server.controller
+        self.file_manager = LocalFileManager(base_path="/home/cc/neurobazaar/neurobazaar/lidc_pixConvImg")
+        self.server.state.image_cache = {}  # Add this line
+        self.image_cache = {}
+        self.server.state.image_paths = []  # Store image paths instead of base64 data
 
+        # Change this line to use port 5000 for image serving
+        self.image_server_url = "http://localhost:5000/images"
+        
         if csv_path and not data_column:
             raise ValueError("data_column argument is required when csv_path is provided")
 
@@ -55,6 +71,9 @@ class BaseRangeCountHistogram:
         self.df = pd.DataFrame()
         self.html_figure = None
         self.data = []
+        self.state.first_nodule_image = ""
+        self.state.image_base_url = "http://localhost:5000/images"
+        self.state.nodule_images = []  # List to store all nodule image paths
 
         self.state.subset_config = [
             {"text": "Index", "value": "index"},
@@ -125,6 +144,8 @@ class BaseRangeCountHistogram:
         self.register_triggers()
         self.render_ui_layout()
 
+        # Add this line to set up the static file serving
+        self.setup_static_directory()
 
     # ---------------------------------------------------------------------------------------------
     # Method to get the figure size (static method).
@@ -228,7 +249,7 @@ class BaseRangeCountHistogram:
             self.update_range_count() 
             self.update_chart() 
             self.display_data()
-            self.insert_row_above_data()
+            self.insert_row_above_data() 
             
 
 
@@ -238,10 +259,11 @@ class BaseRangeCountHistogram:
     # ---------------------------------------------------------------------------------------------
 
     def display_data(self):
-
         self.state.data_items.clear()
+        self.state.nodule_images.clear()
+        first_image_set = False  # Flag to ensure we only set the first image once
+
         for i, item in enumerate(self.state.subset_items):
-            
             if i == 0:
                 start = float(0)  
             else:
@@ -268,7 +290,17 @@ class BaseRangeCountHistogram:
                     if any(str(id) in path for id in filtered_nodule_ids_str)
                 ]
 
-               
+                # Set the first nodule image as the source for the img tag
+                if nodule_ids and not first_image_set:
+                    self.state.first_nodule_image = Path(nodule_ids[0]).name  # Just the filename
+                    self.state.first_nodule_image = f"{self.image_server_url}/{self.state.first_nodule_image}"
+                    first_image_set = True
+                    print(f"First nodule image set to: {self.state.first_nodule_image}")  # Debug print
+
+                for nodule_id in nodule_ids:
+                    image_name = Path(nodule_id).name
+                    image_name = f"{self.image_server_url}/{image_name}"
+                    self.state.nodule_images.append(image_name)
             
             else:
                 data_values = []
@@ -309,6 +341,9 @@ class BaseRangeCountHistogram:
                     if any(str(id) in path for id in filtered_remaining_nodule_ids_str)
                 ]
 
+                for nodule_id in remaining_nodule_ids:
+                    image_name = Path(nodule_id).name
+                    self.state.nodule_images.append(image_name)
             
                 remaining_item = {
                     "index": len(self.state.subset_items) + 1,
@@ -322,6 +357,14 @@ class BaseRangeCountHistogram:
 
             server.state.dirty("data_items")  # Refresh the state of the server to update the data table
             
+
+        # After the loop, check if an image was set
+        if not first_image_set:
+            print("Warning: No nodule image was set. Check your data and filters.")
+
+        # Force a refresh of the state
+        self.server.state.dirty("first_nodule_image")
+        self.server.state.dirty("nodule_images")
 
     # ---------------------------------------------------------------------------------------------
     # Method to add a threshold row before data row
@@ -342,7 +385,6 @@ class BaseRangeCountHistogram:
         self.state.data_items=updated_data_items
         server.state.dirty("data_items")
      
-
     # ---------------------------------------------------------------------------------------------
     # Method to add a subset.
     # ---------------------------------------------------------------------------------------------
@@ -524,14 +566,6 @@ class BaseRangeCountHistogram:
         with SinglePageLayout(self.server) as layout:
             layout.title.set_text(self.server.name)
 
-            with layout.toolbar:
-                vuetify.VSpacer()
-                #vuetify.VTextField(
-                #v_model=("query", ""),
-                #placeholder="Search",
-                #dense=True,
-                #hide_details=True,)
-
             with layout.content:
                 with vuetify.VContainer(fluid=True, classes="d-flex flex-row"):
                     # Left Column for the figure and data 
@@ -544,11 +578,20 @@ class BaseRangeCountHistogram:
                             self.html_figure = matplotlib.Figure(style="position: relative")
                             self.ctrl.update_plot = self.html_figure.update
 
-
                         with vuetify.VRow():
                             vuetify.VSubheader("Data Items:",
                             style="font-size: 20px;font-weight: bold;color: rgb(0, 71, 171); margin-top: 40px;")
                         
+                        # Add the image here
+                        with vuetify.VRow():
+                            with vuetify.VContainer(fluid=True):
+                                with vuetify.VRow(align="center", justify="center"):
+                                    html.Img(
+                                        src=("first_nodule_image", lambda name: f"http://localhost:5000/images/{name}"),
+                                        alt="First Nodule Image",
+                                        style="max-width: 100%; max-height: 400px; object-fit: contain;",
+                                    )
+
                         with vuetify.VRow():  
                             with vuetify.VContainer(style="overflow-x: auto; white-space: nowrap;"):
                                 
@@ -608,6 +651,25 @@ class BaseRangeCountHistogram:
                                     step=0.1,
                                     
                                 )
+
+                        with vuetify.VRow():
+                            with vuetify.VContainer(fluid=True, style="max-height: 400px; overflow-y: auto;"):
+                                with vuetify.VRow(align="center", justify="center"):
+                                    with vuetify.VCarousel(
+                                        v_model=("active_image", 0),
+                                        height="400",
+                                        hide_delimiter_background=True,
+                                        delimiter_icon="mdi-minus",
+                                        show_arrows=True,
+                                    ):
+                                        with vuetify.Template(v_for="(image, index) in nodule_images", v_slot="{ item }"):
+                                            with vuetify.VCarouselItem(key="index"):
+                                                html.Img(
+                                                    src=("image", lambda name: f"{self.state.image_base_url}/{name}"),
+                                                    alt="Nodule Image",
+                                                    style="max-width: 100%; max-height: 400px; object-fit: contain;",
+                                                )
+
     # ---------------------------------------------------------------------------------------------
     # Method to start a new server (main). Not to be used in a multi-process environment
     # ---------------------------------------------------------------------------------------------
@@ -615,6 +677,8 @@ class BaseRangeCountHistogram:
     @abstractmethod   
     def start_server_immediately(self):
         print(f"Starting Server_Manager at http://localhost:{self.port}/index.html")
+        self.server.static_url_path = "/assets"
+        self.server.static_folder = "/home/cc/neurobazaar/neurobazaar/lidc_pixConvImg"
         self.server.start(exec_mode="main", port=self.port)
 
     # ---------------------------------------------------------------------------------------------
@@ -650,14 +714,36 @@ class BaseRangeCountHistogram:
     def fetch_data(self):
         pass
 
+    def setup_static_directory(self):
+        image_dir = Path("/home/cc/neurobazaar/neurobazaar/lidc_pixConvImg")
+        if image_dir.exists() and image_dir.is_dir():
+            self.server.state.image_paths = [
+                str(file) for file in image_dir.iterdir() 
+                if file.suffix.lower() in ['.png', '.jpg', '.jpeg']
+            ]
+            print(f"Static directory set up: {image_dir}")
+            print(f"Number of images found: {len(self.server.state.image_paths)}")
+        else:
+            print(f"Warning: Directory {image_dir} does not exist or is not a directory")
+        
+        self.server.state.dirty("image_paths")
+
+        # Set up Flask app for serving images
+        app = Flask(__name__)
+
+        @app.route('/images/<path:filename>')
+        def serve_image(filename):
+            return send_from_directory(image_dir, filename)
+
+        # Run Flask app in a separate thread
+        import threading
+        threading.Thread(target=lambda: app.run(port=5000, debug=False, use_reloader=False)).start()
+
 # ----------------------------------------------------------------------------- 
 # Main (Guard)
 # ----------------------------------------------------------------------------- 
 
 if __name__ == "__main__":
-    server = BaseRangeCountHistogram("Ood Analyzer using Trame-Matplotlib", 1235, "/home/cc/research_tests/MaxSlices_wOoDScore.csv", "/home/cc/research_tests/LIDC_Dataset", "/home/cc/research_tests/lidc_pixConvImg", "Log_Loss_ALL","imageSOP_UID","noduleID") # Testing passed
-    # server = BaseRangeCountHistogram("Test", 1235, "/home/demo/neurobazaar/MaxSlices_newMode_Manuf_Int.csv") # Testing passed 
-    # server = BaseRangeCountHistogram("Test", 1235) # Testing passed 
-    fig = server.update_plot()
-    server.html_figure.update(fig)
+    
+    server = BaseRangeCountHistogram("Ood Analyzer using Trame-Matplotlib", 1235, "/home/cc/neurobazaar/neurobazaar/MaxSlices_wOoDScore.csv", "/home/cc/neurobazaar/neurobazaar/LIDC_Dataset", "/home/cc/neurobazaar/neurobazaar/lidc_pixConvImg", "Log_Loss_ALL","imageSOP_UID","noduleID")
     server.start_server_immediately()

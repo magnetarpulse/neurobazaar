@@ -13,3 +13,4 @@ trame
 trame-client
 trame-server
 trame-vtk
+watchdog

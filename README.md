@@ -32,6 +32,8 @@ To load/activate the Python Virtual Environment in Windows 10 Powershell use the
 To load/activate the Python Virtual Environment in Windows 10 CMD use the following command:
 ```
 .venv/Scripts/activate.bat
+or
+.venv/Scripts/activate
 ```
 
 ### Python Virtual Environment Setup
@@ -60,10 +62,10 @@ Install the dependencies/packages on the loaded/activated virtual environment:
 python -m pip install -r requirements.txt
 ```
 
-### Execution
+### Execution with automatic reload
 
 ```
-python ood_interface_matplotlib.py
+python reload.py
 ```
 
 

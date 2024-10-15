@@ -312,10 +312,10 @@ class BasicHistogramApp:
             layout.title.set_text(self.server.name)
 
             # Add custom CSS to create the top gap
-            layout.root.style = "padding-top: 50px;"
+            layout.root.style = "padding-top: 90px;"
 
             # Add padding to the toolbar
-            layout.toolbar.style = "padding-top: 80px;"
+            layout.toolbar.style = "padding-top: 120px;"
 
             with layout.toolbar:
                 vuetify.VSpacer()

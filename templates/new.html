@@ -1,0 +1,15 @@
+<!-- {% extends 'base.html' %}
+
+{% block content %}
+<h1>New Page with Visualization</h1>
+<div id="visualization-container"></div>
+
+<script>
+    // This script will load the content from our proxy view
+    fetch('/new/api/data')  // This path will be proxied to http://localhost:5459/api/data
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('visualization-container').innerText = JSON.stringify(data, null, 2);
+        });
+</script>
+{% endblock %} -->

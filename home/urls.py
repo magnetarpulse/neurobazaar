@@ -1,6 +1,6 @@
-from django.urls import path
+from django.urls import path, re_path
 from django.contrib import admin                                                                                                    
-from home import views
+from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -16,5 +16,7 @@ urlpatterns = [
     path('datastore/', views.datastore, name='datastore'),
     path('download_collection/<uuid:collection_uuid>/', views.download_collection, name='download_collection'),
     path('visualization_server_manager/', views.visualization_server_manager, name='visualization_server_manager'),
+    path('new/', views.new_view, name='new_view'),
+    re_path(r'^new/(?P<path>.*)$', views.new_view, name='new_proxy'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

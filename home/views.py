@@ -453,10 +453,39 @@ def workspaces(request):
 
     return render(request, 'workspaces.html', context)
 
-
+import requests
 # for visualization server manager.
 
 @login_required
 def visualization_server_manager(request):
     username = request.user.username
     return render(request, 'visualization_server_manager.html', {'username': username})
+
+
+from django.http import HttpResponse, JsonResponse
+import requests
+import logging
+import re
+
+logger = logging.getLogger(__name__)
+
+@login_required
+def new_view(request, path=''):
+    username = request.user.username
+    try:
+        # Proxy the request to the service running on port 5459
+        target_url = f'http://localhost:5459/{path}'
+        logger.info(f"Proxying request to: {target_url}")
+        
+        response = requests.get(target_url, timeout=5)
+        response.raise_for_status()  # Raise an exception for bad status codes
+        
+        return HttpResponse(response.content, content_type=response.headers['Content-Type'])
+    except requests.RequestException as e:
+        if '.map' in path:  # If it's a source map file
+            logger.warning(f"Source map file not found: {path}")
+            return HttpResponse(status=404)
+        logger.error(f"Error proxying request: {str(e)}")
+        return JsonResponse({"error": "Failed to proxy request", "details": str(e)}, status=500)
+
+# ... rest of the file ...

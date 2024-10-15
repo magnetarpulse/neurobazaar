@@ -2,10 +2,12 @@
 import os
 
 # Core libraries for rendering
-from trame.app import get_server
+from trame.app import get_server, asynchronous
 from trame.decorators import TrameApp, change
 from trame.widgets import vtk, vuetify
 from trame.ui.vuetify import SinglePageLayout
+from trame.ui.html import DivLayout
+from trame.widgets import html
 import vtk as standard_vtk
 
 # Core libraries for data processing
@@ -35,6 +37,7 @@ class BasicHistogramApp:
 
     def __init__(self, name, port, np_data=None):
         self.server = get_server(name, client_type="vue2")
+        self.server.client_type = "vue2"
         self.port = port
 
         self.np_data = np_data if np_data is not None else np.random.normal(size=1_000)
@@ -51,10 +54,6 @@ class BasicHistogramApp:
         self.hist_cache = {}
         
         self.histogram_vtk() 
-
-        self.client_view = vtk.VtkRemoteView(
-            self.renderWindow, trame_server=self.server, ref="view"
-        )
 
         self.setup_layout()
     
@@ -308,43 +307,31 @@ class BasicHistogramApp:
     # ---------------------------------------------------------------------------------------------
 
     def setup_layout(self):
-        with SinglePageLayout(self.server) as layout:
-            layout.title.set_text(self.server.name)
-
-            with layout.toolbar:
-                vuetify.VSpacer()
+        with DivLayout(self.server) as layout:
+            html.Div("{{ title }}")
+            with html.Div():
                 vuetify.VSlider(
-                    v_model=("bins", 5), 
+                    v_model=("bins", 5),
                     min=1,
                     max=100,
-                    label="Number of Bins",  
+                    label="Number of Bins",
                     hide_details=False,
                     dense=True,
-                    thumb_label=True,  
-                    thumb_size=20, 
-                    style="padding-top: 20px;", 
+                    thumb_label=True,
+                    thumb_size=20,
                 )
                 vuetify.VFileInput(
                     v_model=("file_input", None),
                     label="Upload CSV File",
                     accept=".csv",
-                    style="padding-top: 20px;", 
                 )
                 vuetify.VSelect(
                     v_model=("selected_column", None),
                     items=("column_options",),
                     label="Select Column",
-                    style="padding-top: 20px;", 
                 )
-
-            with layout.content:
-                with vuetify.VContainer(
-                    fluid=True,
-                    classes="pa-0 fill-height", 
-                ):
-                    self.client_view = vtk.VtkRemoteView(
-                        self.renderWindow, trame_server=self.server, ref="view"
-                    )
+            with html.Div():
+                self.client_view = vtk.VtkRemoteView(self.renderWindow)
 
     # ---------------------------------------------------------------------------------------------
     # Method to start a new server (main). Not to be used in a multi-process environment
@@ -386,13 +373,14 @@ class BasicHistogramApp:
         
         return self.trace_calls
 
+    @asynchronous.task
+    async def start_server(self):
+        await self.server.start(exec_mode="task")
+        return self.server
+
 # Add this at the end of the file
 if __name__ == "__main__":
-    import argparse
+    import asyncio
     
-    parser = argparse.ArgumentParser(description="Start a Basic Histogram App")
-    parser.add_argument("--port", type=int, default=5459, help="Port to run the server on")
-    args = parser.parse_args()
-    
-    app = BasicHistogramApp("Standalone Histogram", args.port)
-    app.start_new_server_immediately()
+    app = BasicHistogramApp("Standalone Histogram", 5459)
+    asyncio.run(app.start_server())

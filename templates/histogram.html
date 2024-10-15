@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Histogram</h2>
+    {% if error_message %}
+        <div class="alert alert-danger">{{ error_message }}</div>
+    {% else %}
+        <div id="trame-app">
+            {{ trame_content|safe }}
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    // Function to load additional resources
+    function loadTrameResources() {
+        fetch('/trame-proxy/')
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Copy all elements from <head>
+                const head = document.head;
+                Array.from(doc.head.children).forEach(child => {
+                    if (child.tagName === 'LINK' || child.tagName === 'SCRIPT') {
+                        const newChild = child.cloneNode(true);
+                        newChild.href = newChild.href ? '/trame-proxy' + new URL(newChild.href).pathname : newChild.href;
+                        newChild.src = newChild.src ? '/trame-proxy' + new URL(newChild.src).pathname : newChild.src;
+                        head.appendChild(newChild);
+                    }
+                });
+
+                // Execute any scripts that were in the loaded HTML
+                const scripts = doc.getElementsByTagName('script');
+                for (let script of scripts) {
+                    if (script.src) {
+                        const newScript = document.createElement('script');
+                        newScript.src = '/trame-proxy' + new URL(script.src).pathname;
+                        document.body.appendChild(newScript);
+                    } else {
+                        eval(script.innerHTML);
+                    }
+                }
+            })
+            .catch(error => console.error('Error loading Trame resources:', error));
+    }
+
+    // Load Trame resources when the page is ready
+    document.addEventListener('DOMContentLoaded', loadTrameResources);
+</script>
+{% endblock %}

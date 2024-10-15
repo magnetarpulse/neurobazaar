@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 # from .datastore_manager import getDataStoreManager
+from channels.routing import ProtocolTypeRouter, URLRouter
+from django.urls import re_path
+from home.consumers import WebSocketProxy
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -144,3 +148,12 @@ DATA_UPLOAD_MAX_NUMBER_FILES = 20000000  # Or another higher value based on your
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Add this at the end of the file
+ASGI_APPLICATION = "neurobazaar.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}

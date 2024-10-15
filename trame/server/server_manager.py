@@ -44,7 +44,7 @@ from dask.distributed import Client
 # For manipulating CSV files
 import csv
 import tempfile
-from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
+# from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
 
 # Imports required for the all histogram applications
 # Base class for the histogram application
@@ -97,7 +97,7 @@ class ServerManager:
 
         command = [
             "python",
-            "server_manager.py",  
+            "/home/cc/neurobazaar/working/neurobazaar/trame/server/server_manager.py",  
             "--launch_basic_server",
             str(self.next_port)
         ]
@@ -129,7 +129,7 @@ class ServerManager:
 
         command = [
             "python",
-            "server_manager.py",  
+            "/home/cc/neurobazaar/working/neurobazaar/trame/server/server_manager.py",  
             "--launch_general_server",
             str(self.next_port)
         ]
@@ -161,7 +161,7 @@ class ServerManager:
 
         command = [
             "python",
-            "server_manager.py",  
+            "/home/cc/neurobazaar/working/neurobazaar/trame/server/server_manager.py",  
             "--launch_analyzer_server",
             str(self.next_port)
         ]
@@ -459,8 +459,8 @@ if __name__ == "__main__":
     # Note: This will cause an error if you try to start a new application server, since the port is already in use. 
     # Use the launcher instead.
     # Start the server manager
-    server_manager.start(port=8080) 
+    # server_manager.start(port=8080) 
 
     # The launcher is used to start new application servers
     # Remember to uncomment the server_manager.start(port=8080) line above 
-    # server_manager.launch_server_manager()
+    server_manager.launch_server_manager()

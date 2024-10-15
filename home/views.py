@@ -466,12 +466,17 @@ from django.http import HttpResponse, JsonResponse
 import requests
 import logging
 import re
+from django.shortcuts import render
+from django.template import Template, Context
+import base64
 
 logger = logging.getLogger(__name__)
 
 @login_required
 def new_view(request, path=''):
     username = request.user.username
+    logger.info(f"new_view called with path: '{path}'")
+
     try:
         # Proxy the request to the service running on port 5459
         target_url = f'http://localhost:5459/{path}'
@@ -480,7 +485,41 @@ def new_view(request, path=''):
         response = requests.get(target_url, timeout=5)
         response.raise_for_status()  # Raise an exception for bad status codes
         
-        return HttpResponse(response.content, content_type=response.headers['Content-Type'])
+        content_type = response.headers.get('Content-Type', '')
+        
+        # If the content is not HTML, return it as-is
+        if 'text/html' not in content_type:
+            return HttpResponse(response.content, content_type=content_type)
+        
+        # For HTML content, wrap it in our template
+        html_template = Template("""
+        {% extends 'histogram.html' %}
+        {% block content %}
+        <style>
+          
+                    
+
+        </style>
+       
+       <div id="proxied-content-box">
+            <div id="proxied-content">
+                {{ proxied_content|safe }}
+            </div>
+        </div>
+        {% endblock %}
+        """)
+        
+        # Render the template with the proxied content
+        context = Context({
+            'username': username,
+            'content_type': content_type,
+            'proxied_content': response.content.decode('utf-8', errors='replace')
+        })
+        rendered_html = html_template.render(context)
+        
+        # Return the wrapped content as HTML
+        return HttpResponse(rendered_html, content_type='text/html')
+    
     except requests.RequestException as e:
         if '.map' in path:  # If it's a source map file
             logger.warning(f"Source map file not found: {path}")

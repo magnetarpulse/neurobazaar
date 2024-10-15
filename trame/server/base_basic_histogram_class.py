@@ -311,6 +311,12 @@ class BasicHistogramApp:
         with SinglePageLayout(self.server) as layout:
             layout.title.set_text(self.server.name)
 
+            # Add custom CSS to create the top gap
+            layout.root.style = "padding-top: 50px;"
+
+            # Add padding to the toolbar
+            layout.toolbar.style = "padding-top: 80px;"
+
             with layout.toolbar:
                 vuetify.VSpacer()
                 vuetify.VSlider(
@@ -322,29 +328,31 @@ class BasicHistogramApp:
                     dense=True,
                     thumb_label=True,  
                     thumb_size=20, 
-                    style="padding-top: 20px;", 
+                    style="max-width: 300px; margin-right: 20px;", 
                 )
                 vuetify.VFileInput(
                     v_model=("file_input", None),
                     label="Upload CSV File",
                     accept=".csv",
-                    style="padding-top: 20px;", 
+                    style="max-width: 300px; margin-right: 20px;", 
                 )
                 vuetify.VSelect(
                     v_model=("selected_column", None),
                     items=("column_options",),
                     label="Select Column",
-                    style="padding-top: 20px;", 
+                    style="max-width: 200px;", 
                 )
 
             with layout.content:
-                with vuetify.VContainer(
-                    fluid=True,
-                    classes="pa-0 fill-height", 
-                ):
-                    self.client_view = vtk.VtkRemoteView(
-                        self.renderWindow, trame_server=self.server, ref="view"
-                    )
+                with vuetify.VContainer(fluid=True, classes="pa-0 fill-height"):
+                    with vuetify.VRow(classes="fill-height"):
+                        with vuetify.VCol():
+                            self.client_view = vtk.VtkRemoteView(
+                                self.renderWindow, trame_server=self.server, ref="view"
+                            )
+
+        # Add a print statement to confirm the method is being called
+        print("Layout setup completed")
 
     # ---------------------------------------------------------------------------------------------
     # Method to start a new server (main). Not to be used in a multi-process environment

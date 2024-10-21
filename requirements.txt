@@ -1,0 +1,16 @@
+pandas
+trame>3
+trame-vuetify
+trame-components
+trame-matplotlib
+numpy
+trame[vuetify]
+django
+pymongo
+matplotlib
+scikit-learn
+trame
+trame-client
+trame-server
+trame-vtk
+watchdog

@@ -2,7 +2,8 @@
 **Jarvis College of Computing and Digital Media - DePaul University**  
 
 Authors and Contributors:
-- Alexandru Iulian Orhean 2024 (aorhean@depaul.edu)  
+- Alexandru Iulian Orhean 2024 (aorhean@depaul.edu)
+- Areena Mahek 2024 (amahek@depaul.edu)
 
 Interactive Visualization Platform for Machine Learning and Data Science Datasets.
 
@@ -31,13 +32,40 @@ To load/activate the Python Virtual Environment in Windows 10 Powershell use the
 To load/activate the Python Virtual Environment in Windows 10 CMD use the following command:
 ```
 .venv/Scripts/activate.bat
+or
+.venv/Scripts/activate
 ```
 
-### Install the Python Required Packages
+### Python Virtual Environment Setup
 
-To install the required Python packages inside the loaded/activated virtual enviroment run the following command:
+All of the required Python packages are installed in a Python Virtual Environment. The first step is to create the virtual environment and the second step is to load/activate the environment. The first command has to be run only once.
+
+To create the Python Virtual Environment on Ubuntu 22.04 LTS or a newer Ubuntu version, run the following commands. 
+
+**Note:** In this example, we are naming our Python Virtual Environment "**.venv**", but you can name it something else if you already have a Python Virtual Environment called .venv:  
+
+```
+python3.11 -m venv .venv
 ```
 
+To load/activate the Python Virtual Environment on Ubuntu 22.04 LTS or a newer Ubuntu version: 
+
+```
+source .venv/bin/activate
 ```
 
-## How to Build and Run
+### Install the Python Dependencies/Packages
+
+Install the dependencies/packages on the loaded/activated virtual environment:
+
+```
+python -m pip install -r requirements.txt
+```
+
+### Execution with automatic reload
+
+```
+python reload.py
+```
+
+

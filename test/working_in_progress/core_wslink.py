@@ -32,6 +32,29 @@ logging.basicConfig(level=logging.DEBUG)  # Enable detailed logging
 # -----------------------------------------------------------------------------
 
 async def _root_handler(request):
+    # Extract the key from the query parameters or headers
+    key = request.query.get('key', '')  # Extract 'key' from query string
+    # For example, if you want to extract it from headers:
+    # key = request.headers.get('X-Auth-Key', '')
+
+    # key = "hello"
+
+    logger.debug(f"Handling root request with key: {key}")
+    print(f"Handling request for key: {key}")
+
+    # Validate the key
+    if key != secret_key:
+        print("Invalid key provided")
+        logger.debug("Invalid key provided")
+        return aiohttp.web.Response(text="Invalid Key", status=403)
+
+    if key == secret_key:
+        print ("Valid key provided")
+        logger.debug("Valid key provided")
+        # Serve the static index.html without exposing the key in the path
+        return aiohttp.web.HTTPFound(f"/index.html?{request.query_string}")
+
+    '''
     # Get the key from the URL
     # key = request.match_info.get('key', '')
     key = "hello" # For testing purposes
@@ -51,6 +74,7 @@ async def _root_handler(request):
     if request.query_string:
         return aiohttp.web.HTTPFound(f"/{key}/index.html?{request.query_string}")
     return aiohttp.web.HTTPFound(f"/{key}/index.html")
+    '''
 
     '''
     # Allow root access without key for public content
@@ -86,7 +110,6 @@ async def http_headers(request: aiohttp_web.Request, handler):
 
     return response
 
-
 # -----------------------------------------------------------------------------
 class WebAppServer(AbstractWebApp):
     def __init__(self, server_config):
@@ -101,6 +124,7 @@ class WebAppServer(AbstractWebApp):
         self._site = None
         self._runner = None
 
+        '''
         if "ws" in server_config:
             routes = []
             for route, server_protocol in server_config["ws"].items():
@@ -126,7 +150,8 @@ class WebAppServer(AbstractWebApp):
                 )
 
         '''
-        key = 'hello'  # Define the key variable here
+
+        key = "hello"  # For testing purposes
         if "ws" in server_config:
             print("WebSocket configuration found")  # Confirm that WebSocket configuration is found
             routes = []
@@ -164,6 +189,10 @@ class WebAppServer(AbstractWebApp):
 
             for route in sorted(static_routes.keys(), reverse=True):
                 server_path = static_routes[route]
+
+                # Append '/hello' to the server_path
+                # server_path = Path(server_path) / "hello"
+
                 logger.debug(f"Adding static route: {route} -> {server_path}")
                 print(f"Adding static route: {route} -> {server_path}")
                 # Check if the directory exists and log it
@@ -171,21 +200,23 @@ class WebAppServer(AbstractWebApp):
                     print(f"Static directory does not exist: {server_path}")
                     logger.error(f"Static directory does not exist: {server_path}")
                 else:
-                    print(f"Static directory exists: {server_path}")
-                    logger.debug(f"Static directory exists: {server_path}")
+                    pass
+                    # print(f"Static directory exists: {server_path}")
+                    # logger.debug(f"Static directory exists: {server_path}")
 
-                routes.append(
-                    aiohttp_web.static(
-                        f"/{{{key}}}{_fix_path(route)}", server_path, append_version=True
-                    )
-                )
-
+                
+                # routes.append(
+                #    aiohttp_web.static(
+                #        f"/{{{key}}}{_fix_path(route)}", server_path, append_version=True
+                #    )
+                # )
+                
                 routes.append(
                     aiohttp_web.static(
                         f"{_fix_path(route)}", server_path, append_version=True
                     )
                 )
-        '''
+                
 
             # Resolve / => index.html with key check
             # logger.debug("Adding root handler for static content")
@@ -322,6 +353,7 @@ class AioHttpWsHandler(WslinkHandler):
         self.publishManager.unregisterProtocol(self)
 
     async def handleWsRequest(self, request):
+        '''
         client_id = str(uuid.uuid4()).replace("-", "")
         current_ws = aiohttp_web.WebSocketResponse(
             max_msg_size=MSG_OVERHEAD + MAX_MSG_SIZE, heartbeat=HEART_BEAT
@@ -350,10 +382,11 @@ class AioHttpWsHandler(WslinkHandler):
                 self.web_app.shutdown_schedule()
 
         return current_ws
+        '''
 
-    '''
     async def handleWsRequest(self, request):
-        key = request.match_info.get('key', '')
+        # key = request.match_info.get('key', '')
+        key = "hello"  # For testing purposes
         logger.debug(f"Handling WebSocket request with key: {key}")
         
         # Key validation
@@ -386,7 +419,6 @@ class AioHttpWsHandler(WslinkHandler):
                 self.web_app.shutdown_schedule()
 
         return current_ws
-        '''
 
     async def reverse_connect_to(self, url):
         logger.debug("reverse_connect_to: running with url %s", url)

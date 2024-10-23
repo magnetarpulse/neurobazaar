@@ -14,7 +14,7 @@ import os
 # from .datastore_manager import getDataStoreManager
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.urls import re_path
-from home.wildcard import WebSocketProxy
+from home.wildcard import MultiPortWebSocketProxy
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

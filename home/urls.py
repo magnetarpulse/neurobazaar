@@ -18,5 +18,7 @@ urlpatterns = [
     path('visualization_server_manager/', views.visualization_server_manager, name='visualization_server_manager'),
     path('new/', views.new_view, name='new_view'),
     re_path(r'^new/(?P<path>.*)$', views.new_view, name='new_proxy'),
+    path('new2/', views.new_view2, name='new_view2'),
+    re_path(r'^new2/(?P<path>.*)$', views.new_view2, name='new_proxy2'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

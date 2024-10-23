@@ -1,5 +1,5 @@
 # Django imports
-from django.http import FileResponse, HttpResponse, Http404
+from django.http import FileResponse, HttpResponse, Http404, StreamingHttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -469,6 +469,7 @@ import re
 from django.shortcuts import render
 from django.template import Template, Context
 import base64
+from urllib.parse import urljoin
 
 logger = logging.getLogger(__name__)
 
@@ -479,7 +480,7 @@ def new_view(request, path=''):
 
     try:
         # Proxy the request to the service running on port 5459
-        target_url = f'http://localhost:5459/{path}'
+        target_url = f'http://129.114.108.168:5459/{path}'
         logger.info(f"Proxying request to: {target_url}")
         
         response = requests.get(target_url, timeout=5)
@@ -528,3 +529,69 @@ def new_view(request, path=''):
         return JsonResponse({"error": "Failed to proxy request", "details": str(e)}, status=500)
 
 # ... rest of the file ...
+import logging
+from django.http import HttpResponse, StreamingHttpResponse
+from django.template import Template, Context
+import requests
+from urllib.parse import urljoin
+import re
+
+
+@login_required
+def new_view2(request, path=''):
+    username = request.user.username
+    logger.info(f"new_view2 called with path: '{path}'")
+
+    try:
+        # Proxy the request to the service running on port 1235
+        base_url = 'http://localhost:1235/'
+        target_url = urljoin(base_url, path)
+        logger.info(f"Proxying request to: {target_url}")
+        
+        # Forward the original request headers
+        headers = {key: value for key, value in request.headers.items()
+                   if key.lower() not in ['host', 'cookie']}
+        
+        # Forward the request method and body
+        method = request.method
+        data = request.body if method in ['POST', 'PUT', 'PATCH'] else None
+        
+        # Make the request to the upstream server
+        response = requests.request(method, target_url, headers=headers, data=data, stream=True, timeout=10)
+        
+        logger.info(f"Response status code: {response.status_code}")
+        logger.info(f"Response headers: {response.headers}")
+        
+        content_type = response.headers.get('Content-Type', '')
+        
+        # For HTML content, modify URLs
+        if 'text/html' in content_type:
+            content = response.content.decode('utf-8', errors='replace')
+            content = re.sub(r'(src|href)="/', r'\1="/new2/', content)
+            content = re.sub(r'(src|href)="\./', r'\1="/new2/', content)
+            content = re.sub(r'(ws://localhost:1235)', r'ws://' + request.get_host() + '/new2', content)
+            
+            django_response = HttpResponse(content, content_type=content_type, status=response.status_code)
+        else:
+            # For non-HTML content, stream it as-is
+            django_response = StreamingHttpResponse(
+                streaming_content=response.iter_content(chunk_size=8192),
+                content_type=content_type,
+                status=response.status_code
+            )
+        
+        # Copy relevant headers from the upstream response
+        for header, value in response.headers.items():
+            if header.lower() not in ['content-encoding', 'transfer-encoding', 'content-length']:
+                django_response[header] = value
+        
+        return django_response
+    
+    except requests.RequestException as e:
+        logger.error(f"Error proxying request: {str(e)}")
+        return HttpResponse(f"Error proxying request: {str(e)}", status=500)
+
+# ... rest of the file ...
+
+
+

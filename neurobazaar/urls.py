@@ -13,8 +13,10 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.urls import include, path, re_path as url
+from django.urls import include, path, re_path
 from django.contrib import admin
+from channels.routing import ProtocolTypeRouter, URLRouter
+from home.wildcard import MultiPortWebSocketProxy
 
 admin.site.site_header = 'Neurobazaar Administration'
 admin.site.site_title = 'Neurobazaar Administration Portal'
@@ -22,6 +24,7 @@ admin.site.index_title = 'Welcome to Neurobazaar Administration Portal'
 
 urlpatterns = [
     path('', include('home.urls')),
-    path('admin/', admin.site.urls)
-    
+    path('admin/', admin.site.urls),
+    re_path(r'^new/ws/?$', MultiPortWebSocketProxy.as_asgi()),
+    re_path(r'^new2/ws/?$', MultiPortWebSocketProxy.as_asgi()),
 ]

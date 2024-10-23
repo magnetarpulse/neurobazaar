@@ -6,44 +6,71 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 logger = logging.getLogger(__name__)
 
-class WebSocketProxy(AsyncWebsocketConsumer):
+class MultiPortWebSocketProxy(AsyncWebsocketConsumer):
+    UPSTREAM_SERVERS = [
+        {"ip": "129.114.108.168", "ports": [1235, 5459]},
+        {"ip": "localhost", "ports": [1235]},
+        # Add more IP and port combinations as needed
+    ]
+
     async def connect(self):
         await self.accept()
-        self.ws = await websockets.connect('ws://localhost:5459/ws')
-        logger.info("WebSocket connection established")
-        asyncio.create_task(self.receive_from_upstream())
+        self.upstream_connections = {}
+        connect_tasks = []
+
+        for server in self.UPSTREAM_SERVERS:
+            ip = server["ip"]
+            for port in server["ports"]:
+                connect_tasks.append(self.connect_to_upstream(ip, port))
+
+        await asyncio.gather(*connect_tasks)
+
+    async def connect_to_upstream(self, ip, port):
+        try:
+            ws = await websockets.connect(f'ws://{ip}:{port}/ws')
+            self.upstream_connections[(ip, port)] = ws
+            asyncio.create_task(self.receive_from_upstream(ip, port))
+            logger.info(f"WebSocket connection established to {ip}:{port}")
+        except Exception as e:
+            logger.error(f"Failed to connect to upstream {ip}:{port}: {str(e)}")
 
     async def disconnect(self, close_code):
-        await self.ws.close()
-        logger.info(f"WebSocket disconnected with code: {close_code}")
+        disconnect_tasks = [ws.close() for ws in self.upstream_connections.values()]
+        await asyncio.gather(*disconnect_tasks)
+        logger.info(f"All WebSocket connections closed with code: {close_code}")
 
     async def receive(self, text_data=None, bytes_data=None):
-        if text_data:
-            logger.info(f"Received text message from client: {text_data}")
-            await self.ws.send(text_data)
-        elif bytes_data:
-            logger.info(f"Received binary message from client: {len(bytes_data)} bytes")
-            await self.ws.send(bytes_data)
+        send_tasks = []
+        for (ip, port), ws in self.upstream_connections.items():
+            if text_data:
+                logger.info(f"Sending text message to upstream {ip}:{port}: {text_data}")
+                send_tasks.append(ws.send(text_data))
+            elif bytes_data:
+                logger.info(f"Sending binary message to upstream {ip}:{port}: {len(bytes_data)} bytes")
+                send_tasks.append(ws.send(bytes_data))
+        
+        await asyncio.gather(*send_tasks)
 
-    async def receive_from_upstream(self):
+    async def receive_from_upstream(self, ip, port):
+        ws = self.upstream_connections[(ip, port)]
         try:
             while True:
-                message = await self.ws.recv()
+                message = await ws.recv()
                 if isinstance(message, str):
-                    logger.info(f"Received text message from upstream: {message}")
+                    logger.info(f"Received text message from upstream {ip}:{port}: {message}")
                     try:
                         data = json.loads(message)
                         if 'clientID' not in data and 'id' in data:
                             data['clientID'] = data['id']
                         message = json.dumps(data)
                     except json.JSONDecodeError:
-                        logger.warning(f"Received non-JSON message: {message}")
+                        logger.warning(f"Received non-JSON message from {ip}:{port}: {message}")
                     await self.send(text_data=message)
                 else:
-                    logger.info(f"Received binary message from upstream: {len(message)} bytes")
+                    logger.info(f"Received binary message from upstream {ip}:{port}: {len(message)} bytes")
                     await self.send(bytes_data=message)
         except websockets.exceptions.ConnectionClosed:
-            logger.info("Upstream connection closed")
+            logger.info(f"Upstream connection closed for {ip}:{port}")
 
     async def send(self, text_data=None, bytes_data=None):
         if text_data:

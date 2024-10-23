@@ -22,6 +22,8 @@ import tempfile
 # Base class for the histogram application
 from abc import abstractmethod
 
+import socket
+
 ## ================================================================= ## 
 ## Base class. The most basic histogramming application. Standalone. ##         
 ## ================================================================= ##
@@ -359,8 +361,17 @@ class BasicHistogramApp:
     # ---------------------------------------------------------------------------------------------
 
     def start_new_server_immediately(self):
-        print(f"Starting {self.server.name} at http://localhost:{self.port}/index.html")
-        self.server.start(exec_mode="main", port=self.port, open_browser=True)
+        try:
+            hostname = socket.gethostname()
+            local_ip = socket.gethostbyname(hostname)
+            print(f"Local IP: {local_ip}")
+            print(f"Attempting to start {self.server.name} at http://129.114.108.204:{self.port}/")
+            print(f"Also try accessing at http://{local_ip}:{self.port}/")
+            self.server.start(exec_mode="main", port=self.port, host="0.0.0.0", open_browser=False)
+        except Exception as e:
+            print(f"Error starting server: {e}")
+            import traceback
+            traceback.print_exc()
 
     # ---------------------------------------------------------------------------------------------
     # Method to start a new server (async). To be used in a multi-process environment
@@ -368,7 +379,7 @@ class BasicHistogramApp:
 
     @abstractmethod
     async def start_new_server_async(self):
-        print(f"Starting {self.server.name} at http://localhost:{self.port}/index.html")
+        print(f"Starting {self.server.name} at http://129.114.108.204:{self.port}/index.html")
         return await self.server.start(exec_mode="task", port=self.port)
 
     # ---------------------------------------------------------------------------------------------
@@ -402,5 +413,10 @@ if __name__ == "__main__":
     parser.add_argument("--port", type=int, default=5459, help="Port to run the server on")
     args = parser.parse_args()
     
-    app = BasicHistogramApp("Standalone Histogram", args.port)
-    app.start_new_server_immediately()
+    try:
+        app = BasicHistogramApp("Standalone Histogram", args.port)
+        app.start_new_server_immediately()
+    except Exception as e:
+        print(f"Error in main: {e}")
+        import traceback
+        traceback.print_exc()

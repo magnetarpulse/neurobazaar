@@ -62,10 +62,19 @@ Install the dependencies/packages on the loaded/activated virtual environment:
 python -m pip install -r requirements.txt
 ```
 
-### Execution with automatic reload
+The media folder should have all the datasets, includes the max_slices folder, LIDC original folder, Max_Slices_OoD.csv, All_slices.csv
+
+### Start the Django Server
 
 ```
-python reload.py
+python manage.py runserver
 ```
+
+### Start the Trame Server with the python Code
+
+```
+python working_images.py
+```
+
 
 

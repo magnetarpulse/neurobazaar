@@ -3,31 +3,36 @@ import websockets
 import json
 import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.apps import apps
+from asgiref.sync import sync_to_async
+from home.models import UpstreamServer
 
 logger = logging.getLogger(__name__)
 
 class MultiPortWebSocketProxy(AsyncWebsocketConsumer):
-    UPSTREAM_SERVERS = [
-        {"ip": "129.114.108.168", "ports": [1235, 5459]},
-        {"ip": "localhost", "ports": [1235]},
-        # Add more IP and port combinations as needed
-    ]
-
     async def connect(self):
         await self.accept()
         self.upstream_connections = {}
         connect_tasks = []
 
-        for server in self.UPSTREAM_SERVERS:
-            ip = server["ip"]
-            for port in server["ports"]:
-                connect_tasks.append(self.connect_to_upstream(ip, port))
+        # Determine which set of upstream servers to use based on the route
+        route = self.scope['url_route']['kwargs'].get('route', 'new')
+        
+        # Fetch upstream servers from the database
+        upstream_servers = await self.get_upstream_servers(route)
+
+        for server in upstream_servers:
+            connect_tasks.append(self.connect_to_upstream(server.ip, server.port))
 
         await asyncio.gather(*connect_tasks)
 
+    @sync_to_async
+    def get_upstream_servers(self, route):
+        return list(UpstreamServer.objects.filter(route=route))
+
     async def connect_to_upstream(self, ip, port):
         try:
-            ws = await websockets.connect(f'ws://{ip}:{port}/ws')
+            ws = await websockets.connect(f'ws://{ip}:{port}/ws', timeout=5)
             self.upstream_connections[(ip, port)] = ws
             asyncio.create_task(self.receive_from_upstream(ip, port))
             logger.info(f"WebSocket connection established to {ip}:{port}")

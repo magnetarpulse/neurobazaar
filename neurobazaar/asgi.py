@@ -1,13 +1,15 @@
 import os
+import django
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.urls import re_path
-from home.wildcard import MultiPortWebSocketProxy
 from channels.auth import AuthMiddlewareStack
-from django.conf import settings
 from django.contrib.staticfiles.handlers import ASGIStaticFilesHandler
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'neurobazaar.settings')
+django.setup()
+
+from home.wildcard import MultiPortWebSocketProxy
 
 django_asgi_app = get_asgi_application()
 

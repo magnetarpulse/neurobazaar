@@ -564,14 +564,19 @@ def new_view2(request, path=''):
         
         content_type = response.headers.get('Content-Type', '')
         
-        # For HTML content, modify URLs
+        # For HTML content, modify URLs and wrap in template
         if 'text/html' in content_type:
             content = response.content.decode('utf-8', errors='replace')
             content = re.sub(r'(src|href)="/', r'\1="/new2/', content)
             content = re.sub(r'(src|href)="\./', r'\1="/new2/', content)
             content = re.sub(r'(ws://localhost:1235)', r'ws://' + request.get_host() + '/new2', content)
             
-            django_response = HttpResponse(content, content_type=content_type, status=response.status_code)
+            # Use render() to force the use of the template
+            return render(request, 'histogram.html', {
+                'username': username,
+                'content_type': content_type,
+                'proxied_content': content,
+            })
         else:
             # For non-HTML content, stream it as-is
             django_response = StreamingHttpResponse(
@@ -580,18 +585,22 @@ def new_view2(request, path=''):
                 status=response.status_code
             )
         
-        # Copy relevant headers from the upstream response
-        for header, value in response.headers.items():
-            if header.lower() not in ['content-encoding', 'transfer-encoding', 'content-length']:
-                django_response[header] = value
+            # Copy relevant headers from the upstream response
+            for header, value in response.headers.items():
+                if header.lower() not in ['content-encoding', 'transfer-encoding', 'content-length']:
+                    django_response[header] = value
         
-        return django_response
+            return django_response
     
     except requests.RequestException as e:
         logger.error(f"Error proxying request: {str(e)}")
         return HttpResponse(f"Error proxying request: {str(e)}", status=500)
 
 # ... rest of the file ...
+
+
+
+
 
 
 

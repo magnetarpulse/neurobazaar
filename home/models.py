@@ -1,6 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
-
+from django.conf import settings
 import uuid
     
 class Datastores(models.Model):
@@ -24,8 +23,8 @@ class MongoDBDatastores(Datastores):
 
 class Files(models.Model):
     UUID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    Datastore_UUID = models.ForeignKey(Datastores, on_delete=models.PROTECT, editable=False)
-    Username = models.ForeignKey(User, on_delete=models.PROTECT)
+    Datastore_UUID = models.ForeignKey('Datastores', on_delete=models.PROTECT, editable=False)
+    Username = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     Name = models.CharField(max_length=256)
     Type = "Tabular Data"
     Description = models.TextField(null=True)
@@ -46,4 +45,15 @@ class Collections(models.Model):
     Created = models.DateField(auto_now_add=True)
     Modified = models.DateField(auto_now=True)
 
+class UpstreamServer(models.Model):
+    ip = models.CharField(max_length=255)
+    port = models.IntegerField()
+    route = models.CharField(max_length=50, choices=[('new', 'New'), ('new2', 'New2')])
 
+    class Meta:
+        unique_together = ('ip', 'port', 'route')
+
+    def __str__(self):
+        return f"{self.ip}:{self.port} ({self.route})"
+
+# Add other models here if they exist

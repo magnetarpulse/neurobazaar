@@ -571,12 +571,35 @@ def new_view2(request, path=''):
             content = re.sub(r'(src|href)="\./', r'\1="/new2/', content)
             content = re.sub(r'(ws://localhost:1235)', r'ws://' + request.get_host() + '/new2', content)
             
-            # Use render() to force the use of the template
-            return render(request, 'histogram.html', {
+            # Use an inline template
+            html_template = Template("""
+            {% extends 'histogram.html' %}
+            {% block content %}
+            <style>
+                #proxied-content-box {
+                    width: 100%;
+                    height: 100%;
+                    overflow: auto;
+                }
+            </style>
+            <div id="proxied-content-box">
+                <div id="proxied-content">
+                    {{ proxied_content|safe }}
+                </div>
+            </div>
+            {% endblock %}
+            """)
+            
+            # Render the template with the proxied content
+            context = Context({
                 'username': username,
                 'content_type': content_type,
-                'proxied_content': content,
+                'proxied_content': content
             })
+            rendered_html = html_template.render(context)
+            
+            # Return the wrapped content as HTML
+            return HttpResponse(rendered_html, content_type='text/html')
         else:
             # For non-HTML content, stream it as-is
             django_response = StreamingHttpResponse(
@@ -597,6 +620,7 @@ def new_view2(request, path=''):
         return HttpResponse(f"Error proxying request: {str(e)}", status=500)
 
 # ... rest of the file ...
+
 
 
 

@@ -14,3 +14,5 @@ trame-client
 trame-server
 trame-vtk
 watchdog
+requests
+pydicom

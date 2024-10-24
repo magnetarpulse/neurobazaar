@@ -344,8 +344,8 @@ class BaseOoDHistogram:
         # Add a values for remaining items
         if self.state.subset_items:
             last_threshold = self.state.subset_items[-1]["threshold"]
-            max_value = np.max(self.data)
-
+            #max_value = np.max(self.data)
+            max_value = np.nanmax(self.data)
             if last_threshold<= max_value:
                 
                 remaining_mask = (self.data > last_threshold) & (self.data <= max_value)

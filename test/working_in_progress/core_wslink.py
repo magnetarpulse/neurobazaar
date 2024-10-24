@@ -12,9 +12,6 @@ from wslink.protocol import WslinkHandler, AbstractWebApp
 import aiohttp
 import aiohttp.web as aiohttp_web
 
-# Set the default secret key
-secret_key = "hello"
-
 # 4MB is the default inside aiohttp
 MSG_OVERHEAD = int(os.environ.get("WSLINK_MSG_OVERHEAD", 4096))
 MAX_MSG_SIZE = int(os.environ.get("WSLINK_MAX_MSG_SIZE", 4194304))
@@ -25,83 +22,55 @@ if HTTP_HEADERS and Path(HTTP_HEADERS).exists():
     HTTP_HEADERS: dict = json.loads(Path(HTTP_HEADERS).read_text())
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)  # Enable detailed logging
+
+
+# -----------------------------------------------------------------------------
+# Auth key
+# -----------------------------------------------------------------------------
+
+AUTH_KEY = "key"
 
 # -----------------------------------------------------------------------------
 # HTTP helpers
 # -----------------------------------------------------------------------------
 
 async def _root_handler(request):
-    # Extract the key from the query parameters or headers
-    key = request.query.get('key', '')  # Extract 'key' from query string
-    # For example, if you want to extract it from headers:
-    # key = request.headers.get('X-Auth-Key', '')
+    query_params = request.rel_url.query
+    key = query_params.get('key')
 
-    # key = "hello"
+    peername = request.transport.get_extra_info('peername')
+    print(f"Peername: {peername}")
+    if peername is not None:
+        client_ip, _ = peername
+        print(f"Client IP: {client_ip}")
 
-    logger.debug(f"Handling root request with key: {key}")
-    print(f"Handling request for key: {key}")
+        if client_ip != '127.0.0.1' and client_ip != 'YOUR_ALLOWED_IP':
+            print("Access Denied: Unauthorized IP address.")
+            return aiohttp.web.HTTPForbidden(text="Access Denied: Unauthorized IP address.")
 
-    # Validate the key
-    if key != secret_key:
-        print("Invalid key provided")
-        logger.debug("Invalid key provided")
-        return aiohttp.web.Response(text="Invalid Key", status=403)
+    print("Request received with key:", key)
+    print(f"Request received: {request.rel_url}")
 
-    if key == secret_key:
-        print ("Valid key provided")
-        logger.debug("Valid key provided")
-        # Serve the static index.html without exposing the key in the path
-        return aiohttp.web.HTTPFound(f"/index.html?{request.query_string}")
-
-    '''
-    # Get the key from the URL
-    # key = request.match_info.get('key', '')
-    key = "hello" # For testing purposes
-
-    logger.debug(f"Handling root request with key: {key}")
-    print(f"Handling request for key: {key}")
-
-    # If the key is present but invalid, return 403
-    if key != secret_key:
-        print("Invalid key provided")
-        print("Key provided: {key}")
-        print(f"Key expected: {secret_key}")
-        logger.debug("Invalid key provided")
-        return aiohttp.web.Response(text="Invalid Key", status=403)
-
-    # If the key is valid, redirect to a key-specific page (e.g., /key/index.html)
-    if request.query_string:
-        return aiohttp.web.HTTPFound(f"/{key}/index.html?{request.query_string}")
-    return aiohttp.web.HTTPFound(f"/{key}/index.html")
-    '''
-
-    '''
-    # Allow root access without key for public content
-    if not key:
-        print("Serving content without key at root")
-        logger.debug("Serving content without key at root")
-        return aiohttp_web.HTTPFound(f"/hello/index.html")  # or any default static file
-
-    # Key validation
-    if key != secret_key:
-        logger.debug("Invalid key")
-        return aiohttp_web.Response(text="Invalid Key", status=403)
-
-    if request.query_string:
-        logger.debug(f"Redirecting to: /{key}/index.html?{request.query_string}")
-        return aiohttp_web.HTTPFound(f"/{key}/index.html?{request.query_string}")
+    if key and key == AUTH_KEY:
+        print("Access Granted: Correct key.")
+        return aiohttp.web.FileResponse("index.html") 
     
-    return aiohttp_web.HTTPFound(f"/{key}/index.html")
-    '''
+    print("Access Denied: Invalid or missing key.")
+    return aiohttp.web.HTTPForbidden(text="Access Denied: Invalid or missing key.")
+
+# -----------------------------------------------------------------------------
+# Path helper function
+# -----------------------------------------------------------------------------
 
 def _fix_path(path):
     if not path.startswith("/"):
         return "/{0}".format(path)
     return path
 
-
 # -----------------------------------------------------------------------------
+# Middleware
+# -----------------------------------------------------------------------------
+
 @aiohttp_web.middleware
 async def http_headers(request: aiohttp_web.Request, handler):
     response: aiohttp_web.Response = await handler(request)
@@ -111,20 +80,24 @@ async def http_headers(request: aiohttp_web.Request, handler):
     return response
 
 # -----------------------------------------------------------------------------
+# Updated the class to only serve index.html if the key is correct in the query
+# -----------------------------------------------------------------------------
+
 class WebAppServer(AbstractWebApp):
     def __init__(self, server_config):
         AbstractWebApp.__init__(self, server_config)
-
         if HTTP_HEADERS:
             self.set_app(aiohttp_web.Application(middlewares=[http_headers]))
+            # self.set_app(aiohttp_web.Application(middlewares=[auth_middleware, http_headers]))
         else:
             self.set_app(aiohttp_web.Application())
-
         self._ws_handlers = []
         self._site = None
         self._runner = None
 
-        '''
+        # self.app.router.add_route("GET", "/", _root_handler)
+        # self.app.router.add_route("GET", "/index.html", _root_handler)  # Only accessible via the root handler
+
         if "ws" in server_config:
             routes = []
             for route, server_protocol in server_config["ws"].items():
@@ -143,92 +116,22 @@ class WebAppServer(AbstractWebApp):
             # Ensure longer path are registered first
             for route in sorted(static_routes.keys(), reverse=True):
                 server_path = static_routes[route]
-                routes.append(
-                    aiohttp_web.static(
-                        _fix_path(route), server_path, append_version=True
+                # server_path = Path(server_path)
+                # print(f"Adding static route: {route} -> {server_path}")
+
+                if route != "/index.html":  # Exclude index.html from static route
+                    routes.append(
+                        aiohttp_web.static(
+                            _fix_path(route), server_path, append_version=True
+                        )
                     )
-                )
 
-        '''
-
-        key = "hello"  # For testing purposes
-        if "ws" in server_config:
-            print("WebSocket configuration found")  # Confirm that WebSocket configuration is found
-            routes = []
-            print("Iterating over WebSocket routes:")
-            
-            for route, server_protocol in server_config["ws"].items():
-                print(f"  Setting up route: {route} with protocol: {server_protocol}")
-                
-                protocol_handler = AioHttpWsHandler(server_protocol, self)
-                self._ws_handlers.append(protocol_handler)
-                
-                # Debugging the final route with key and path fix
-                # final_route = f"/{{{key}}}{_fix_path(route)}"
-                final_route = f"{_fix_path(route)}"
-                print(f"  Generated route path: {final_route}")
-
-                # Adding WebSocket route
-                routes.append(
-                    aiohttp_web.get(final_route, protocol_handler.handleWsRequest)
-                )
-
-                # print(f"  Handler for {final_route} is set up with key: {key}")
-                print(f"  Handler for {final_route} is set up")
-
-
-            # At the end of setting up all routes
-            print(f"Total WebSocket routes set up: {len(routes)}")
-
+            # Route index.html through _root_handler
+            self.app.router.add_route("GET", "/", _root_handler)
+            self.app.router.add_route("GET", "/index.html", _root_handler)  # Only accessible via the root handler
             self.app.add_routes(routes)
 
-        if "static" in server_config:
-            logger.debug("Static file configuration found")
-            static_routes = server_config["static"]
-            routes = []
-
-            for route in sorted(static_routes.keys(), reverse=True):
-                server_path = static_routes[route]
-
-                # Append '/hello' to the server_path
-                # server_path = Path(server_path) / "hello"
-
-                logger.debug(f"Adding static route: {route} -> {server_path}")
-                print(f"Adding static route: {route} -> {server_path}")
-                # Check if the directory exists and log it
-                if not Path(server_path).exists():
-                    print(f"Static directory does not exist: {server_path}")
-                    logger.error(f"Static directory does not exist: {server_path}")
-                else:
-                    pass
-                    # print(f"Static directory exists: {server_path}")
-                    # logger.debug(f"Static directory exists: {server_path}")
-
-                
-                # routes.append(
-                #    aiohttp_web.static(
-                #        f"/{{{key}}}{_fix_path(route)}", server_path, append_version=True
-                #    )
-                # )
-                
-                routes.append(
-                    aiohttp_web.static(
-                        f"{_fix_path(route)}", server_path, append_version=True
-                    )
-                )
-                
-
-            # Resolve / => index.html with key check
-            # logger.debug("Adding root handler for static content")
-            # self.app.router.add_route("GET", "/{key}/", _root_handler)
-        self.app.router.add_route("GET", "/", _root_handler)
-        self.app.add_routes(routes)
-
-            # logger.debug(f"Static routes available: {server_config['static']}")
-            # print(f"Static routes available: {server_config['static']}")
-
         self.app["state"] = {}
-        print(f"State: {self.app['state']}")
 
     # -------------------------------------------------------------------------
     # Server status
@@ -298,6 +201,9 @@ class WebAppServer(AbstractWebApp):
         logger.info("Stopping server")
         self.completion.set_result(True)
 
+# -----------------------------------------------------------------------------
+# Reverse connection
+# -----------------------------------------------------------------------------
 
 class ReverseWebAppServer(AbstractWebApp):
     def __init__(self, server_config):
@@ -317,7 +223,6 @@ class ReverseWebAppServer(AbstractWebApp):
         ws = self._ws_handler.connections[client_id]
         await ws.close()
 
-
 def create_webserver(server_config):
     if "logging_level" in server_config and server_config["logging_level"]:
         logging.getLogger("wslink").setLevel(server_config["logging_level"])
@@ -329,15 +234,12 @@ def create_webserver(server_config):
     # Normal web server
     return WebAppServer(server_config)
 
-
 # -----------------------------------------------------------------------------
 # WS protocol definition
 # -----------------------------------------------------------------------------
 
-
 def is_binary(msg):
     return msg.type == aiohttp.WSMsgType.BINARY
-
 
 class AioHttpWsHandler(WslinkHandler):
     async def disconnectClients(self):
@@ -353,7 +255,6 @@ class AioHttpWsHandler(WslinkHandler):
         self.publishManager.unregisterProtocol(self)
 
     async def handleWsRequest(self, request):
-        '''
         client_id = str(uuid.uuid4()).replace("-", "")
         current_ws = aiohttp_web.WebSocketResponse(
             max_msg_size=MSG_OVERHEAD + MAX_MSG_SIZE, heartbeat=HEART_BEAT
@@ -376,43 +277,6 @@ class AioHttpWsHandler(WslinkHandler):
             self.authentified_client_ids.discard(client_id)
 
             logger.info("client {0} disconnected".format(client_id))
-
-            if not self.connections:
-                logger.info("No more connections, scheduling shutdown")
-                self.web_app.shutdown_schedule()
-
-        return current_ws
-        '''
-
-    async def handleWsRequest(self, request):
-        # key = request.match_info.get('key', '')
-        key = "hello"  # For testing purposes
-        logger.debug(f"Handling WebSocket request with key: {key}")
-        
-        # Key validation
-        if key != secret_key:
-            print(f"Invalid WebSocket key: {key}")
-            logger.debug(f"Invalid WebSocket key: {key}")
-            return aiohttp_web.Response(text="Invalid Key", status=403)
-
-        client_id = str(uuid.uuid4()).replace("-", "")
-        logger.debug(f"WebSocket connection established for client {client_id}")
-        current_ws = aiohttp_web.WebSocketResponse(
-            max_msg_size=MSG_OVERHEAD + MAX_MSG_SIZE, heartbeat=HEART_BEAT
-        )
-        self.connections[client_id] = current_ws
-        self.web_app.shutdown_cancel()
-
-        try:
-            await current_ws.prepare(request)
-            await self.onConnect(request, client_id)
-            async for msg in current_ws:
-                await self.onMessage(is_binary(msg), msg, client_id)
-        finally:
-            logger.debug(f"WebSocket connection closed for client {client_id}")
-            await self.onClose(client_id)
-            del self.connections[client_id]
-            self.authentified_client_ids.discard(client_id)
 
             if not self.connections:
                 logger.info("No more connections, scheduling shutdown")

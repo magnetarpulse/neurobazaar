@@ -31,6 +31,15 @@ logging.basicConfig(level=logging.DEBUG)
 AUTH_KEY = "key"
 
 # -----------------------------------------------------------------------------
+# Function to set a new authentication key, this can be invoked from the server 
+# -----------------------------------------------------------------------------
+def set_auth_key(new_key) -> None:
+    global AUTH_KEY
+    AUTH_KEY = new_key
+    print(f"New authentication key set: {new_key}")
+    # logger.info(f"New authentication key set: {new_key}")
+
+# -----------------------------------------------------------------------------
 # HTTP helpers
 # -----------------------------------------------------------------------------
 

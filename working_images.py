@@ -1,30 +1,23 @@
 # Core libraries for data processing
-
-#from django.http import JsonResponse
-#from django.shortcuts import render
-
-import requests
-import numpy as np
-import pandas as pd
 import os
-import trame
-import base64
-import matplotlib.pyplot as plt 
-import pydicom
+import requests
+import numpy as np # type: ignore
+import pandas as pd # type: ignore
+import matplotlib.pyplot as plt  # type: ignore
+import pydicom # type: ignore
+from PIL import Image # type: ignore
 
 
 # Core libraries for rendering
-from trame.app import get_server
-from trame.ui.vuetify import SinglePageLayout
-from trame.widgets import vuetify, matplotlib, html
-from trame.decorators import TrameApp, change
-from trame.tools.app import Path
-#from trame.assets.local import LocalFileManager
+from trame.app import get_server # type: ignore
+from trame.ui.vuetify import SinglePageLayout # type: ignore
+from trame.widgets import vuetify, matplotlib, html # type: ignore
+from trame.decorators import TrameApp, change # type: ignore
+from trame.tools.app import Path # type: ignore
 from pathlib import Path
-#from pydicom.data import get_testdata_files
-from django.conf import settings
-from django.core.wsgi import get_wsgi_application
-
+from django.conf import settings # type: ignore
+from django.core.wsgi import get_wsgi_application # type: ignore
+ 
 # Base class for the histogram application
 from abc import abstractmethod
 
@@ -48,9 +41,6 @@ class BaseOoDHistogram:
         self.port = port
         self.state, self.ctrl = self.server.state, self.server.controller
 
-        #self.image_server_url = "http://localhost:5001/images"
-        #self.state.image_base_url = self.image_server_url
-
         csv_path = os.path.join(settings.MEDIA_ROOT, csv_path)
         #print(csv_path)
         
@@ -58,10 +48,8 @@ class BaseOoDHistogram:
         #print(self.state.image_base_url)
         
         self.state.collection_base_url= os.path.join(settings.MEDIA_ROOT, collection_path)  # Folder containing collections
-        #self.image_server_url = f"{settings.MEDIA_URL}lidc_pixConvImg"
-        #self.image_server_url = f"{settings.MEDIA_URL}images"
+        #print(self.state.collection_base_url)
 
-        # Initialize the images list
         self.state.images_list=[]
         
         if csv_path and not data_column:
@@ -88,6 +76,7 @@ class BaseOoDHistogram:
         self.state.final_path=[]
         self.state.collection_images=[]
         self.state.pixel_array=[]
+        self.state.dicom_images=[]
         self.df = pd.DataFrame()
         self.html_figure = None
         self.data = []
@@ -132,6 +121,7 @@ class BaseOoDHistogram:
             {"text": "Data_Item", "value": "data_item"},
             {"text": "Nodule_IDs", "value": "nodule_ids"},  
             {"text": "Image_Row", "value": "image_row"},    
+            {"text": "Dicom_Images", "value": "dicom_imgs"},
         ]
 
         self.table_data_items = {
@@ -167,13 +157,7 @@ class BaseOoDHistogram:
 
         self.register_triggers()
         self.render_ui_layout()
-        
-
-    
-    
-    
-
-    
+        self.update_range_count()
 
     # ---------------------------------------------------------------------------------------------
     # Method to get the figure size (static method).
@@ -295,7 +279,7 @@ class BaseOoDHistogram:
             if start < end:
                 mask = (self.data > start) & (self.data <= end)
 
-                # Get the UIDs that match the mask
+                # Get the SOP UIDs that match the mask
                 filtered_uids = [self.item_list[j] for j in range(len(self.data)) if mask[j]]
                 
                 data_values = [
@@ -307,23 +291,50 @@ class BaseOoDHistogram:
                 filtered_nodule_ids = [self.nodule_ids[j] for j in range(len(self.data)) if mask[j]]
                 filtered_nodule_ids_str = [str(id) for id in filtered_nodule_ids]
 
-                
-
                 nodule_ids = [
                     path for path in self.state.collection_images 
                     if any(str(id) in path for id in filtered_nodule_ids_str)
                 ]
 
-            
-                imgs=[]
+                nodule_ids = sorted(nodule_ids, key=lambda url: int(os.path.splitext(os.path.basename(url))[0])) # to sort nodule ids in ascending order
+
+                dicom_images_list=[]
+                for image in self.state.dicom_images:
+                    base_name, ext = os.path.splitext(image)
+                    if any(uid in base_name for uid in filtered_uids):
+                        #print(f"Image found: {base_name}")
+                        dicom_images_list.append(f"{base_name}.png")
+                
+
+                imgs={}
                 for id in nodule_ids:
                     ss= f"{Path(id).name}"
-                    
+                    base, ext = os.path.splitext(ss)
                     for item in self.state.images_list:
                         strip=Path(item).name
-                        if ss==strip:
-                            imgs.append(item)
-                #print(len(imgs))
+                        base_img, ext = os.path.splitext(strip)
+                        if base==base_img:
+                            imgs[base]=item
+                
+                # Map DICOM images to nodule IDs using the DataFrame
+                base_names_list=[]
+                for i in dicom_images_list:
+                    base_name = os.path.splitext(os.path.basename(i))[0]
+                    base_names_list.append(base_name)
+                
+                results = self.df[self.df[self.state.item_column].isin(base_names_list)][[self.state.node_id, self.state.item_column]]
+                
+                # dictionary to map node IDs to their respective image paths in sorted order
+                id_to_image_mapping = {row[self.state.node_id]: row[self.state.item_column] for _, row in results.iterrows()}
+               
+                # Retrieve images in the sorted order of nodule_ids
+                final_dicom_images={}
+                for ni, sop in id_to_image_mapping.items():
+                    for image in dicom_images_list:
+                        base_name = os.path.splitext(os.path.basename(image))[0]
+                        if base_name == sop:
+                            final_dicom_images[ni]=image
+                
 
             else:
                 data_values = []
@@ -336,7 +347,8 @@ class BaseOoDHistogram:
                 "range": f"Range = ({float(start)} , {float(end)}]",
                 "data_item": f"CollectionPath = {data_values}",
                 "nodule_ids": [f"{Path(nodule_id).name}" for nodule_id in nodule_ids],
-                "image_row": [f"{i}" for i in imgs]
+                "image_row": imgs,
+                "dicom_imgs": final_dicom_images
             }
 
             self.state.data_items.append(items)
@@ -346,10 +358,12 @@ class BaseOoDHistogram:
             last_threshold = self.state.subset_items[-1]["threshold"]
             #max_value = np.max(self.data)
             max_value = np.nanmax(self.data)
+
             if last_threshold<= max_value:
                 
                 remaining_mask = (self.data > last_threshold) & (self.data <= max_value)
 
+                # Get the SOP UIDs that match the mask
                 remaining_uids = [self.item_list[j] for j in range(len(self.data)) if remaining_mask[j]]
 
                 remaining_values = [
@@ -365,24 +379,54 @@ class BaseOoDHistogram:
                     if any(str(id) in path for id in filtered_remaining_nodule_ids_str)
                 ]
 
-                rem_imgs=[]
+                remaining_nodule_ids = sorted(remaining_nodule_ids, key=lambda url: int(os.path.splitext(os.path.basename(url))[0])) # to sort nodule ids in ascending order
+
+                dicom_rem_images_list=[]
+                for image in self.state.dicom_images:
+                    base_name, ext = os.path.splitext(image)
+                    if any(uid in base_name for uid in remaining_uids):
+                        dicom_rem_images_list.append(f"{base_name}.png")
+                
+                
+
+                rem_imgs={}
                 for id in remaining_nodule_ids:
                     ss= f"{Path(id).name}"
                     
                     for item in self.state.images_list:
                         strip=Path(item).name
                         if ss==strip:
-                            rem_imgs.append(item)
+                            rem_imgs[id]=item
                 
-                #print(len(rem_imgs))
             
+                # Map DICOM images to nodule IDs using the DataFrame
+                base_names_list=[]
+                for i in dicom_rem_images_list:
+                    base_name = os.path.splitext(os.path.basename(i))[0]
+                    base_names_list.append(base_name)
+                
+                results = self.df[self.df[self.state.item_column].isin(base_names_list)][[self.state.node_id, self.state.item_column]]
+                
+                # dictionary to map node IDs to their respective image paths in sorted order
+                id_to_image_mapping = {row[self.state.node_id]: row[self.state.item_column] for _, row in results.iterrows()}
+               
+                # Retrieve images in the sorted order of nodule_ids
+                final_dicom_rem_images={}
+                for ni, sop in id_to_image_mapping.items():
+                    for image in dicom_rem_images_list:
+                        base_name = os.path.splitext(os.path.basename(image))[0]
+                        if base_name == sop:
+                            final_dicom_rem_images[ni]=image
+
                 remaining_item = {
                     #"index": len(self.state.subset_items) + 1,
                     #"name": f"Subset{len(self.state.subset_items) + 1} (Remaining)",
                     "range": f"Range = ({float(last_threshold)} , {max_value}]",
                     "data_item": f"CollectionPath= {remaining_values}",
                     "nodule_ids": [f"{Path(nodule_id).name}" for nodule_id in remaining_nodule_ids], 
-                    "image_row": [f"{i}" for i in rem_imgs] 
+                    "image_row": rem_imgs,
+                    "dicom_imgs": final_dicom_rem_images
+
                 }
 
                 self.state.data_items.append(remaining_item)
@@ -426,7 +470,6 @@ class BaseOoDHistogram:
             self.state.range_item.pop(index)
             self.display_data()
 
-        
         if 0 < index <= len(self.state.subset_items):  
             self.state.subset_items.pop(index-1)  
             self.state.range_item.pop(index-1)
@@ -450,6 +493,12 @@ class BaseOoDHistogram:
             #(f"Subset at index {index} removed")
 
 
+    # ---------------------------------------------------------------------------------------------
+    # Method to show image.
+    # ---------------------------------------------------------------------------------------------
+    def show_image(self, url):
+        print(f"Show image: {url}")
+        
 
     # ---------------------------------------------------------------------------------------------
     # Getting path for each .dcm file 
@@ -465,7 +514,7 @@ class BaseOoDHistogram:
                     else:
                         if full_path.endswith('.dcm'):
                             self.state.image_paths.append(full_path)
-                            
+                           
 
     # ---------------------------------------------------------------------------------------------
     # Mapping records from .csv to the collection folder
@@ -498,19 +547,30 @@ class BaseOoDHistogram:
                     if study_uid == first_folder and series_uid == second_folder and file_uid == dcm_file:
                         #path = f"{study_uid}/{series_uid}/{file_uid}.dcm"
                         self.state.final_path.append(dcm_path)
-        #print(f"Counted DICOM paths:{len(self.state.image_paths)}")
-        
+
     # ---------------------------------------------------------------------------------------------
     # Displaying Pixel Array for original images from Collection
     # ---------------------------------------------------------------------------------------------
 
     def original_images(self,final_path):
+        
+        dicom_folder = "/home/cc/neurobazaar/neurobazaar/media/dicom_images"  # Folder where images will be saved
+        
+        if not os.path.exists(dicom_folder):
+            os.makedirs(dicom_folder)
+        
         for path in self.state.final_path:
             meta_data_path = pydicom.dcmread(f"{path}")
             pixel_array = meta_data_path.pixel_array
+            img = Image.fromarray(pixel_array)
             self.state.pixel_array.append(pixel_array)
-        #print(self.state.pixel_array)
-
+            base_name, ext = os.path.splitext(path)
+            base_name= base_name.split('/').pop()
+            filename = base_name + ".png"  # Use original filename with .png extension
+            output_path = os.path.join(dicom_folder, filename)
+            plt.imsave(output_path, img, cmap='gray')
+            #print(f"Image saved at: {output_path}")
+        
 
     # ---------------------------------------------------------------------------------------------
     # Mapping Max_slices collection with csv file
@@ -532,9 +592,7 @@ class BaseOoDHistogram:
                                     if img_name==str(i):
                                         self.state.collection_images.append(file_path)
         
-        
 
-    
     # ---------------------------------------------------------------------------------------------
     # State change handler to update the chart.
     # ---------------------------------------------------------------------------------------------
@@ -552,6 +610,7 @@ class BaseOoDHistogram:
     def register_triggers(self):
         self.ctrl.trigger("update_threshold")(self.update_threshold_t)
         self.ctrl.trigger("remove_subset")(self.remove_subset_t)
+        self.ctrl.trigger("show_image")(self.show_image_t)
 
     # ---------------------------------------------------------------------------------------------
     # Trigger to update threshold.
@@ -568,36 +627,46 @@ class BaseOoDHistogram:
         self.remove_subset(index)
 
     # ---------------------------------------------------------------------------------------------
-    # Fetching response from views.py 
+    # Trigger to enlarge clicked image
     # ---------------------------------------------------------------------------------------------
 
+    def show_image_t(self, url):
+        self.show_image(url)
+
+
+    # ---------------------------------------------------------------------------------------------
+    # Fetching response from views.py 
+    # ---------------------------------------------------------------------------------------------
     
     def fetch_images(self):
         try:
             # Ensure this matches your Django URL
-            response = requests.get('http://127.0.0.1:8000/images/')
+            response_maxslices = requests.get('http://127.0.0.1:8000/images/')
+            response_lidc = requests.get('http://127.0.0.1:8000/dicom/')
             
             # Debugging output to check the response
-            print(f"Response status code: {response.status_code}")
+            print(f"Response status code for Max_Slices Images: {response_maxslices.status_code}")
+            print(f"Response status code for LIDC images: {response_lidc.status_code}")
             
-            if response.status_code == 200:
-                data = response.json()
-                #print(f"Data received: {data}")  # Print the data for debugging
+            if response_maxslices.status_code == 200 & response_lidc.status_code == 200:
+                data = response_maxslices.json()
+                dicom_data = response_lidc.json()
+                #print(f"Data received max_slices: {data}")  
+                #print(f"Data received lidc: {dicom_data}")  
                 
-                # Assuming your images are already in the correct format
                 self.state.images_list = data.get('images', [])
+                self.state.dicom_images = dicom_data.get('dicom_images', [])
                 #print(f"From fetch: {self.state.images_list}")  # Check the images list
-                #print(self.state.images_list)
+                #print(f"From fetch: {self.state.dicom_images}")  # Check the dicom images list
             
             else:
-                print(f"Failed to fetch images: {response.status_code}")
+                print(f"Failed to fetch images: {response_maxslices.status_code}")
+                print(f"Failed to fetch dicom images: {response_lidc.status_code}")
                 
         
         except Exception as e:
             print(f"Error fetching images: {e}")
 
-
-    
 
     # ---------------------------------------------------------------------------------------------
     # UI layout
@@ -608,7 +677,7 @@ class BaseOoDHistogram:
             layout.title.set_text(self.server.name)
 
             with layout.content:
-                with vuetify.VContainer(fluid=True, classes="d-flex flex-row"):
+                with vuetify.VContainer(fluid=True, classes="d-flex flex-row",style="padding-bottom: 40px;"):
                     # Left Column for the figure and data 
                     with vuetify.VCol(cols="8"):
                         with vuetify.VRow():
@@ -623,50 +692,64 @@ class BaseOoDHistogram:
                             vuetify.VSubheader("Data View:",
                             style="font-size: 18px;font-weight: bold;color: rgb(0, 71, 171);")
 
-                        
-                        with vuetify.VRow():
-                                #with vuetify.VContainer(style="overflow-x: auto; white-space: nowrap;"):
-                                    with html.Tbody():
-                                        with html.Tr(v_for="(item, index) in data_items",key="index"):
-                                            with vuetify.VContainer(style="overflow-x: auto; white-space: nowrap;"):
-                                                    vuetify.VIcon(
+                        with vuetify.VRow():   
+                            with html.Tbody():
+                                with html.Tr(v_for="(item, index) in data_items",key="index"):
+                                            
+                                    with vuetify.VContainer(style="overflow-x: auto; white-space: nowrap; overflow-y: hidden"):
+                                            vuetify.VIcon(
                                                     "mdi-download",
                                                     color="blue",
-                                                    click="const csvContent = 'Nodule_ids\\n' + item['nodule_ids'].join('\\n'); const fileName = `nodule_ids_${index}.csv`; utils.download(fileName, csvContent, 'text/csv');",
+                                                    click="const csvContent = 'Nodule_ids\\n' + item['nodule_ids'].join('\\n'); const fileName = `Subset_${index+1}.csv`; utils.download(fileName, csvContent, 'text/csv');",
                                                     size=25,
-                                                    style="border: 2px solid blue; border-radius: 30%; padding: 3px; color: rgb(8, 24, 168);margin-top: 20px;margin-bottom: 10px;",
+                                                    style="border: 2px solid blue; border-radius: 30%; padding: 3px; color: rgb(8, 24, 168);margin-top: 5px;margin-bottom: 5px;",
                                                     )
                                                 
-                                                    with vuetify.VRow(): 
-                                                        html.Td("{{ item.range }}", classes="pa-4")
+                                            with vuetify.VRow(): 
+                                                html.Td("{{ item.range }}", classes="pa-4")
                                                 
-                                                    #with vuetify.VRow(): 
-                                                    #    html.Td(("{{ item.data_item }}",), classes="pa-4")
+                                            #with vuetify.VRow(): 
+                                            #    html.Td(("{{ item.data_item }}",), classes="pa-4")
                                                             
-                                                    #with vuetify.VRow():
-                                                    #    html.Td(("{{ item.nodule_ids }}",), classes="pa-4")
+                                            #with vuetify.VRow():
+                                            #    html.Td(("{{ item.nodule_ids }}",), classes="pa-4")
                                                     
-                                                    #with vuetify.VRow():
-                                                    #    html.Td(("{{ item.image_row }}",), classes="pa-4")
+                                            #with vuetify.VRow():
+                                            #    html.Td(("{{ item.image_row }}",), classes="pa-4")
 
+                                            #with vuetify.VRow():
+                                            #    html.Td(("{{ item.dicom_imgs }}",), classes="pa-4")
+                                            
+                                            with vuetify.VRow(style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start;",):
+                                                        with vuetify.Template(v_for="(dicom, imgIndex) in item.dicom_imgs", key="imgIndex"):   
+                                                            with vuetify.VCol(cols="auto", class_="d-inline-block", style="flex: 0 0 auto; padding: 5px;"):
+                                                                with vuetify.VCard(style="padding: 0; max-height: 350px;"): 
+                                                                    vuetify.VImg(
+                                                                        src=("dicom", lambda name: f"{name}"),
+                                                                        lazy_src="http://via.placeholder.com/150x150",
+                                                                        alt=("imgIndex", lambda imgIndex: f"Dicom_Img{imgIndex}"),
+                                                                        style="width: 150px; height: 150px; object-fit: contain;",
+                                                                        eager=False,
+                                                                        #click="trigger('show_image', [img])",
+                                                                    )           
+                                                                    html.Td("nodule_Id={{ imgIndex }}", classes="pa-4 center-text", style="font-size: 16px; display: flex; justify-content: center; align-items: center;")
 
-                                                    #with vuetify.VContainer(style="overflow-x: hidden;"):
-                                                    with vuetify.VContainer(fluid=True, classes="d-flex flex-row"):
-                                                        with vuetify.VRow(style="overflow-x: hidden; white-space: nowrap; max-height: 200px; overflow-x: auto;"):
-
-                                                            with vuetify.Template(v_for="(img, imgIndex) in item.image_row", key="imgIndex"):
-                                                                        with vuetify.VCol(cols="auto", style="flex: 0 0 auto;"):
-                                                                            vuetify.VImg(
-                                                                                src=("img", lambda name: f"{name}"),
-                                                                                lazy_src="http://via.placeholder.com/300x150",
-                                                                                alt=("imgIndex", lambda imgIndex: f"Img{imgIndex}"),
-                                                                                style="max-width: 300px; max-height: 300px; object-fit: contain;",
-                                                                                eager=False,  # This ensures lazy loading
-                                                                            )
                                                     
-                                                
-                                                
-                                
+                                            with vuetify.VRow(style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start;",):
+                                                                    with vuetify.Template(v_for="(img, imgIndex2) in item.image_row", key="imgIndex2"):   
+                                                                        #with vuetify.Template(v_if="imgIndex === imgIndex2"):
+                                                                        with vuetify.VCol(cols="auto", class_="d-inline-block", style="flex: 0 0 auto; padding: 5px;"):
+                                                                            with vuetify.VCard(style="padding: 0; max-height: 200px;"): 
+                                                                                vuetify.VImg(
+                                                                                    src=("img", lambda name: f"{name}"),
+                                                                                    lazy_src="http://via.placeholder.com/150x150",
+                                                                                    alt=("imgIndex2", lambda imgIndex2: f"Img{imgIndex2}"),
+                                                                                    style="width: 150px; height: 150px; object-fit: contain;",
+                                                                                    eager=False,
+                                                                                    click="trigger('show_image', [img])",
+                                                                                )           
+                                                                                html.Td("{{ img.split('/').pop() }}", classes="pa-4 center-text", style="font-size: 16px; display: flex; justify-content: center; align-items: center;")
+                                                                                
                     # Right Column for the dynamic grid tables for configuration and view
                     with vuetify.VCol(cols="4"):
 
@@ -714,8 +797,8 @@ class BaseOoDHistogram:
                                     step=0.1,
                                     
                                 )
-
-
+            
+                        
     # ---------------------------------------------------------------------------------------------
     # Method to start a new server (main). Not to be used in a multi-process environment
     # ---------------------------------------------------------------------------------------------
@@ -723,8 +806,8 @@ class BaseOoDHistogram:
     @abstractmethod   
     def start_server_immediately(self):
         print(f"Starting Server_Manager at http://localhost:{self.port}/index.html")
-        self.server.static_url_path = "/assets"
-        self.server.static_folder = "/home/cc/research_tests/lidc_pixConvImg"
+        #self.server.static_url_path = "/assets"
+        #self.server.static_folder = "/home/cc/research_tests/lidc_pixConvImg"
         self.server.start(exec_mode="main", port=self.port)
 
     # ---------------------------------------------------------------------------------------------
@@ -769,4 +852,5 @@ class BaseOoDHistogram:
 if __name__ == "__main__":
     server = BaseOoDHistogram("Ood Analyzer using Trame-Matplotlib", 8089, "MaxSlices_wOoDScore.csv", "LIDC_Dataset", "lidc_pixConvImg", "Log_Loss_ALL","imageSOP_UID","noduleID")
     server.start_server_immediately()
+    
     

@@ -4,6 +4,7 @@ import requests
 import numpy as np # type: ignore
 import pandas as pd # type: ignore
 import matplotlib.pyplot as plt  # type: ignore
+from matplotlib.patches import FancyArrowPatch # type: ignore
 import pydicom # type: ignore
 from PIL import Image # type: ignore
 
@@ -40,6 +41,7 @@ class BaseOoDHistogram:
         self.server = get_server(name, client_type="vue2")
         self.port = port
         self.state, self.ctrl = self.server.state, self.server.controller
+        self.state.thresholds=[1,2,3,4]
 
         csv_path = os.path.join(settings.MEDIA_ROOT, csv_path)
         #print(csv_path)
@@ -173,17 +175,72 @@ class BaseOoDHistogram:
     def update_plot(self, extra_lines=None):
         plt.close('all')
         fig, ax = plt.subplots(**self.get_figure_size())
-
-        ax.hist(self.data, bins=self.state.bins, edgecolor='black',color=(70/255, 130/255, 180/255))
+        min_bin = min(0, min(self.data))  # Use the minimum of 0 and the minimum data point
+        max_bin = np.ceil(max(self.data) * 2) / 2 # Use the maximum data point
+        ax.set_xticks(np.arange(min_bin, max_bin, step=0.5))
+        bin_edges = np.linspace(min_bin, max_bin, num=self.state.bins + 1) 
+        ax.hist(self.data, bins=bin_edges, color="#00a8e8",alpha=0.85)
+        
+        ax.set_xlim(left=min_bin, right=max_bin)
         y_limits = ax.get_ylim() 
-        colors= ['blue','green','red','orange','black']
+        colors= ['#006400','#7D26CD','blue','red']
+        OOD_sections=['EASY','MEDIUM','HARD']
         if extra_lines: 
             for i,line in enumerate(extra_lines):
                 line_color = colors[i % len(colors)]
                 ax.plot([line, line], y_limits, color=line_color, linestyle='--')
+                
+                # Add section labels based on thresholds
+                label_x_position = line - 0.4
+                
+                if i < len(extra_lines) - 1:
+                    label_x_position = (line + (extra_lines[i + 1]- line ) / 2) - 1.11 # on adding new line, move it to the left
+                
+                else:
+                    label_x_position = line - 0.4  # For the last line, just move it to the left
 
+                if i==0:
+                    section_text = f'ID'
+                
+                    arrow = FancyArrowPatch((0, y_limits[1] * 0.97),  # Start at the y-axis (x=0)
+                                        (line, y_limits[1] * 0.97),  # End at the position of the first line
+                                        color=line_color, 
+                                        arrowstyle='<->', 
+                                        mutation_scale=15, 
+                                        alpha=0.5)
+                    ax.add_patch(arrow)  
+                    
+                elif i >= len(OOD_sections):  # If more lines than sections, use the last section "HARD"
+                    section_text = 'HARD'
+                
+                else:
+                    section_index = (i - 1) 
+                    section_text = OOD_sections[section_index]
+       
+                if i > 0:  # Draw an arrow only if there's a previous line
+                    arrow = FancyArrowPatch((line, y_limits[1] * 0.97), 
+                                            (extra_lines[i - 1], y_limits[1] * 0.97), 
+                                            color=line_color, 
+                                            arrowstyle='<->', 
+                                            mutation_scale=15, alpha=0.5)
+                                           
+                    ax.add_patch(arrow)
+                # Place the label
+                ax.text(label_x_position, y_limits[1] * 1.0, section_text, color=line_color, horizontalalignment='center', verticalalignment='bottom', )
+            
+            # Ood Arrow from the first extra line to the end of the x-axis
+            last_arrow = FancyArrowPatch(
+                (extra_lines[0], y_limits[1] * 0.92),  # Start from first extra line
+                (self.state.thresholds[-1], y_limits[1] * 0.92),  # End at the max x-axis value
+                color='black', arrowstyle='simple', mutation_scale=15, alpha=0.5
+            )
+            ax.add_patch(last_arrow)
+            ax.text(self.state.thresholds[-1] - 0.5, y_limits[1] * 0.90, 'OoD', color='black', horizontalalignment='center', verticalalignment='top',alpha=0.5)
+
+        plt.title("Distribution of OoD Scores", fontweight='bold', fontsize=16, ha='center',pad=23)
         ax.set_xlabel('OoD Scores')
         ax.set_ylabel('Frequency')
+        
         return fig
 
 
@@ -256,6 +313,7 @@ class BaseOoDHistogram:
 
             self.update_range_count() 
             self.update_chart() 
+            self.update_plot()
             self.display_data()
              
             
@@ -440,13 +498,23 @@ class BaseOoDHistogram:
     # ---------------------------------------------------------------------------------------------
    
     def add_subset(self):
-        original_val=[1,2,3,4]
+        #thresholds=[1,2,3,4]
+        threshold_count=len(self.state.thresholds)
+
+        if len(self.state.subset_items) >= threshold_count:
+            print("Cannot add more subsets. Maximum threshold reached.")
+            return  # Exit the method if the threshold is reached
 
         if self.state.subset_items:
             last_threshold = self.state.subset_items[-1]["threshold"]
-            new_line = last_threshold+1
+            if last_threshold < self.state.thresholds[-1]:
+                new_line = last_threshold+1
+            else:
+                print("Cannot add more subsets. Maximum threshold reached.")
+                return
+        
         else:
-            new_line = original_val[0]
+            new_line = self.state.thresholds[0]
         
         new_item = {"index": len(self.state.subset_items) + 1, "name": f"Subset{len(self.state.subset_items) + 1}", "threshold": float(new_line), "actions": "Remove"}
         
@@ -458,6 +526,7 @@ class BaseOoDHistogram:
         #print("Subset Items added:", self.state.subset_items)
         self.update_range_count()
         self.display_data()
+        self.update_plot()
         
 
     # ---------------------------------------------------------------------------------------------
@@ -489,6 +558,7 @@ class BaseOoDHistogram:
             self.server.state.dirty("range_item")
             
             self.display_data()
+            self.update_plot()
             self.server.state.dirty("data_items")           
             #(f"Subset at index {index} removed")
 

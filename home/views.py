@@ -20,5 +20,12 @@ def image_list(request):
     return JsonResponse({'images': images})
 
 
+def dicom_list(request):
+    dicom_folder=os.path.join(settings.MEDIA_ROOT,'dicom_images')
+    dicom_images = [f"{request.build_absolute_uri(settings.MEDIA_URL)}dicom_images/{di_img}" for di_img in os.listdir(dicom_folder) if di_img.endswith(('.png', '.jpg', '.jpeg'))]  # Filter for dicom files
+    #print(f"Images:{dicom_images}")  # Debug: Check the list of images
+    return JsonResponse({'dicom_images': dicom_images})
+
+
 
 

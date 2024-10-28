@@ -624,7 +624,7 @@ class BaseOoDHistogram:
 
     def original_images(self,final_path):
         
-        dicom_folder = "/home/cc/neurobazaar/neurobazaar/media/dicom_images"  # Folder where images will be saved
+        dicom_folder = "/home/cc/neurobazaar_share/neurobazaar/media/dicom_images"  # Folder where images will be saved
         
         if not os.path.exists(dicom_folder):
             os.makedirs(dicom_folder)

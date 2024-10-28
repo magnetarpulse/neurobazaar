@@ -704,6 +704,7 @@ class Server:
 
         # Manage exit life cycle unless coroutine
         if exec_mode == "main":
+            print("Exiting main loop")
             self._running_stage = 0
             if self.controller.on_server_exited.exists():
                 loop = asyncio.get_event_loop()
@@ -711,22 +712,29 @@ class Server:
                     **self.state.to_dict()
                 ):
                     if inspect.isawaitable(exit_task):
+                        print("Awaiting exit task:", exit_task)
                         loop.run_until_complete(exit_task)
                     elif callable(exit_task):
                         result = exit_task()
                         if inspect.isawaitable(result):
+                            print("Awaiting result of callable exit task:", result)
                             loop.run_until_complete(result)
         elif hasattr(task, "add_done_callback"):
+            print("Adding done callback to task:", task)
 
             def on_done(task: asyncio.Task) -> None:
                 try:
+                    print("Task completed:", task)
                     task.result()
                     self._running_stage = 0
                     if self.controller.on_server_exited.exists():
+                        print("Calling on_server_exited after task completion")
                         self.controller.on_server_exited(**self.state.to_dict())
                 except asyncio.CancelledError:
+                    print("Task was cancelled:", task)
                     pass  # Task cancellation should not be logged as an error.
                 except Exception:  # pylint: disable=broad-except
+                    print("Exception raised by task:", task)
                     logging.exception("Exception raised by task = %r", task)
 
             task.add_done_callback(on_done)
@@ -753,3 +761,24 @@ class Server:
     def server_options(self):
         """Once started, you can retrieve the server options used"""
         return self._server_options
+    
+    # -------------------------------------------------------------------------
+    # Stop the instance(s) of the server(s) and clean up the webserver instance
+    # -------------------------------------------------------------------------
+
+    def stop(self):
+        """
+        Safely closes the server(s) and performs cleanup.
+        This is a synchronous wrapper around the async stop() method.
+        """
+
+        print("Closing the server and performing cleanup")
+
+        # Stop the server using CoreServer's static method
+        CoreServer.server_stop()
+        
+        # Reset internal state
+        self._running_stage = 0
+        self._running_port = 0
+        self._server = None
+        self._running_future = None

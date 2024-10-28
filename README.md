@@ -9,13 +9,42 @@ Interactive Visualization Platform for Machine Learning and Data Science Dataset
 
 ## Requirements and Setup
 
-### Install Python
-
 In order to run the Neurobazaar Platform you need to have at least Python **3.11** installed on your computer.
 
 For Windows 10 this software has been tested with Python **3.11.5**.
 
-### Set up the Python Virtual Environment
+### Ubuntu Required Packages
+
+Please install Deadsnakes Personal Package Archive (PPA) to install Python **3.11** or newer on your machine.
+
+**Note:** If you are using a newer Ubuntu version, and Python **3.11** or newer is available in the official Ubuntu repositories, then you will not need to install Deadsnakes Personal Package Archive (PPA).
+```
+sudo add-apt-repository ppa:deadsnakes/ppa
+```
+
+After, installing the Deadsnakes Personal Package Archive (PPA), I would recommend check if your system has any available updates, installing any necessary upgrades and then doing a reboot of the system.
+
+```
+sudo apt update
+sudo apt upgrade
+sudo reboot
+```
+After rebooting. You will also need to install these packages if you want to run the Neurobazaar from a headless machine.
+
+**Note:** If you plan to build the Neurobazaar on your local machine and or a headed machine, then you will not need to install these packages. However, I would not recommend the Neurobazaar on your local machine because of the architecture of the Neurobazaar. 
+
+```
+sudo apt install python3.11 python3.11-venv libpython3.11-dev build-essential g++-12 cmake cmake-curses-gui ninja-build mesa-common-dev mesa-utils libosmesa6-dev freeglut3-dev 
+sudo update-alternatives --remove-all gcc
+sudo update-alternatives --remove-all g++
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 110
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 120
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 110
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 120
+```
+
+
+### Set up the Python Virtual Environment for Windows
 
 All of the required Python packages are installed in a Python Virtual Environment.
 
@@ -36,7 +65,7 @@ or
 .venv/Scripts/activate
 ```
 
-### Python Virtual Environment Setup
+### Python Virtual Environment Setup for Ubuntu/Linux
 
 All of the required Python packages are installed in a Python Virtual Environment. The first step is to create the virtual environment and the second step is to load/activate the environment. The first command has to be run only once.
 

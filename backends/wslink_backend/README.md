@@ -1,6 +1,6 @@
 ```
 wslink:
-├── protocol.py
+├── protocol.py -> protocol.py
 ├── publish.py
 ├── relay.py
 ├── backends

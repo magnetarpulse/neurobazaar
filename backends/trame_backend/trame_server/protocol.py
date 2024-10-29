@@ -53,9 +53,41 @@ class CoreServer(ServerProtocol):
         if auth_key is None:
             raise ValueError("auth_key does not exist in options")
 
-        print(f"auth_key exists: {auth_key}")
+        # print(f"DEBUG: authentication key exists")
+        # print(f"DEBUG: authentication key: {auth_key}")
+
+        # Extract username from options if it exists
+        username = getattr(options, 'username', None)
+
+        # Check if username exists and return an error if it does not
+        if username is None:
+            raise ValueError("username does not exist in options")
+
+        # print(f"DEBUG: username exists")
+        # print(f"DEBUG: username: {username}")
+
+        # Extract password from options if it exists
+        password = getattr(options, 'password', None)
+
+        # Check if password exists and return an error if it does not
+        if password is None:
+            raise ValueError("password does not exist in options")
+
+        # print(f"DEBUG: password exists")
+        # print(f"DEBUG: password: {password}")
+
+        # Extract client_ip from options if it exists
+        client_ip = getattr(options, 'client_ip', None)
+
+        # Check if client_ip exists and return an error if it does not
+        if client_ip is None:
+            raise ValueError("client_ip does not exist in options")
+
+        # print(f"DEBUG: client_ip exists")
+        # print(f"DEBUG: client_ip: {client_ip}")
 
         # NOTE: **kwargs to wslink's start_webserver are currently unused
+        
         return server.start_webserver(
             options=options,
             protocol=CoreServer,
@@ -64,10 +96,40 @@ class CoreServer(ServerProtocol):
             exec_mode=exec_mode,
             **kwargs,
         )
-
+        
     @staticmethod
     def server_stop():
+        print("DEBUG: stopping server")
         server.stop_webserver()
+
+    @staticmethod
+    async def set_auth_key(auth_key):
+
+        # print("Value of auth_key: ", auth_key)
+        # print("Type of auth_key: ", type(auth_key))
+        
+        await server.set_auth_key(auth_key)
+
+    @staticmethod
+    async def get_auth_key(username, password, client_ip):
+
+        # print("Value of username: ", username)
+        # print("Type of username: ", type(username))
+
+        # print("Value of password: ", password)
+        # print("Type of password: ", type(password))
+
+        # print("Value of client_ip: ", client_ip)
+        # print("Type of client_ip: ", type(client_ip))
+
+        return await server.get_auth_key(username, password, client_ip)
+    
+    @staticmethod
+    async def check_username(username):
+        # print("Value of username: ", username)
+        # print("Type of username: ", type(username))
+
+        return await server.check_username(username)
 
     # ---------------------------------------------------------------
     # Server

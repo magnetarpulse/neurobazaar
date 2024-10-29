@@ -17,15 +17,26 @@ from wslink import backends
 ws_server = None
 
 # =============================================================================
+# Parse a comma separated list of IP addresses
+# =============================================================================
+
+def parse_ip_list(ip_list_str):
+    return ip_list_str.split(',')
+
+# =============================================================================
 # Setup default arguments to be parsed
 #   --nosignalhandlers
 #   --debug
-#   --host     localhost
-#   -p, --port     8080
-#   --timeout  300 (seconds)
-#   --content  '/www'  (No content means WebSocket only)
-#   --authKey  vtkweb-secret
-#   --auth_key client authentication key
+#   --host               localhost
+#   -p, --port           8080
+#   --timeout            300 (seconds)
+#   --content            '/www'  (No content means WebSocket only)
+#   --authKey            vtkweb-secret
+#   --auth_key           client authentication key
+#   --username           username for primary client registration and authentication
+#   --password           password for primary client registration and authentication
+#   --client_ip          client IP address for primary client registration and authentication
+#   --allowed_ips        allowed IP addresses for other client authentication
 # =============================================================================
 
 def add_arguments(parser):
@@ -74,8 +85,32 @@ def add_arguments(parser):
     parser.add_argument(
         "--auth_key",
         type=str,
-        default="auth_key",
+        default="",
         help="Authentication key to verify clients connecting to trame server.",
+    )
+    parser.add_argument(
+        "--username",
+        type=str,
+        default="",
+        help="Username for primary client registration and authentication.",
+    )
+    parser.add_argument(
+        "--password",
+        type=str,
+        default="",
+        help="Password for primary client registration and authentication.",
+    )
+    parser.add_argument(
+        "--client_ip",
+        type=str,
+        default="",
+        help="Client IP address for primary client registration and authentication.",
+    )
+    parser.add_argument(
+        "--allowed_ips",
+        type=parse_ip_list,
+        default="",
+        help="Comma-separated list of allowed IP addresses for other clients authentication.",
     )
     parser.add_argument(
         "--ws-endpoint",
@@ -140,7 +175,49 @@ def stop_webserver():
     if ws_server:
         loop = asyncio.get_event_loop()
         return loop.create_task(ws_server.stop())
+    
+# =============================================================================
+# Change auth key
+# =============================================================================
 
+async def set_auth_key(auth_key):
+    if ws_server:
+        # print("Value of auth_key (server.py): ", auth_key)
+        # print("Type of auth_key (server.py): ", type(auth_key))
+        result = await ws_server.set_auth_key(auth_key)
+        if result is None:
+            raise TypeError("ws_server.set_auth_key returned None, expected an awaitable object")
+    else:
+        raise ValueError("ws_server is not initialized")
+
+# =============================================================================
+# Get auth key
+# =============================================================================
+
+async def get_auth_key(username, password, client_ip):
+    if ws_server:
+        # print("Value of username (server.py): ", username)
+        # print("Type of username (server.py): ", type(username))
+        result = await ws_server.get_auth_key(username, password, client_ip)
+        if result is None:
+            raise TypeError("ws_server.get_auth_key returned None, expected an awaitable object")
+    else:
+        raise ValueError("ws_server is not initialized")
+
+# =============================================================================
+# Check username
+# =============================================================================
+
+async def check_username(username):
+    if ws_server:
+        # print("Value of username (server.py): ", username)
+        # print("Type of username (server.py): ", type(username
+        result = await ws_server.username_exists(username)
+        if result is None:
+            raise TypeError("ws_server.get_auth_key returned None, expected an awaitable object")
+    else:
+        raise ValueError("ws_server is not initialized")
+    
 # =============================================================================
 # Get webserver port (useful when 0 is provided and a dynamic one was picked)
 # =============================================================================
@@ -186,10 +263,15 @@ def start_webserver(
     """
     Starts the web-server with the given protocol. Options must be an object
     with the following members:
-        options.host : the interface for the web-server to listen on
-        options.port : port number for the web-server to listen on
-        options.timeout : timeout for reaping process on idle in seconds
-        options.content : root for web-pages to serve.
+        options.host:        the interface for the web-server to listen on.
+        options.port:        port number for the web-server to listen on.
+        options.timeout:     timeout for reaping process on idle in seconds.
+        options.content:     root for web-pages to serve.
+        options.auth_key:    authentication key for clients to connect to the trame server.
+        options.username:    username for primary client registration and authentication.
+        options.password:    password for primary client registration and authentication.
+        options.client_ip:   client IP address for primary client registration and authentication.
+        options.allowed_ips: allowed IP addresses for other client authentication.
     """
     global ws_server
 
@@ -216,6 +298,10 @@ def start_webserver(
             "timeout": options.timeout,
             "logging_level": logging_level,
             "auth_key": options.auth_key,
+            "username": options.username,
+            "password": options.password,
+            "client_ip": options.client_ip,
+            "allowed_ips": options.allowed_ips,
         }
 
         # Configure websocket endpoint
@@ -262,6 +348,11 @@ def start_webserver(
 
     # Create the webserver and start it
     ws_server = create_webserver(server_config, backend=backend)
+
+    # Register user
+    print("Registering user...")
+    ws_server.register_user(options.username, options.password, options.client_ip)
+    print("User registered")
 
     # Once we have python 3.7 minimum, we can start the server with asyncio.run()
     # asyncio.run(ws_server.start())

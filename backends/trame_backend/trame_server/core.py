@@ -536,6 +536,10 @@ class Server:
         timeout: int | None = None,
         host: str | None = None,
         auth_key: str | None = None,
+        username: str | None = None,
+        password: str | None = None,
+        client_ip: str | None = None,
+        allowed_ips: list[str] | None = None,
         **kwargs,
     ):
         """
@@ -568,6 +572,11 @@ class Server:
         :param host: The hostname used to bind the server. This can also be
                      set with the environment variable ``TRAME_DEFAULT_HOST``.
                      Defaults to ``'localhost'``.
+        :param auth_key: The authentication key for the wslink webserver instances
+        :param username: The username of the primary client
+        :param password: The password of the primary client
+        :param client_ip: The IP address of the primary client
+        :param allowed_ips: A list of IP addresses that are allowed to connect to the server
         :param **kwargs: Keyword arguments for capturing optional parameters
                          for wslink server and/or desktop browser
         """
@@ -583,6 +592,10 @@ class Server:
                 timeout=timeout,
                 host=host,
                 auth_key=auth_key,
+                username=username,
+                password=password,
+                client_ip=client_ip,
+                allowed_ips=allowed_ips,
                 **kwargs,
             )
             return
@@ -609,8 +622,24 @@ class Server:
         # print("Args:", options)
 
         if auth_key is not None:
-            # print("DEBUG: auth_key exists")
             options.auth_key = auth_key
+            # print("Value of auth_key:", auth_key)
+        
+        if username is not None:
+            options.username = username
+            # print("Value of username:", username)
+        
+        if password is not None:
+            options.password = password
+            # print("Value of password:", password)
+        
+        if client_ip is not None:
+            options.client_ip = client_ip
+            # print("Value of client_ip:", client_ip)
+        
+        if allowed_ips is not None:
+            options.allowed_ips = allowed_ips
+            # print("Value of allowed_ips:", allowed_ips)
 
         if backend is None:
             backend = os.environ.get("TRAME_BACKEND", "aiohttp")
@@ -763,12 +792,12 @@ class Server:
         return self._server_options
     
     # -------------------------------------------------------------------------
-    # Stop the instance(s) of the server(s) and clean up the webserver instance
+    # Close server method
     # -------------------------------------------------------------------------
 
     def stop(self):
         """
-        Safely closes the server(s) and performs cleanup.
+        Safely closes the server and performs cleanup.
         This is a synchronous wrapper around the async stop() method.
         """
 
@@ -782,3 +811,54 @@ class Server:
         self._running_port = 0
         self._server = None
         self._running_future = None
+
+    # -------------------------------------------------------------------------
+    # Method to set a new authentication key for the wslink webserver instances
+    # -------------------------------------------------------------------------
+
+    async def set_new_auth_key(self, auth_key):
+        """
+        Set a new authentication key for the wslink webserver instances.
+
+        :param auth_key: The new authentication key
+        :type auth_key: str
+        """
+
+        # print("Type of auth_key:", type(auth_key))
+        # print("Value of auth_key:", auth_key)
+
+        await CoreServer.set_auth_key(auth_key)
+
+    # -------------------------------------------------------------------------
+    # Method to get the current authentication key for the wslink webserver app
+    # -------------------------------------------------------------------------
+
+    async def get_auth_key(self, username, password, client_ip):
+        """
+        Get the current authentication key for the wslink webserver app.
+        
+        :param username: The username of the client
+        :type username: str
+
+        :param password: The password of the client
+        :type password: str
+
+        :param client_ip: The IP address of the client
+        :type client_ip: str
+        """
+
+        await CoreServer.get_auth_key(username, password, client_ip)
+
+    # -------------------------------------------------------------------------
+    # Method to check the wslink webserver app for a valid username as a client
+    # -------------------------------------------------------------------------
+
+    async def check_username(self, username):
+        """
+        Check the wslink webserver app for a valid username as a client.
+
+        :param username: The username of the client
+        :type username: str
+        """
+
+        await CoreServer.check_username(username)

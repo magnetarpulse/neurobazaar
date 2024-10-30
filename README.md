@@ -130,7 +130,7 @@ in the templates folder, add the following:
 Go to Views.py and there are two functions new and new2 - these acts as the routes for the trame server and the websocket connection. Change the Url in the template to the route you want to use to connect to the trame server.
 
 
-6. **Managing the Websocket Connection**:  
+7. **Managing the Websocket Connection**:  
 
 
 
@@ -140,7 +140,7 @@ After that, go to the admin.py file and register the UpstreamServer model.
 Add the upstream server details in the admin panel. ip and the port should be the same as the trame server. the route should be the same as the one in the views.py file.
 
 
-6. **Accessing the Trame Server from the Django**:  
+8. **Accessing the Trame Server from the Django**:  
 
 ```
 

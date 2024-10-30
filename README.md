@@ -135,7 +135,9 @@ Go to Views.py and there are two functions new and new2 - these acts as the rout
 
 
 Start the server to access the Neurobazaar Platform locally or Globally:
-Go to the models.py file and there is a model called UpstreamServer. This model is used to manage the websocket connection. in that add the choices=[('new', 'Histogram'), ('new2', 'Server')] to the route field (Here we can as many websockets we want servers with correct names). it should be matching the route in the views.py file. 
+Go to the models.py file and there is a model called UpstreamServer. This model is used to manage the websocket connection. in that add the choices=[('new', 'Histogram'), ('new2', 'Server')] to the route field (Here we can as many websockets we want servers with correct names). it should be matching the route in the views.py file. & also in the asgi.py file add the correct routes to manage 
+websocket_urlpatterns = [ re_path(r"^new/ws/?$", MultiPortWebSocketProxy.as_asgi(), {'route': 'new'}),]
+ 
 After that, go to the admin panel https://localhost:8000/admin url and register the UpstreamServer model.
 Add the upstream server details in the admin panel. ip and the port should be the same as the trame server. the route should be the same as the one in the views.py file.
 

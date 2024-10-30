@@ -124,12 +124,12 @@ python trame/server/*.py
 
 ```
 6. **Add the Trame Server to the Django Template**:  
-```
+
 Start the server to access the Neurobazaar Platform locally or Globally:
 in the templates folder, add the following:
 Go to Views.py and there are two functions new and new2 - these acts as the routes for the trame server and the websocket connection. Change the Url in the template to the route you want to use to connect to the trame server.
 
-```
+
 6. **Managing the Websocket Connection**:  
 
 

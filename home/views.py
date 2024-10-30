@@ -480,7 +480,7 @@ def new_view(request, path=''):
 
     try:
         # Proxy the request to the service running on port 5459
-        target_url = f'http://129.114.108.168:5459/{path}'
+        target_url = f'http://129.114.108.204:5459/{path}'
         logger.info(f"Proxying request to: {target_url}")
         
         response = requests.get(target_url, timeout=5)
@@ -544,7 +544,7 @@ def new_view2(request, path=''):
 
     try:
         # Proxy the request to the service running on port 1235
-        base_url = 'http://localhost:1235/'
+        base_url = 'http://localhost:8080/'
         target_url = urljoin(base_url, path)
         logger.info(f"Proxying request to: {target_url}")
         
@@ -569,7 +569,7 @@ def new_view2(request, path=''):
             content = response.content.decode('utf-8', errors='replace')
             content = re.sub(r'(src|href)="/', r'\1="/new2/', content)
             content = re.sub(r'(src|href)="\./', r'\1="/new2/', content)
-            content = re.sub(r'(ws://localhost:1235)', r'ws://' + request.get_host() + '/new2', content)
+            content = re.sub(r'(ws://localhost:8080)', r'ws://' + request.get_host() + '/new2', content)
             
             # Use an inline template
             html_template = Template("""

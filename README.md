@@ -113,3 +113,45 @@ Start the server to access the Neurobazaar Platform locally:
 ```
 python manage.py runserver
 ```# proxydjango
+
+```
+
+5. **Starting the Trame Server**:  
+Start the server to access the Neurobazaar Platform locally or Globally:
+```
+
+python trame/server/*.py
+
+```
+6. **Add the Trame Server to the Django Template**:  
+```
+Start the server to access the Neurobazaar Platform locally or Globally:
+in the templates folder, add the following:
+Go to Views.py and there are two functions new and new2 - these acts as the routes for the trame server and the websocket connection. Change the Url in the template to the route you want to use to connect to the trame server.
+
+```
+6. **Managing the Websocket Connection**:  
+
+```
+
+Start the server to access the Neurobazaar Platform locally or Globally:
+Go to the models.py file and there is a model called UpstreamServer. This model is used to manage the websocket connection. in that add the choices=[('new', 'Histogram'), ('new2', 'Server')] to the route field. it should be matching the route in the views.py file. 
+After that, go to the admin.py file and register the UpstreamServer model.
+Add the upstream server details in the admin panel. ip and the port should be the same as the trame server. the route should be the same as the one in the views.py file.
+```
+
+6. **Accessing the Trame Server from the Django**:  
+
+```
+
+Now go to the url route you added in the views.py and urls.py file and access it.
+
+http://localhost:8000/new/
+
+http://localhost:8000/new2/
+
+These are the two routes you can use to access the trame server for example.
+
+Now everything should be working fine.
+
+```

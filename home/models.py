@@ -48,7 +48,7 @@ class Collections(models.Model):
 class UpstreamServer(models.Model):
     ip = models.CharField(max_length=255)
     port = models.IntegerField()
-    route = models.CharField(max_length=50, choices=[('new', 'New'), ('new2', 'New2')])
+    route = models.CharField(max_length=50, choices=[('new', 'Histogram'), ('new2', 'Server')])
 
     class Meta:
         unique_together = ('ip', 'port', 'route')

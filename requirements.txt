@@ -14,3 +14,6 @@ trame-vuetify
 dask[complete]
 dask-histogram
 boost-histogram
+daphne
+channels
+websockets

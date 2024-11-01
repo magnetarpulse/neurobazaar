@@ -96,13 +96,21 @@ The media folder should have all the datasets, includes the max_slices folder, L
 ### Start the Django Server
 
 ```
-python manage.py runserver
+python manage.py runserver 0.0.0.0:8000
 ```
 
 ### Start the Trame Server with the python Code
 
 ```
 python working_images.py
+```
+
+The browser opens with the localhost:port with the interface running.
+
+### If required to run on a different machine, run the django server and start the trame server. In the browser:
+
+```
+http://192.5.87.63:8089/
 ```
 
 

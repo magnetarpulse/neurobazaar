@@ -2,6 +2,7 @@
 import os
 import sys
 
+# Get the Neurobazaar directory as the root directory
 cwd = os.getcwd()
 index = cwd.index('neurobazaar')
 neurobazaar_dir = cwd[:index + len('neurobazaar')]

@@ -1,24 +1,39 @@
+# Trame imports (core imports)
 from trame.app import get_server
 from trame.ui.vuetify import SinglePageLayout
 from trame.widgets import vuetify
-import zmq
-from threading import Thread, Event
 
 # -----------------------------------------------------------------------------
-# Get a server to work with
+# Get a trame server. Vue2 is client for the example. Vue3 ok, but diff syntax.
 # -----------------------------------------------------------------------------
 
 server = get_server(client_type="vue2")
 
 # -----------------------------------------------------------------------------
-# Close the server
+# Start server (immediately/blocking) function. Recommended during development.
+# -----------------------------------------------------------------------------
+
+def start_server(port: int, auth_key: str):
+    print(f"Starting simple server at http://localhost:{port}/index.html")
+    server.start(exec_mode="main", port=port, auth_key=auth_key)
+
+# -----------------------------------------------------------------------------
+# Start server async (async/non-blocking) function. Recommended for production.
+# -----------------------------------------------------------------------------
+
+async def start_server_async(port: int, auth_key: str):
+    print(f"Starting simple server (async) at http://localhost:{port}/index.html")
+    return await server.start(exec_mode="task", port=port, auth_key=auth_key)
+
+# -----------------------------------------------------------------------------
+# Use this function to stop the server. Avoid using: Control + C and or SIGTERM
 # -----------------------------------------------------------------------------
 
 def close_server():
     server.stop()
 
 # -----------------------------------------------------------------------------
-# Change auth_key
+# Change a auth key. Will kick all clients and require them to re-authenticate.
 # -----------------------------------------------------------------------------
 
 async def change_auth_key():
@@ -26,7 +41,7 @@ async def change_auth_key():
     await server.set_new_auth_key("Goodbye")
 
 # -----------------------------------------------------------------------------
-# Get the current auth_key
+# Get the current auth key. Requires authentication to be enabled. Not b64 key.
 # -----------------------------------------------------------------------------
 
 async def get_auth_key():
@@ -42,7 +57,7 @@ async def get_auth_key():
     await server.get_auth_key(username, password, client_ip)
 
 # -----------------------------------------------------------------------------
-# Check username
+# Checks if a username is valid. Requires user to initially authenticate first.
 # -----------------------------------------------------------------------------
 
 async def check_username():
@@ -56,7 +71,23 @@ async def check_username():
     await server.check_username(username)
 
 # -----------------------------------------------------------------------------
-# Improved UI with centered card layout
+# Main function to start the server. Used mainly for development purposes only. 
+# -----------------------------------------------------------------------------
+
+def main(port: int, auth_key: str):
+    # Start the server, blocking
+    start_server(port, auth_key=auth_key)
+
+# -----------------------------------------------------------------------------
+# Main function to start the server (async). Best for production purposes only.
+# -----------------------------------------------------------------------------
+
+async def main_async(port: int, auth_key: str):
+    # Start the server async, must be awaited
+    await start_server_async(port, auth_key=auth_key)
+
+# -----------------------------------------------------------------------------
+# The UI Layout, uses Vue2. Vue3 can be used but the syntax slightly different.
 # -----------------------------------------------------------------------------
 
 with SinglePageLayout(server) as layout:
@@ -74,7 +105,7 @@ with SinglePageLayout(server) as layout:
             prepend_icon="mdi-exit-to-app",
             classes="ma-2"
         )
-
+    
     with layout.content:
         with vuetify.VContainer(
             fluid=True,
@@ -160,44 +191,14 @@ with SinglePageLayout(server) as layout:
                         )
 
 # -----------------------------------------------------------------------------
-# Simple ZeroMQ Server
-# -----------------------------------------------------------------------------
-
-received_message = None
-
-message_received_event = Event()
-
-def zmq_server():
-    global received_message
-    context = zmq.Context()
-    socket = context.socket(zmq.PULL)
-    socket.bind("tcp://*:8082")
-    print("ZeroMQ server started on port 8082.")
-    
-    while True:
-        message = socket.recv_string()
-        print(f"Received message: {message}")
-        received_message = message
-        message_received_event.set()  
-
-zmq_thread = Thread(target=zmq_server)
-zmq_thread.daemon = True
-zmq_thread.start()
-
-# -----------------------------------------------------------------------------
-# Main
+# Main function to start the server. It will not be executed if it is imported.
 # -----------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    # Wait until the message is received
-    message_received_event.wait()
-
-    # Loopback address/localhost 8080 (local machine only). Localhost 8080 is the default, but you can change it with the port parameter as shown below.
-    # server.start(auth_key=received_message, port=ENTER_YOUR_PORT_INTEGER, username="admin", password="admin", client_ip="127.0.0.1", allowed_ips=["123","456"])
-    # server.start(auth_key=received_message, username="admin", password="admin", client_ip="127.0.0.1", allowed_ips=["123","456"])
+    # Loopback address/localhost 8080 (local machine only).
+    # server.start(auth_key="key", port=ENTER_YOUR_PORT_INTEGER, username="admin", password="admin", client_ip="127.0.0.1", allowed_ips=["123","456"])
+    # server.start(auth_key="key", username="admin", password="admin", client_ip="127.0.0.1", allowed_ips=["123","456"])
 
     # All available network interfaces (publicly accessible)
     # server.start(host='0.0.0.0', port=ENTER_YOUR_PORT_INTEGER, auth_key="key", username="admin", password="admin", client_ip="127.0.0.1", allowed_ips=["123","456"])
-    server.start(host='0.0.0.0', auth_key=received_message, username="admin", password="admin", client_ip="127.0.0.1", allowed_ips=["123","456"])
-
-    # http://129.114.109.159:8080/index.html
+    server.start(host='0.0.0.0', auth_key="key", username="admin", password="admin", client_ip="127.0.0.1", allowed_ips=["123","456"])

@@ -1,3 +1,12 @@
+# Importing necessary modules for
+# {
+#   - future annotations
+#   - system operations
+#   - logging
+#   - unique identifiers
+#   - JSON handling
+#   - file path manipulations
+# }
 from __future__ import annotations
 import os
 import logging
@@ -6,11 +15,13 @@ import uuid
 import json
 from pathlib import Path
 
+# Core backend specific imports
 from wslink.protocol import WslinkHandler, AbstractWebApp
-
-# Backend specific imports
 import aiohttp
 import aiohttp.web as aiohttp_web
+
+# HTTPS simulation
+from wslink.ssl_context import load_ssl_context, generate_ssl_pair
 
 # Authentication imports
 import base64
@@ -32,6 +43,10 @@ HTTP_HEADERS: str | None = os.environ.get("WSLINK_HTTP_HEADERS")  # path to json
 
 if HTTP_HEADERS and Path(HTTP_HEADERS).exists():
     HTTP_HEADERS: dict = json.loads(Path(HTTP_HEADERS).read_text())
+
+# -----------------------------------------------------------------------------
+# Logger configuration
+# -----------------------------------------------------------------------------
 
 logger = logging.getLogger(__name__)
 # logging.basicConfig(level=logging.DEBUG)
@@ -62,12 +77,12 @@ class IdentityVerifier:
     def register_user(self, username: str, password: str, ip_address: str) -> None:
         """Register a new user with hashed password and IP address"""
         
-        print(f"Registering new user: {username}")
+        # print(f"Registering new user: {username}")
         logger.info(f"Registering new user: {username}")
 
         # Generate a random salt for each user
         salt = os.urandom(16)  # 16 bytes salt
-        print(f"Salt generated for user {username}: {salt}")
+        # print(f"Salt generated for user {username}: {salt}")
         logger.info(f"Salt generated for user {username}: {salt}")
         
         # Hash the password using a secure method
@@ -756,7 +771,7 @@ class WebAppServer(AbstractWebApp):
                 ip_address
             )
 
-            print("User registered successfully")
+            # print("User registered successfully")
             logger.info("User registered successfully")
 
             return True
@@ -796,12 +811,55 @@ class WebAppServer(AbstractWebApp):
     def get_port(self):
         """Return the actual port used by the server"""
         return self.runner.addresses[0][1]
+    
+    # -------------------------------------------------------------------------
+    # Get Neurobazaar directory
+    # -------------------------------------------------------------------------
+
+    def get_neurobazaar_dir(self):
+        """Get the root directory of the Neurobazaar project."""
+        cwd = os.getcwd()
+        index = cwd.index('neurobazaar')
+        # print("CWD:", cwd[:index + len('neurobazaar')])
+        return cwd[:index + len('neurobazaar')]
+    
+    # -------------------------------------------------------------------------
+    # Get SSL certificate and private key files (paths)
+    # -------------------------------------------------------------------------
+
+    def _get_ssl_paths(self):
+        """Get paths to SSL certificate and private key files."""
+        key_dir = Path(self.get_neurobazaar_dir()) / '.ssl'
+        return str(key_dir / 'cert.pem'), str(key_dir / 'pkey.pem')
 
     # -------------------------------------------------------------------------
     # Life cycles
     # -------------------------------------------------------------------------
 
     async def start(self, port_callback=None):
+        # Get the SSL certificate and private key files
+        cert_file, pkey_file = self._get_ssl_paths()
+
+        # Check if the certificate and key files exist
+        if not (os.path.exists(cert_file) and os.path.exists(pkey_file)):
+            # Generate and save SSL pair if they don't exist
+            logger.info("Generating new SSL certificate and private key")
+            print("Generating new SSL certificate and private key")
+            cert_file, pkey_file = generate_ssl_pair(self.host)
+            print("Certificate file saved at:", cert_file)
+            print("Private key file saved at:", pkey_file)
+            logger.info(f"Certificate file saved at: {cert_file}")
+            logger.info(f"Private key file saved at: {pkey_file}")
+        else:
+            # print("Using existing certificate file at:", cert_file)
+            # print("Using existing private key file at:", pkey_file)
+            # logger.info(f"Using existing certificate file at: {cert_file}")
+            # logger.info(f"Using existing private key file at: {pkey_file}")
+            print("Got existing certificate and private key files")
+
+        # Load the SSL context 
+        # self.ssl_context = load_ssl_context(cert_file, pkey_file)  
+
         self._runner = aiohttp_web.AppRunner(
             self.app, handle_signals=self.handle_signals
         )
@@ -810,8 +868,14 @@ class WebAppServer(AbstractWebApp):
         logger.info("awaiting runner setup")
         await self._runner.setup()
 
+        # Default HTTP server
+        # self._site = aiohttp_web.TCPSite(
+        #     self._runner, self.host, self.port, ssl_context=self.ssl_context  
+        # )
+
+        # HTTP server with SSL context (HTTPS)
         self._site = aiohttp_web.TCPSite(
-            self._runner, self.host, self.port, ssl_context=self.ssl_context
+            self._runner, self.host, self.port, ssl_context=load_ssl_context(cert_file, pkey_file)  
         )
 
         print("awaiting site startup")

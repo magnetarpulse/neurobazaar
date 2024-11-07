@@ -19,7 +19,7 @@ wslink:
 │       ├── core.py
 │       └── __init__.py
 ├── chunking.py
-├── ssl_context.py
+├── ssl_context.py -> ssl_context.py
 ├── websocket.py
 ├── server.py -> server.py
 ├── LICENSE

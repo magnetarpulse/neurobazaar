@@ -54,6 +54,23 @@ async def check_username():
     await server.check_username(username)
 
 # -----------------------------------------------------------------------------
+# Start server async function
+# -----------------------------------------------------------------------------
+
+async def start_server_async(port: int, auth_key: str):
+    print(f"Starting OoD Analyzer server (async) at http://localhost:{port}/index.html")
+    return await server.start(exec_mode="task", port=port, auth_key=auth_key)
+
+# -----------------------------------------------------------------------------
+# Main async function
+# -----------------------------------------------------------------------------
+
+async def main_async(port: int, auth_key: str):
+    
+    # Start the server
+    await start_server_async(port, auth_key=auth_key)
+
+# -----------------------------------------------------------------------------
 # UI Layout (Vuetify 2)
 # -----------------------------------------------------------------------------
 
@@ -169,3 +186,5 @@ if __name__ == "__main__":
     # All available network interfaces (publicly accessible)
     # server.start(host='0.0.0.0', port=ENTER_YOUR_PORT_INTEGER, auth_key="key", username="admin", password="admin", client_ip="127.0.0.1", allowed_ips=["123","456"])
     server.start(host='0.0.0.0', auth_key="key", username="admin", password="admin", client_ip="127.0.0.1", allowed_ips=["123","456"])
+
+    # http://129.114.109.159:8080/index.html

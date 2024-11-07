@@ -199,3 +199,5 @@ if __name__ == "__main__":
     # All available network interfaces (publicly accessible)
     # server.start(host='0.0.0.0', port=ENTER_YOUR_PORT_INTEGER, auth_key="key", username="admin", password="admin", client_ip="127.0.0.1", allowed_ips=["123","456"])
     server.start(host='0.0.0.0', auth_key=received_message, username="admin", password="admin", client_ip="127.0.0.1", allowed_ips=["123","456"])
+
+    # http://129.114.109.159:8080/index.html

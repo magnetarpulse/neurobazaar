@@ -152,7 +152,7 @@ class BaseOoDHistogram:
                 
         self.check_collection(self.collection_path)
         self.mapping(csv_path,self.state.image_paths)
-        self.original_images(self.state.final_path)
+        #self.original_images(self.state.final_path)
         global files
         files="/home/cc/neurobazar_share/neurobazaar/media/dicom_images"
         self.check_node_id(self.max_slices,self.csv_path,self.nodule_ids)
@@ -759,7 +759,7 @@ class BaseOoDHistogram:
                                                 html.Td("{{ item.range }}", classes="pa-4")
                                               
                                         
-                                            with vuetify.VContainer(style="overflow-x: auto; white-space: nowrap; overflow-y: hidden"):
+                                            with vuetify.VContainer(style="overflow-x: auto; white-space: nowrap; overflow-y: hidden; max-width: 1100px;"):
                                                 with vuetify.VRow(style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start;",):
                                                             with vuetify.Template(v_for="(dicom, imgIndex) in item.dicom_imgs", key="imgIndex"):   
                                                                 with vuetify.VCol(cols="auto", class_="d-inline-block", style="flex: 0 0 auto; padding: 5px;"):
@@ -774,7 +774,7 @@ class BaseOoDHistogram:
                                                                             )           
                                                                         html.Td("nodule_Id={{ imgIndex }}", classes="pa-4 center-text", style="font-size: 16px; display: flex; justify-content: center; align-items: center;")
 
-                                            with vuetify.VContainer(style="overflow-x: auto; white-space: nowrap; overflow-y: hidden"):           
+                                            with vuetify.VContainer(style="overflow-x: auto; white-space: nowrap; overflow-y: hidden; max-width: 1100px;"):           
                                                 with vuetify.VRow(style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start;",):
                                                                         with vuetify.Template(v_for="(img, imgIndex2) in item.image_row", key="imgIndex2"):   
                                                                             with vuetify.VCol(cols="auto", class_="d-inline-block", style="flex: 0 0 auto; padding: 5px;"):

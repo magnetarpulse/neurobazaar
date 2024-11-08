@@ -4,13 +4,13 @@ numpy
 matplotlib
 pandas
 scikit-learn
-trame
+git+https://github.com/HuyNguyenDePaul/trame-server.git@master
 trame-client
 trame-components
 trame-matplotlib
-trame-server
 trame-vtk
 trame-vuetify
 dask[complete]
 dask-histogram
 boost-histogram
+pyzmq

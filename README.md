@@ -4,9 +4,10 @@
 Authors and Contributors:
 - Alexandru Iulian Orhean 2024 (aorhean@depaul.edu)  
 - Huy Quoc Nguyen 2024 (hnguye83@depaul.edu)
+- Areena Mahek 2024 (amahek@depaul.edu)
 - Vivek Shravan Gupta 2024 (vgupta16@depaul.edu)  
 
-Interactive Visualization Platform for Machine Learning and Data Science Datasets.
+Scalable Interactive Visualization and Exploration of Large Datasets from Machine Learning and Data Science.
 
 ## Requirements and Setup
 
@@ -108,5 +109,10 @@ npm run dev
 
 Start the server to access the Neurobazaar Platform locally:
 ```
-python manage.py runserver
+python manage.py runserver 0.0.0.0:8000
+```
+
+Start the Ood Analyzer Interface:
+```
+python ood_interface.py
 ```

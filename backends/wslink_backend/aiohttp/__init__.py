@@ -699,8 +699,9 @@ class WebAppServer(AbstractWebApp):
             # Validate existing session
             session_id = request.cookies.get('auth_session')
             if session_id and self.auth_manager.validate_session(session_id, client_ip):
-                home_dir = os.path.expanduser("~")
-                file_path = os.path.join(home_dir, "neurobazaar/.venv/lib/python3.11/site-packages/trame_client/module/vue2-www/index.html")
+                neurobazaar_dir = self.get_neurobazaar_dir()
+                file_path = os.path.join(neurobazaar_dir, ".venv/lib/python3.11/site-packages/trame_client/module/vue2-www/index.html")
+                # print("Path to index.html:", file_path)
                 return aiohttp.web.FileResponse(file_path)
             
             # No valid session, return forbidden

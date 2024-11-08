@@ -633,7 +633,7 @@ class WebAppServer(AbstractWebApp):
                 # Only allow access from localhost or allowed IP
                 # The only default allowed IP is 127.0.0.1 (localhost)
                 # You can add more allowed IPs in the server_config -> server(allowed_ip="...")
-                if client_ip != '127.0.0.1' and client_ip != server_config.get('allowed_ips'):
+                if client_ip != '127.0.0.1' and client_ip not in server_config.get('allowed_ips', []):
                     print("Access Denied: Unauthorized IP address.")
                     logger.error("Access Denied: Unauthorized IP address.")
                     return aiohttp.web.HTTPForbidden(text="Access Denied: Unauthorized IP address.")

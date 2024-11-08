@@ -102,7 +102,7 @@ python manage.py runserver 0.0.0.0:8000
 ### Start the Trame Server with the python Code
 
 ```
-python working_images.py
+python ood_interface.py
 ```
 
 The browser opens with the localhost:port with the interface running.

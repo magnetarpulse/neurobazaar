@@ -15,4 +15,4 @@ dask-histogram
 boost-histogram
 pyzmq
 cryptography
-watchdogs
+watchdog

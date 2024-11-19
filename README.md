@@ -26,59 +26,18 @@ If you are running the Neurobazaar and its components on a headless machine, you
 
 If you are not running the Neurobazaar and its components on a headless machine, you do not have to install and set up VTK manually. Instead, you can install the distributed VTK package (wheels). You can do so using the command ```pip install vtk```.
 
-### Ubuntu Required Packages
+## Run The Installation Script
 
-You need to install the following packages (assuming Ubuntu22.04 LTS and Python **3.11**):
-```
-sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt update
-sudo apt upgrade
-sudo apt install g++-12 python3.11 python3.11-venv libpython3.11-dev build-essential cmake cmake-curses-gui mesa-common-dev mesa-utils libosmesa6-dev freeglut3-dev ninja-build 
-sudo update-alternatives --remove-all gcc
-sudo update-alternatives --remove-all g++
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 110
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 120
-sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 110
-sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 120
-sudo reboot
-```
+For simplicity, we have written a script that will automate the commands. Users will still require to give permission when installing required software and dependencies.
 
-**Note:** ```sudo reboot``` will take approximately 3 minutes to 5 minutes.
 
-### Python Virtual Environment Setup
+Enter the Neurobazaar directory if you have not yet already: ```cd neurobazaar```
 
-All of the required Python dependencies/packages/wheels are installed in a Python virtual environment (assuming Python **3.11**). The first step is to create the virtual environment and the second step is to activate the virtual environment. The first step has to be run only once.
+For now (will update in production): ```git checkout demo```
 
-Create the Python virtual environment on Ubuntu 22.04 LTS:  
-```
-python3.11 -m venv .venv
-```
+Make the installation script an executable: ```chmod +x install.sh```
 
-Activate the Python virtual environment on Ubuntu 22.04 LTS: 
-```
-source .venv/bin/activate
-```
-
-### VTK Setup
-
-If you are running the Neurobazaar on a headless machine. You will need to initialize, set up and build VTK manually. Here are the commands:
-```
-git submodule init
-git submodule update
-mkdir build
-cmake -GNinja -DCMAKE_INSTALL_PREFIX=.venv -DVTK_WRAP_PYTHON=ON -DVTK_SMP_IMPLEMENTATION_TYPE=STDThread -DVTK_USE_COCOA=OFF -DVTK_USE_X=OFF -DVTK_USE_WIN32_OPENGL=OFF -DVTK_OPENGL_HAS_OSMESA=ON -DVTK_OPENGL_USE_EGL=OFF -DVTK_DEFAULT_RENDER_WINDOW_OFFSCREEN=ON -DVTK_DEFAULT_RENDER_WINDOW_HEADLESS=ON -DVTK_GROUP_ENABLE_Web:STRING=WANT -S vtk/ -B build/
-cmake --build build
-cmake --build build --target install
-```
-
-**Note:** The amount of time it takes to initialize, set up and build VTK varies depending on the machine. It could take 10 minutes, or it could take 3 hours, it really depends on the machine.
-
-### Install the Python Dependencies/Packages/Wheels
-
-Install the dependencies/packages/wheels in the activated virtual environment:
-```
-python -m pip install -r requirements.txt
-```
+Run the script with sudo permission: ```sudo ./install.sh```
 
 ## How to Build and Run the Neurobazaar
 

@@ -1,0 +1,892 @@
+2024-12-02 00:36:42,080 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 00:36:42,080 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 00:39:40,755 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 00:39:40,755 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 00:43:27,435 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 00:43:27,435 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 00:43:37,905 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: FAILURE, Details: Key validation attempt
+2024-12-02 00:43:37,905 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: FAILURE, Details: Key validation attempt
+2024-12-02 00:44:02,180 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 00:44:02,180 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 00:44:06,230 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 00:44:06,230 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 00:44:06,230 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: c11c7cbf-5156-4752-bffe-3aa4b4e02742
+2024-12-02 00:44:06,230 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: c11c7cbf-5156-4752-bffe-3aa4b4e02742
+2024-12-02 03:55:11,969 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 03:55:11,969 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 03:55:21,994 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 03:55:21,994 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 03:55:21,994 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: ed616e8c-cc87-4de7-af46-72d4bd7791c3
+2024-12-02 03:55:21,994 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: ed616e8c-cc87-4de7-af46-72d4bd7791c3
+2024-12-02 04:06:39,595 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 04:06:39,595 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 04:10:11,673 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 04:10:11,673 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 04:10:19,735 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:10:19,735 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:10:19,736 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 26de52df-a30e-4a7d-a04e-209b0e8c62f8
+2024-12-02 04:10:19,736 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 26de52df-a30e-4a7d-a04e-209b0e8c62f8
+2024-12-02 04:20:53,326 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 04:20:53,326 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 04:21:36,241 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:21:36,241 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:21:36,242 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8370e1d4-2a71-417d-824a-d953931f6fdd
+2024-12-02 04:21:36,242 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8370e1d4-2a71-417d-824a-d953931f6fdd
+2024-12-02 04:22:02,874 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:22:02,874 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:22:02,874 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9953924b-a0fd-42df-b57a-4e4236ddbf76
+2024-12-02 04:22:02,874 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9953924b-a0fd-42df-b57a-4e4236ddbf76
+2024-12-02 04:22:44,560 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:22:44,560 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:22:44,560 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 33bb5437-c552-41c8-9676-33863dfcacde
+2024-12-02 04:22:44,560 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 33bb5437-c552-41c8-9676-33863dfcacde
+2024-12-02 04:22:57,966 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:22:57,966 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:22:57,966 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6ba62a71-9a63-4f7c-bcda-acd218f17398
+2024-12-02 04:22:57,966 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6ba62a71-9a63-4f7c-bcda-acd218f17398
+2024-12-02 04:23:35,345 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:23:35,345 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:23:35,345 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 1d3af537-f4cd-4fa7-84ec-43b6dd0016ce
+2024-12-02 04:23:35,345 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 1d3af537-f4cd-4fa7-84ec-43b6dd0016ce
+2024-12-02 04:39:00,991 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 04:39:00,991 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 04:39:11,342 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:39:11,342 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:39:11,342 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: f781804c-7dd9-49c5-87a1-9979f0a5fda9
+2024-12-02 04:39:11,342 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: f781804c-7dd9-49c5-87a1-9979f0a5fda9
+2024-12-02 04:41:34,141 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 04:41:34,141 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 04:41:41,418 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:41:41,418 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:41:41,418 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8dd26dcd-3c21-407c-aaff-e6a24c898db4
+2024-12-02 04:41:41,418 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8dd26dcd-3c21-407c-aaff-e6a24c898db4
+2024-12-02 04:42:10,011 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:42:10,011 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:42:10,011 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: af6b21d7-e530-4412-ac16-85d7e03f30ee
+2024-12-02 04:42:10,011 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: af6b21d7-e530-4412-ac16-85d7e03f30ee
+2024-12-02 04:43:56,852 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:43:56,852 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:43:56,852 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3b9ddf86-712b-4d1f-baaf-06cfbcb72e98
+2024-12-02 04:43:56,852 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3b9ddf86-712b-4d1f-baaf-06cfbcb72e98
+2024-12-02 04:48:59,466 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:48:59,466 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:48:59,466 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 5722706c-0f8f-468e-a8f4-4068bf3692d4
+2024-12-02 04:48:59,466 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 5722706c-0f8f-468e-a8f4-4068bf3692d4
+2024-12-02 04:49:14,722 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:49:14,722 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:49:14,722 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8acaf4e4-f260-4472-9f50-24b8bce9befd
+2024-12-02 04:49:14,722 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8acaf4e4-f260-4472-9f50-24b8bce9befd
+2024-12-02 04:51:01,646 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:51:01,646 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:51:01,646 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 32185dfb-387a-4a24-b271-9c816f09839f
+2024-12-02 04:51:01,646 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 32185dfb-387a-4a24-b271-9c816f09839f
+2024-12-02 04:54:01,857 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 04:54:01,857 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 04:54:10,612 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:54:10,612 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:54:10,613 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 54acd228-c692-44e9-a9f6-7603a3a79daa
+2024-12-02 04:54:10,613 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 54acd228-c692-44e9-a9f6-7603a3a79daa
+2024-12-02 04:54:35,334 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:54:35,334 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 04:54:35,334 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9964b3da-738a-4eab-9ce6-8e9dafd6760d
+2024-12-02 04:54:35,334 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9964b3da-738a-4eab-9ce6-8e9dafd6760d
+2024-12-02 05:04:19,055 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:04:19,055 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:04:19,055 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: ddbd2918-2613-43d2-9cc3-0b99484e83f4
+2024-12-02 05:04:19,055 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: ddbd2918-2613-43d2-9cc3-0b99484e83f4
+2024-12-02 05:08:45,267 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:08:45,267 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:08:45,267 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 261953c3-a7f1-4d33-901e-eaa25d1a081d
+2024-12-02 05:08:45,267 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 261953c3-a7f1-4d33-901e-eaa25d1a081d
+2024-12-02 05:09:27,964 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:09:27,964 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:09:27,964 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8a9d91ce-d1e4-41f1-9456-57ef3c120a07
+2024-12-02 05:09:27,964 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8a9d91ce-d1e4-41f1-9456-57ef3c120a07
+2024-12-02 05:11:55,454 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:11:55,454 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:11:55,454 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a93ec923-ca8a-4b8c-b92e-cc99f0d188a0
+2024-12-02 05:11:55,454 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a93ec923-ca8a-4b8c-b92e-cc99f0d188a0
+2024-12-02 05:12:21,304 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:12:21,304 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:12:21,305 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 61296171-2da9-4053-a90e-e50fb92f642e
+2024-12-02 05:12:21,305 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 61296171-2da9-4053-a90e-e50fb92f642e
+2024-12-02 05:12:41,005 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:12:41,005 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:12:41,005 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9190d889-cbe3-4838-bc3f-98ea6165a974
+2024-12-02 05:12:41,005 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9190d889-cbe3-4838-bc3f-98ea6165a974
+2024-12-02 05:13:40,068 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:13:40,068 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:13:40,068 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8e7d05bb-fc8e-4ef1-af16-623b0152aa7b
+2024-12-02 05:13:40,068 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8e7d05bb-fc8e-4ef1-af16-623b0152aa7b
+2024-12-02 05:14:08,523 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:14:08,523 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:14:08,523 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8ccf3450-c1e5-44a7-aa2b-087022b765b1
+2024-12-02 05:14:08,523 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8ccf3450-c1e5-44a7-aa2b-087022b765b1
+2024-12-02 05:15:42,896 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 05:15:42,896 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 05:16:09,333 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:16:09,333 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:16:09,334 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: aee997c0-a6b0-44eb-8db6-19500e62ff18
+2024-12-02 05:16:09,334 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: aee997c0-a6b0-44eb-8db6-19500e62ff18
+2024-12-02 05:16:35,809 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:16:35,809 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:16:35,810 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: fcca770f-1222-4242-9da4-ca4c45d4bce4
+2024-12-02 05:16:35,810 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: fcca770f-1222-4242-9da4-ca4c45d4bce4
+2024-12-02 05:18:41,624 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:18:41,624 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:18:41,624 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 0cab4ece-7cb2-4a31-8a10-bb2943a0dd59
+2024-12-02 05:18:41,624 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 0cab4ece-7cb2-4a31-8a10-bb2943a0dd59
+2024-12-02 05:20:17,972 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:20:17,972 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:20:17,972 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9a62977b-9bb5-4ee8-8a82-f094cb81d0b7
+2024-12-02 05:20:17,972 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9a62977b-9bb5-4ee8-8a82-f094cb81d0b7
+2024-12-02 05:20:46,643 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:20:46,643 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:20:46,644 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: bb1a402a-b7de-485d-bcf0-f0b323e4da2e
+2024-12-02 05:20:46,644 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: bb1a402a-b7de-485d-bcf0-f0b323e4da2e
+2024-12-02 05:23:50,045 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:23:50,045 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:23:50,045 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 985f82dc-f9ed-4689-92a6-964b30b80524
+2024-12-02 05:23:50,045 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 985f82dc-f9ed-4689-92a6-964b30b80524
+2024-12-02 05:24:12,789 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:24:12,789 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:24:12,789 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8bb2b08d-4a9d-4df7-8074-15cb9c9ef27f
+2024-12-02 05:24:12,789 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8bb2b08d-4a9d-4df7-8074-15cb9c9ef27f
+2024-12-02 05:24:55,063 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:24:55,063 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:24:55,063 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6790d6c4-e7e8-4193-9d65-736e23fdeb1d
+2024-12-02 05:24:55,063 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6790d6c4-e7e8-4193-9d65-736e23fdeb1d
+2024-12-02 05:27:09,442 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:27:09,442 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:27:09,442 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: d5796030-52c4-4c14-a833-71d8f835d0cd
+2024-12-02 05:27:09,442 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: d5796030-52c4-4c14-a833-71d8f835d0cd
+2024-12-02 05:33:35,794 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:33:35,794 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:33:35,794 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 69675d1e-256b-4270-a0f5-ebf023c5515e
+2024-12-02 05:33:35,794 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 69675d1e-256b-4270-a0f5-ebf023c5515e
+2024-12-02 05:34:12,634 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:34:12,634 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:34:12,634 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 85d56456-8e88-4dba-8b75-d318d93db17a
+2024-12-02 05:34:12,634 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 85d56456-8e88-4dba-8b75-d318d93db17a
+2024-12-02 05:36:31,906 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:36:31,906 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:36:31,906 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: db1432c2-ae46-4f8f-ab76-5fdd6941c269
+2024-12-02 05:36:31,906 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: db1432c2-ae46-4f8f-ab76-5fdd6941c269
+2024-12-02 05:36:47,992 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:36:47,992 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:36:47,992 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6d5fb8de-67de-4eee-a1b2-122e0dab10ad
+2024-12-02 05:36:47,992 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6d5fb8de-67de-4eee-a1b2-122e0dab10ad
+2024-12-02 05:37:26,803 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:37:26,803 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:37:26,803 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 07b9d521-9e34-4e01-9c35-bbe6db227049
+2024-12-02 05:37:26,803 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 07b9d521-9e34-4e01-9c35-bbe6db227049
+2024-12-02 05:38:06,694 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:38:06,694 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:38:06,694 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 0f7e9276-1d78-4b21-ae09-f8c48c27dc4d
+2024-12-02 05:38:06,694 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 0f7e9276-1d78-4b21-ae09-f8c48c27dc4d
+2024-12-02 05:40:09,248 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:40:09,248 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:40:09,248 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 5b2d4378-4417-4349-bc43-af31ef9ec1d7
+2024-12-02 05:40:09,248 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 5b2d4378-4417-4349-bc43-af31ef9ec1d7
+2024-12-02 05:46:14,639 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:46:14,639 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 05:46:14,640 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: c146867d-d290-4cab-b242-ce36ee2d3ff2
+2024-12-02 05:46:14,640 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: c146867d-d290-4cab-b242-ce36ee2d3ff2
+2024-12-02 06:14:22,642 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:14:22,642 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:15:51,328 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:15:51,328 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:16:05,744 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:16:05,744 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:16:05,744 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: fbee58c4-053f-4932-af42-320b05b127f3
+2024-12-02 06:16:05,744 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: fbee58c4-053f-4932-af42-320b05b127f3
+2024-12-02 06:18:57,909 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:18:57,909 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:19:15,502 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:19:15,502 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:19:15,503 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 5b0112af-8936-4006-a5b5-38b7058fe68b
+2024-12-02 06:19:15,503 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 5b0112af-8936-4006-a5b5-38b7058fe68b
+2024-12-02 06:24:07,627 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:24:07,627 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:24:25,798 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:24:25,798 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:24:25,798 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: ecbe653b-0aee-4e69-818e-1525c01ad8dd
+2024-12-02 06:24:25,798 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: ecbe653b-0aee-4e69-818e-1525c01ad8dd
+2024-12-02 06:27:26,647 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:27:26,647 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:27:41,627 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:27:41,627 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:27:41,627 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: decd4b09-248d-42f4-974a-f98d50a22e69
+2024-12-02 06:27:41,627 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: decd4b09-248d-42f4-974a-f98d50a22e69
+2024-12-02 06:29:38,933 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:29:38,933 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:29:55,188 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:29:55,188 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:29:55,189 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 856e5741-83cb-4f57-85e4-dc468be07e68
+2024-12-02 06:29:55,189 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 856e5741-83cb-4f57-85e4-dc468be07e68
+2024-12-02 06:31:50,007 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:31:50,007 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:32:47,939 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:32:47,939 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:33:02,734 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:33:02,734 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:33:02,735 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6ab5faba-f13f-4c6f-a7ce-6d8e0942186c
+2024-12-02 06:33:02,735 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6ab5faba-f13f-4c6f-a7ce-6d8e0942186c
+2024-12-02 06:37:14,997 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:37:14,997 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:37:29,877 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:37:29,877 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:37:29,877 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a90b745a-b4ab-4307-86b3-59fce7620b1d
+2024-12-02 06:37:29,877 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a90b745a-b4ab-4307-86b3-59fce7620b1d
+2024-12-02 06:39:54,589 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:39:54,589 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:40:23,813 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:40:23,813 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:40:23,813 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 4a8aebfd-6cf5-450d-9bf4-fc48dc165dba
+2024-12-02 06:40:23,813 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 4a8aebfd-6cf5-450d-9bf4-fc48dc165dba
+2024-12-02 06:42:34,103 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:42:34,103 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:44:25,698 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:44:25,698 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:46:03,575 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:46:03,575 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:47:05,648 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:47:05,648 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:50:05,576 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:50:05,576 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:50:59,628 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:50:59,628 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:51:09,235 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:51:09,235 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:51:09,236 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 98547d91-ab20-45ae-bac3-6f82343bbf50
+2024-12-02 06:51:09,236 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 98547d91-ab20-45ae-bac3-6f82343bbf50
+2024-12-02 06:54:21,339 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:54:21,339 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:54:33,273 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:54:33,273 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:54:33,273 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 2fd347f2-92e8-4835-9300-7bf8b7f91654
+2024-12-02 06:54:33,273 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 2fd347f2-92e8-4835-9300-7bf8b7f91654
+2024-12-02 06:56:30,861 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:56:30,861 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:56:35,149 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:56:35,149 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:56:35,149 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: cf162ce4-e3bb-40c1-bd94-48dbcf372538
+2024-12-02 06:56:35,149 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: cf162ce4-e3bb-40c1-bd94-48dbcf372538
+2024-12-02 06:57:49,936 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:57:49,936 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 06:58:03,773 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:58:03,773 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 06:58:03,774 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 27e77571-6ff7-4a45-8966-d11030a8f886
+2024-12-02 06:58:03,774 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 27e77571-6ff7-4a45-8966-d11030a8f886
+2024-12-02 07:02:47,028 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 07:02:47,028 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 07:02:53,445 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:02:53,445 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:02:53,445 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: e753dbdd-babd-4704-bc7d-45e74ef78835
+2024-12-02 07:02:53,445 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: e753dbdd-babd-4704-bc7d-45e74ef78835
+2024-12-02 07:04:41,870 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 07:04:41,870 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 07:04:48,731 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: FAILURE, Details: Key validation attempt
+2024-12-02 07:04:48,731 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: FAILURE, Details: Key validation attempt
+2024-12-02 07:05:14,959 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 07:05:14,959 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 07:05:18,187 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:05:18,187 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:05:18,188 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6a4ede61-fbd4-4718-a7d5-434320e3547c
+2024-12-02 07:05:18,188 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6a4ede61-fbd4-4718-a7d5-434320e3547c
+2024-12-02 07:06:51,881 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 07:06:51,881 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 07:06:58,951 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:06:58,951 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:06:58,951 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: ec95694f-4fe0-49e9-b89f-0db7c9acfecb
+2024-12-02 07:06:58,951 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: ec95694f-4fe0-49e9-b89f-0db7c9acfecb
+2024-12-02 07:09:55,576 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 07:09:55,576 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 07:10:13,541 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:10:13,541 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:10:13,541 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 18acf577-b836-4553-a134-849417628965
+2024-12-02 07:10:13,541 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 18acf577-b836-4553-a134-849417628965
+2024-12-02 07:22:28,084 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 07:22:28,084 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 07:22:42,525 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: FAILURE, Details: Key validation attempt
+2024-12-02 07:22:42,525 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: FAILURE, Details: Key validation attempt
+2024-12-02 07:22:46,631 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: FAILURE, Details: Key validation attempt
+2024-12-02 07:22:46,631 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: FAILURE, Details: Key validation attempt
+2024-12-02 07:23:50,016 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 07:23:50,016 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 07:23:56,986 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:23:56,986 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:23:56,986 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a82094bb-91e6-4cfb-8235-178c92efa7ac
+2024-12-02 07:23:56,986 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a82094bb-91e6-4cfb-8235-178c92efa7ac
+2024-12-02 07:24:38,920 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:24:38,920 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:24:38,921 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3d433438-a4cd-4fbf-b528-6af4ec054219
+2024-12-02 07:24:38,921 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3d433438-a4cd-4fbf-b528-6af4ec054219
+2024-12-02 07:24:50,036 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:24:50,036 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:24:50,036 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 904ab49b-bf41-480c-aeea-02e0a60d08d9
+2024-12-02 07:24:50,036 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 904ab49b-bf41-480c-aeea-02e0a60d08d9
+2024-12-02 07:24:58,707 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:24:58,707 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:24:58,707 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 08af8a0a-e6b5-4d4b-baba-d717948606d0
+2024-12-02 07:24:58,707 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 08af8a0a-e6b5-4d4b-baba-d717948606d0
+2024-12-02 07:26:16,657 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:26:16,657 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:26:16,657 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3b2c57aa-fef5-4863-8363-ce28996b2fe2
+2024-12-02 07:26:16,657 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3b2c57aa-fef5-4863-8363-ce28996b2fe2
+2024-12-02 07:26:24,721 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:26:24,721 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 07:26:24,721 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: d0495826-0df5-4e96-a28a-c177f51d236f
+2024-12-02 07:26:24,721 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: d0495826-0df5-4e96-a28a-c177f51d236f
+2024-12-02 19:58:24,516 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 19:58:24,516 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 19:58:55,170 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 19:58:55,170 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 19:58:55,171 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9fcbfbc9-3576-4539-87bb-54e039739e80
+2024-12-02 19:58:55,171 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9fcbfbc9-3576-4539-87bb-54e039739e80
+2024-12-02 19:59:09,236 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 19:59:09,236 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 19:59:09,236 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 1f59eba2-1500-46c5-893a-4031db64cfe3
+2024-12-02 19:59:09,236 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 1f59eba2-1500-46c5-893a-4031db64cfe3
+2024-12-02 20:04:45,418 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 20:04:45,418 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 20:04:56,492 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:04:56,492 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:04:56,492 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 776ce391-f3d4-46d8-b0c1-37e0cb43a7ef
+2024-12-02 20:04:56,492 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 776ce391-f3d4-46d8-b0c1-37e0cb43a7ef
+2024-12-02 20:08:59,882 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:08:59,882 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:08:59,883 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 76477722-a742-403b-a809-42b229b3c8c9
+2024-12-02 20:08:59,883 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 76477722-a742-403b-a809-42b229b3c8c9
+2024-12-02 20:09:15,766 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:09:15,766 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:09:15,766 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: c555a29e-7239-4d34-8d08-5d13e4642a96
+2024-12-02 20:09:15,766 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: c555a29e-7239-4d34-8d08-5d13e4642a96
+2024-12-02 20:11:15,970 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 20:11:15,970 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 20:11:30,886 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:11:30,886 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:11:30,887 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a425c205-d8e1-4ad8-a4b9-0bbdd8be32cd
+2024-12-02 20:11:30,887 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a425c205-d8e1-4ad8-a4b9-0bbdd8be32cd
+2024-12-02 20:13:09,876 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:13:09,876 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:13:09,877 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: ebdbf4f1-6c97-49ab-a49d-6c254fa8a519
+2024-12-02 20:13:09,877 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: ebdbf4f1-6c97-49ab-a49d-6c254fa8a519
+2024-12-02 20:21:19,892 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 20:21:19,892 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 20:21:26,497 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:21:26,497 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:21:26,497 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: d97a3ca5-dbaa-49b6-b160-4798c363f652
+2024-12-02 20:21:26,497 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: d97a3ca5-dbaa-49b6-b160-4798c363f652
+2024-12-02 20:25:59,498 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 20:25:59,498 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 20:26:05,980 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:26:05,980 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:26:05,980 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 69e65e30-fdff-47c3-9e71-10896d9120b1
+2024-12-02 20:26:05,980 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 69e65e30-fdff-47c3-9e71-10896d9120b1
+2024-12-02 20:32:14,269 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 20:32:14,269 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 20:32:35,441 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:32:35,441 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:32:35,441 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: f3d4a390-70d6-442a-a447-c539ed3b4e0a
+2024-12-02 20:32:35,441 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: f3d4a390-70d6-442a-a447-c539ed3b4e0a
+2024-12-02 20:35:44,842 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 20:35:44,842 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 20:35:59,865 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:35:59,865 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:35:59,866 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: e06b1bdf-d530-410e-91bc-a84be3902808
+2024-12-02 20:35:59,866 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: e06b1bdf-d530-410e-91bc-a84be3902808
+2024-12-02 20:36:35,800 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:36:35,800 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:36:35,800 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: aa4fc8de-5f75-49e8-839b-7ec055f34cf8
+2024-12-02 20:36:35,800 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: aa4fc8de-5f75-49e8-839b-7ec055f34cf8
+2024-12-02 20:36:57,415 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:36:57,415 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:36:57,415 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 316f4b98-caa4-4997-8dd6-a9962f29f024
+2024-12-02 20:36:57,415 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 316f4b98-caa4-4997-8dd6-a9962f29f024
+2024-12-02 20:40:27,395 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 20:40:27,395 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-02 20:40:31,010 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:40:31,010 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-02 20:40:31,011 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 4f7fb6ab-6fe3-4a84-8eeb-8e12613e9b6e
+2024-12-02 20:40:31,011 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 4f7fb6ab-6fe3-4a84-8eeb-8e12613e9b6e
+2024-12-03 02:43:22,440 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-03 02:43:22,440 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-03 02:43:40,882 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 02:43:40,882 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 02:43:40,883 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 68da0ebc-58aa-43b7-9dc9-8e36b5930eed
+2024-12-03 02:43:40,883 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 68da0ebc-58aa-43b7-9dc9-8e36b5930eed
+2024-12-03 02:44:48,491 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 02:44:48,491 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 02:44:48,491 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8c117fa2-7982-4223-9b90-46fd0939e9ac
+2024-12-03 02:44:48,491 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8c117fa2-7982-4223-9b90-46fd0939e9ac
+2024-12-03 02:45:30,064 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 02:45:30,064 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 02:45:30,064 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 02dfbcef-e0a9-41fd-8f93-7845ccf6399b
+2024-12-03 02:45:30,064 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 02dfbcef-e0a9-41fd-8f93-7845ccf6399b
+2024-12-03 02:45:56,016 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 02:45:56,016 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 02:45:56,017 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a011f936-8299-46ec-8cc0-22e1352626ea
+2024-12-03 02:45:56,017 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a011f936-8299-46ec-8cc0-22e1352626ea
+2024-12-03 02:48:13,768 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 02:48:13,768 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 02:48:13,768 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: fbc84e5e-c504-4e3b-a851-9528fb8d0a1f
+2024-12-03 02:48:13,768 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: fbc84e5e-c504-4e3b-a851-9528fb8d0a1f
+2024-12-03 02:52:49,791 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 02:52:49,791 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 02:52:49,791 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 162715b1-bebe-4e46-8b2c-b6c9ce631c05
+2024-12-03 02:52:49,791 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 162715b1-bebe-4e46-8b2c-b6c9ce631c05
+2024-12-03 02:57:55,613 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 02:57:55,613 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 02:57:55,613 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 7aaadcc3-61f2-4130-aca6-11494a6784ac
+2024-12-03 02:57:55,613 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 7aaadcc3-61f2-4130-aca6-11494a6784ac
+2024-12-03 02:58:45,128 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 02:58:45,128 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 02:58:45,128 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 58859318-e6e5-42b6-9c41-dfbc36fa51fc
+2024-12-03 02:58:45,128 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 58859318-e6e5-42b6-9c41-dfbc36fa51fc
+2024-12-03 03:00:29,309 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-03 03:00:29,309 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-03 03:01:01,335 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:01:01,335 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:01:01,335 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9d014cac-b8dd-4ade-8f77-1c04a3dee1a2
+2024-12-03 03:01:01,335 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9d014cac-b8dd-4ade-8f77-1c04a3dee1a2
+2024-12-03 03:01:25,748 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:01:25,748 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:01:25,748 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: b81e4258-c8ff-4543-a11e-a29e44d31dcb
+2024-12-03 03:01:25,748 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: b81e4258-c8ff-4543-a11e-a29e44d31dcb
+2024-12-03 03:13:03,423 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:13:03,423 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:13:03,423 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: ef6c868b-c403-4257-a250-b3ef24149b19
+2024-12-03 03:13:03,423 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: ef6c868b-c403-4257-a250-b3ef24149b19
+2024-12-03 03:13:38,893 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:13:38,893 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:13:38,893 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: e2b86b64-3272-4938-b05f-a61fd3036bea
+2024-12-03 03:13:38,893 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: e2b86b64-3272-4938-b05f-a61fd3036bea
+2024-12-03 03:19:17,261 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:19:17,261 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:19:17,261 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 0f0bb559-0109-44fe-a597-72b4defa13ff
+2024-12-03 03:19:17,261 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 0f0bb559-0109-44fe-a597-72b4defa13ff
+2024-12-03 03:21:43,828 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:21:43,828 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:21:43,828 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 68660253-0977-4705-bfaf-18fe90d9d011
+2024-12-03 03:21:43,828 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 68660253-0977-4705-bfaf-18fe90d9d011
+2024-12-03 03:40:29,286 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:40:29,286 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:40:29,286 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6b4b2f93-0f3e-4977-8287-07f9cacff454
+2024-12-03 03:40:29,286 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6b4b2f93-0f3e-4977-8287-07f9cacff454
+2024-12-03 03:43:48,130 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:43:48,130 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:43:48,130 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: aecab72e-e10b-4bbf-832a-b864968c1ed0
+2024-12-03 03:43:48,130 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: aecab72e-e10b-4bbf-832a-b864968c1ed0
+2024-12-03 03:52:54,989 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:52:54,989 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:52:54,989 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: c9789b78-6c90-42e8-b464-d65d316ce651
+2024-12-03 03:52:54,989 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: c9789b78-6c90-42e8-b464-d65d316ce651
+2024-12-03 03:53:09,228 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:53:09,228 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:53:09,228 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 7bc10883-d6a2-43ad-bb56-7564bd66d335
+2024-12-03 03:53:09,228 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 7bc10883-d6a2-43ad-bb56-7564bd66d335
+2024-12-03 03:54:57,638 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:54:57,638 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:54:57,639 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 10cf01d6-2565-453f-87a6-4f62c992266d
+2024-12-03 03:54:57,639 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 10cf01d6-2565-453f-87a6-4f62c992266d
+2024-12-03 03:55:14,574 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:55:14,574 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:55:14,574 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: c42bb8c9-6321-4e77-8909-f522bc167d6e
+2024-12-03 03:55:14,574 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: c42bb8c9-6321-4e77-8909-f522bc167d6e
+2024-12-03 03:55:49,207 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:55:49,207 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:55:49,208 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 5af4b026-fa91-45c9-93a0-fd0a638a3e37
+2024-12-03 03:55:49,208 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 5af4b026-fa91-45c9-93a0-fd0a638a3e37
+2024-12-03 03:59:42,361 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:59:42,361 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 03:59:42,361 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: d04d1d0a-57cd-4f35-9345-348d581215d2
+2024-12-03 03:59:42,361 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: d04d1d0a-57cd-4f35-9345-348d581215d2
+2024-12-03 04:00:07,394 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:00:07,394 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:00:07,394 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8b5f0a97-1d80-4632-b129-ea2bab9e0500
+2024-12-03 04:00:07,394 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 8b5f0a97-1d80-4632-b129-ea2bab9e0500
+2024-12-03 04:00:38,810 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:00:38,810 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:00:38,811 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 431fd57f-f63f-4f48-9fa6-c66741e16436
+2024-12-03 04:00:38,811 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 431fd57f-f63f-4f48-9fa6-c66741e16436
+2024-12-03 04:05:59,499 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:05:59,499 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:05:59,499 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: af1f55f7-a312-4896-9671-ba0cae1ddee2
+2024-12-03 04:05:59,499 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: af1f55f7-a312-4896-9671-ba0cae1ddee2
+2024-12-03 04:28:02,882 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-03 04:28:02,882 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-03 04:28:07,695 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:28:07,695 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:28:07,695 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 1824c267-46ca-45ab-8065-debf32abe5fa
+2024-12-03 04:28:07,695 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 1824c267-46ca-45ab-8065-debf32abe5fa
+2024-12-03 04:32:57,388 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:32:57,388 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:32:57,388 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6a0be109-222c-4c74-85b6-2da9b1884c82
+2024-12-03 04:32:57,388 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6a0be109-222c-4c74-85b6-2da9b1884c82
+2024-12-03 04:33:23,195 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:33:23,195 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:33:23,195 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 5f711131-c6f3-4e56-8f4c-8ece96827ee0
+2024-12-03 04:33:23,195 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 5f711131-c6f3-4e56-8f4c-8ece96827ee0
+2024-12-03 04:38:08,557 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:38:08,557 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:38:08,557 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: e699bb49-e44c-4838-976e-6853015382ed
+2024-12-03 04:38:08,557 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: e699bb49-e44c-4838-976e-6853015382ed
+2024-12-03 04:39:12,448 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:39:12,448 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:39:12,449 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: dbf1b57f-6571-4048-9b7f-be45457c8fb8
+2024-12-03 04:39:12,449 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: dbf1b57f-6571-4048-9b7f-be45457c8fb8
+2024-12-03 04:56:30,780 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-03 04:56:30,780 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-03 04:56:35,225 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:56:35,225 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:56:35,226 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 01c48a94-75ca-4722-a8d0-1c829c359192
+2024-12-03 04:56:35,226 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 01c48a94-75ca-4722-a8d0-1c829c359192
+2024-12-03 04:59:33,724 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:59:33,724 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 04:59:33,725 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 827a8b5c-0e4a-4936-bf6a-bcd10c64b4ab
+2024-12-03 04:59:33,725 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 827a8b5c-0e4a-4936-bf6a-bcd10c64b4ab
+2024-12-03 05:00:01,448 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:00:01,448 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:00:01,448 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 482d5171-8c05-44b3-aa8e-e4f72a0f84aa
+2024-12-03 05:00:01,448 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 482d5171-8c05-44b3-aa8e-e4f72a0f84aa
+2024-12-03 05:01:05,848 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:01:05,848 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:01:05,848 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 79977d20-c1b6-4de7-b9b3-ddc5ac5df559
+2024-12-03 05:01:05,848 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 79977d20-c1b6-4de7-b9b3-ddc5ac5df559
+2024-12-03 05:01:24,341 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:01:24,341 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:01:24,341 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: d32b6aba-5b66-4646-b1a6-0cabd7394f96
+2024-12-03 05:01:24,341 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: d32b6aba-5b66-4646-b1a6-0cabd7394f96
+2024-12-03 05:02:44,836 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:02:44,836 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:02:44,836 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 46d6b3b0-99b8-4ef9-a45e-c34e713ce010
+2024-12-03 05:02:44,836 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 46d6b3b0-99b8-4ef9-a45e-c34e713ce010
+2024-12-03 05:03:13,781 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:03:13,781 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:03:13,781 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a1506089-7b57-43f5-9266-59dc2ce5fff3
+2024-12-03 05:03:13,781 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a1506089-7b57-43f5-9266-59dc2ce5fff3
+2024-12-03 05:04:35,271 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:04:35,271 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:04:35,272 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 89660b49-bff0-4dc0-834b-600bebb74288
+2024-12-03 05:04:35,272 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 89660b49-bff0-4dc0-834b-600bebb74288
+2024-12-03 05:04:53,203 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:04:53,203 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:04:53,203 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 1de9cf27-a547-4956-9366-250dde033401
+2024-12-03 05:04:53,203 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 1de9cf27-a547-4956-9366-250dde033401
+2024-12-03 05:06:40,802 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:06:40,802 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:06:40,803 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 56d575ec-5be6-4404-a9ad-b2d012ff0b51
+2024-12-03 05:06:40,803 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 56d575ec-5be6-4404-a9ad-b2d012ff0b51
+2024-12-03 05:06:59,167 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:06:59,167 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:06:59,167 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 5c573fc5-9cb0-479a-b3cb-39ed614f309f
+2024-12-03 05:06:59,167 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 5c573fc5-9cb0-479a-b3cb-39ed614f309f
+2024-12-03 05:07:22,398 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:07:22,398 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:07:22,398 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 2b72a064-a669-41a7-b776-59c7de771744
+2024-12-03 05:07:22,398 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 2b72a064-a669-41a7-b776-59c7de771744
+2024-12-03 05:07:39,582 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:07:39,582 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:07:39,582 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: cb406e19-2e1d-43ab-ad8c-37316ebef323
+2024-12-03 05:07:39,582 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: cb406e19-2e1d-43ab-ad8c-37316ebef323
+2024-12-03 05:09:11,156 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:09:11,156 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:09:11,156 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: de7c53f5-ddaf-44fd-9914-bca4447a0294
+2024-12-03 05:09:11,156 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: de7c53f5-ddaf-44fd-9914-bca4447a0294
+2024-12-03 05:09:35,898 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:09:35,898 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:09:35,899 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 525ec0a6-e92a-4763-b17c-0d3d4964d465
+2024-12-03 05:09:35,899 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 525ec0a6-e92a-4763-b17c-0d3d4964d465
+2024-12-03 05:09:59,884 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:09:59,884 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:09:59,884 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 470cc8c7-797b-4c40-bbbd-ebfebbb9362e
+2024-12-03 05:09:59,884 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 470cc8c7-797b-4c40-bbbd-ebfebbb9362e
+2024-12-03 05:10:24,489 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:10:24,489 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:10:24,489 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 14285f19-e677-4878-a836-000a2a83ee00
+2024-12-03 05:10:24,489 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 14285f19-e677-4878-a836-000a2a83ee00
+2024-12-03 05:11:04,638 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:11:04,638 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:11:04,639 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 503d6c04-5116-4a55-8012-2ef6f18b1085
+2024-12-03 05:11:04,639 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 503d6c04-5116-4a55-8012-2ef6f18b1085
+2024-12-03 05:27:50,100 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:27:50,100 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:27:50,101 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a98ad959-2577-4bcc-8f48-49bf7435c0aa
+2024-12-03 05:27:50,101 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a98ad959-2577-4bcc-8f48-49bf7435c0aa
+2024-12-03 05:30:14,300 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:30:14,300 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:30:14,300 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 247fefa9-dd9c-4f27-aa09-ff553f56c891
+2024-12-03 05:30:14,300 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 247fefa9-dd9c-4f27-aa09-ff553f56c891
+2024-12-03 05:30:58,597 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:30:58,597 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:30:58,597 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: b109a974-532d-4542-8d82-32d5a4f5f137
+2024-12-03 05:30:58,597 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: b109a974-532d-4542-8d82-32d5a4f5f137
+2024-12-03 05:31:25,539 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:31:25,539 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:31:25,539 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 18298383-825b-4717-be5d-ad670969f26b
+2024-12-03 05:31:25,539 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 18298383-825b-4717-be5d-ad670969f26b
+2024-12-03 05:32:02,963 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:32:02,963 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:32:02,963 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6615cf55-ff2c-4905-8841-444915cb7808
+2024-12-03 05:32:02,963 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6615cf55-ff2c-4905-8841-444915cb7808
+2024-12-03 05:32:32,459 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:32:32,459 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:32:32,459 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 664c10f7-5ed2-44d7-9728-c6879ca272b6
+2024-12-03 05:32:32,459 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 664c10f7-5ed2-44d7-9728-c6879ca272b6
+2024-12-03 05:33:59,138 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:33:59,138 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:33:59,138 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6a58513c-f873-4ce1-a30f-4993ceb18f5c
+2024-12-03 05:33:59,138 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6a58513c-f873-4ce1-a30f-4993ceb18f5c
+2024-12-03 05:34:13,942 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:34:13,942 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:34:13,943 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: d179c66b-abb1-47e6-9f6e-ef0dca5f5690
+2024-12-03 05:34:13,943 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: d179c66b-abb1-47e6-9f6e-ef0dca5f5690
+2024-12-03 05:34:35,713 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:34:35,713 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:34:35,713 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: fa66a976-9fb6-4175-92cf-face56eca043
+2024-12-03 05:34:35,713 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: fa66a976-9fb6-4175-92cf-face56eca043
+2024-12-03 05:35:25,601 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:35:25,601 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:35:25,601 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9da77c40-e158-482d-8821-3dad6dede5f9
+2024-12-03 05:35:25,601 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9da77c40-e158-482d-8821-3dad6dede5f9
+2024-12-03 05:35:41,710 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:35:41,710 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:35:41,711 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: bee58096-c488-467a-b6e9-ed9a3981e203
+2024-12-03 05:35:41,711 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: bee58096-c488-467a-b6e9-ed9a3981e203
+2024-12-03 05:35:58,870 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:35:58,870 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:35:58,870 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 79f1cf89-7e09-4df3-87bd-d8f579ec1ee9
+2024-12-03 05:35:58,870 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 79f1cf89-7e09-4df3-87bd-d8f579ec1ee9
+2024-12-03 05:36:10,975 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:36:10,975 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:36:10,975 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 955df0fa-242f-4375-9c8c-75bab0bcf5a4
+2024-12-03 05:36:10,975 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 955df0fa-242f-4375-9c8c-75bab0bcf5a4
+2024-12-03 05:37:06,967 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:37:06,967 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:37:06,967 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 76b16698-f85e-4d35-aa15-bb4d0afd94ab
+2024-12-03 05:37:06,967 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 76b16698-f85e-4d35-aa15-bb4d0afd94ab
+2024-12-03 05:38:05,167 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:38:05,167 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:38:05,167 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: c4dcb133-be12-471e-a270-00b200d64d0d
+2024-12-03 05:38:05,167 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: c4dcb133-be12-471e-a270-00b200d64d0d
+2024-12-03 05:39:09,392 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-03 05:39:09,392 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-03 05:39:14,498 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:39:14,498 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:39:14,498 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 654b9b14-3d00-4591-a182-869d37903926
+2024-12-03 05:39:14,498 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 654b9b14-3d00-4591-a182-869d37903926
+2024-12-03 05:52:59,530 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:52:59,530 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:52:59,531 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a32b9b32-d0dd-4e5f-9090-a20fc8d4dd20
+2024-12-03 05:52:59,531 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a32b9b32-d0dd-4e5f-9090-a20fc8d4dd20
+2024-12-03 05:53:32,223 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:53:32,223 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:53:32,224 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: c4f84eaa-34c4-4875-a219-9c09b784c35c
+2024-12-03 05:53:32,224 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: c4f84eaa-34c4-4875-a219-9c09b784c35c
+2024-12-03 05:54:19,502 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:54:19,502 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:54:19,502 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: ddc64549-b391-4319-adf0-0bbf426c013b
+2024-12-03 05:54:19,502 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: ddc64549-b391-4319-adf0-0bbf426c013b
+2024-12-03 05:56:26,244 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:56:26,244 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:56:26,244 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 49044329-1e8e-4516-85d0-dc3041cc8510
+2024-12-03 05:56:26,244 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 49044329-1e8e-4516-85d0-dc3041cc8510
+2024-12-03 05:56:57,628 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:56:57,628 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 05:56:57,628 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3249fbcf-6252-475d-8078-963d3f270b48
+2024-12-03 05:56:57,628 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3249fbcf-6252-475d-8078-963d3f270b48
+2024-12-03 06:01:00,135 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-03 06:01:00,135 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-03 06:01:06,341 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:01:06,341 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:01:06,342 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 39004c8e-ee7d-44d6-8556-53d69e72de90
+2024-12-03 06:01:06,342 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 39004c8e-ee7d-44d6-8556-53d69e72de90
+2024-12-03 06:01:31,015 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-03 06:01:31,015 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-03 06:01:37,541 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:01:37,541 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:01:37,542 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 062400e8-c200-4249-8823-39b0e7130ebd
+2024-12-03 06:01:37,542 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 062400e8-c200-4249-8823-39b0e7130ebd
+2024-12-03 06:01:58,364 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:01:58,364 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:01:58,364 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a738f9d5-edac-4faa-b42e-598b5daefd71
+2024-12-03 06:01:58,364 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a738f9d5-edac-4faa-b42e-598b5daefd71
+2024-12-03 06:03:12,306 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-03 06:03:12,306 - INFO - Type: USER_REGISTRATION, IP: , Status: SUCCESS, Details: New user registered: 
+2024-12-03 06:03:26,777 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:03:26,777 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:03:26,778 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 0f112c37-66b4-47cc-8d75-6270443ccafb
+2024-12-03 06:03:26,778 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 0f112c37-66b4-47cc-8d75-6270443ccafb
+2024-12-03 06:03:32,225 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:03:32,225 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:03:32,225 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 1a9b328c-6133-4e73-b08b-235032873f88
+2024-12-03 06:03:32,225 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 1a9b328c-6133-4e73-b08b-235032873f88
+2024-12-03 06:03:44,050 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:03:44,050 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:03:44,050 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 1f758da1-d837-4cb7-b6e0-66ce7edae466
+2024-12-03 06:03:44,050 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 1f758da1-d837-4cb7-b6e0-66ce7edae466
+2024-12-03 06:04:39,578 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:04:39,578 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:04:39,579 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: b47f4d5e-85c8-42d6-949a-37692cea8030
+2024-12-03 06:04:39,579 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: b47f4d5e-85c8-42d6-949a-37692cea8030
+2024-12-03 06:06:45,536 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:06:45,536 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:06:45,536 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a8f66d39-dc17-470d-827e-f5a40889866d
+2024-12-03 06:06:45,536 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a8f66d39-dc17-470d-827e-f5a40889866d
+2024-12-03 06:08:58,189 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:08:58,189 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:08:58,190 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 2ad5a9a7-490a-48fb-9093-a68b0165f891
+2024-12-03 06:08:58,190 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 2ad5a9a7-490a-48fb-9093-a68b0165f891
+2024-12-03 06:09:13,182 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:09:13,182 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:09:13,183 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3bfdd89e-978d-4b41-a44d-3df4274be094
+2024-12-03 06:09:13,183 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3bfdd89e-978d-4b41-a44d-3df4274be094
+2024-12-03 06:10:38,435 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:10:38,435 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:10:38,435 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 19e7f7e4-aadc-47bb-891e-83e698468c7a
+2024-12-03 06:10:38,435 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 19e7f7e4-aadc-47bb-891e-83e698468c7a
+2024-12-03 06:12:25,922 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:12:25,922 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:12:25,922 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: db6df312-f4c0-4ced-b4fc-9cb6cc9737e6
+2024-12-03 06:12:25,922 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: db6df312-f4c0-4ced-b4fc-9cb6cc9737e6
+2024-12-03 06:12:59,465 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:12:59,465 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:12:59,465 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9d622703-1f2a-4bef-ba8a-93ca97df0dd9
+2024-12-03 06:12:59,465 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9d622703-1f2a-4bef-ba8a-93ca97df0dd9
+2024-12-03 06:13:15,109 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:13:15,109 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:13:15,109 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: cadf2cf1-c08d-4152-8d8b-714831b8ddf9
+2024-12-03 06:13:15,109 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: cadf2cf1-c08d-4152-8d8b-714831b8ddf9
+2024-12-03 06:13:55,331 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:13:55,331 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:13:55,331 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: b3947ef1-52b8-4d8f-a4db-43b29c591b58
+2024-12-03 06:13:55,331 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: b3947ef1-52b8-4d8f-a4db-43b29c591b58
+2024-12-03 06:14:33,436 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:14:33,436 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:14:33,436 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9daa9dfa-5e60-42d5-b485-274c8c969677
+2024-12-03 06:14:33,436 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9daa9dfa-5e60-42d5-b485-274c8c969677
+2024-12-03 06:14:43,777 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:14:43,777 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:14:43,777 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: e9d03cd1-b31a-45c6-92ad-d332c51ecddb
+2024-12-03 06:14:43,777 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: e9d03cd1-b31a-45c6-92ad-d332c51ecddb
+2024-12-03 06:15:58,935 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:15:58,935 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:15:58,936 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3be332c8-4cfd-401b-adc3-336d8fc6e607
+2024-12-03 06:15:58,936 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3be332c8-4cfd-401b-adc3-336d8fc6e607
+2024-12-03 06:16:17,060 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:16:17,060 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:16:17,060 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 200b3892-5e80-48f8-b55f-7a3870093d84
+2024-12-03 06:16:17,060 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 200b3892-5e80-48f8-b55f-7a3870093d84
+2024-12-03 06:16:38,003 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:16:38,003 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:16:38,003 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: be65db9f-7881-4a0e-83bb-f7e394e257ad
+2024-12-03 06:16:38,003 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: be65db9f-7881-4a0e-83bb-f7e394e257ad
+2024-12-03 06:16:45,986 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:16:45,986 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:16:45,986 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 4836b309-35f6-4c83-90b3-df83a96985b7
+2024-12-03 06:16:45,986 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 4836b309-35f6-4c83-90b3-df83a96985b7
+2024-12-03 06:17:27,312 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:17:27,312 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:17:27,312 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 7bce2f08-733b-401f-86a3-fa6e1f24f588
+2024-12-03 06:17:27,312 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 7bce2f08-733b-401f-86a3-fa6e1f24f588
+2024-12-03 06:17:42,316 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:17:42,316 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:17:42,316 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 809c6d4c-df6f-402f-98b6-54ada3271176
+2024-12-03 06:17:42,316 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 809c6d4c-df6f-402f-98b6-54ada3271176
+2024-12-03 06:18:06,679 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:18:06,679 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:18:06,679 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: d8a5e477-bede-4031-8175-cc526102a962
+2024-12-03 06:18:06,679 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: d8a5e477-bede-4031-8175-cc526102a962
+2024-12-03 06:18:26,885 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:18:26,885 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:18:26,885 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: fa7c90b3-1089-445b-a35c-80a72a275ba5
+2024-12-03 06:18:26,885 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: fa7c90b3-1089-445b-a35c-80a72a275ba5
+2024-12-03 06:18:45,019 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:18:45,019 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:18:45,019 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a5a1498c-d45b-46fd-b826-f5473dc94343
+2024-12-03 06:18:45,019 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: a5a1498c-d45b-46fd-b826-f5473dc94343
+2024-12-03 06:19:02,225 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:19:02,225 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:19:02,225 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 766301dd-4350-4769-825e-487f2ff7eb12
+2024-12-03 06:19:02,225 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 766301dd-4350-4769-825e-487f2ff7eb12
+2024-12-03 06:21:44,749 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:21:44,749 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:21:44,750 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 5b34e715-f759-4917-a4d9-35f8c81ae381
+2024-12-03 06:21:44,750 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 5b34e715-f759-4917-a4d9-35f8c81ae381
+2024-12-03 06:21:58,125 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:21:58,125 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:21:58,126 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 4aa9d0b1-8dc9-4132-b3e1-8d997ee56834
+2024-12-03 06:21:58,126 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 4aa9d0b1-8dc9-4132-b3e1-8d997ee56834
+2024-12-03 06:22:13,175 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:22:13,175 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:22:13,175 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: f2346ced-1c15-431e-a593-dbff010ef938
+2024-12-03 06:22:13,175 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: f2346ced-1c15-431e-a593-dbff010ef938
+2024-12-03 06:36:58,804 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:36:58,804 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:36:58,804 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 0a0db6b8-5c1e-4a14-a53b-fd0d53e4460b
+2024-12-03 06:36:58,804 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 0a0db6b8-5c1e-4a14-a53b-fd0d53e4460b
+2024-12-03 06:37:35,914 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:37:35,914 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:37:35,914 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 590c9e52-7337-4d87-80b0-61def7577502
+2024-12-03 06:37:35,914 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 590c9e52-7337-4d87-80b0-61def7577502
+2024-12-03 06:37:58,348 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:37:58,348 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:37:58,348 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3e9f0f21-9d85-4972-b55f-c921d7b7c939
+2024-12-03 06:37:58,348 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3e9f0f21-9d85-4972-b55f-c921d7b7c939
+2024-12-03 06:38:45,363 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:38:45,363 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:38:45,363 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9423b7c6-df22-4179-8e2b-94f8d38f471e
+2024-12-03 06:38:45,363 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9423b7c6-df22-4179-8e2b-94f8d38f471e
+2024-12-03 06:39:02,279 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:39:02,279 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:39:02,279 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 632efb35-a813-4f63-a3a0-f40672ee4aed
+2024-12-03 06:39:02,279 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 632efb35-a813-4f63-a3a0-f40672ee4aed
+2024-12-03 06:39:15,416 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:39:15,416 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:39:15,416 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: eb205659-7808-4e0c-a938-742ba7aa87c9
+2024-12-03 06:39:15,416 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: eb205659-7808-4e0c-a938-742ba7aa87c9
+2024-12-03 06:39:31,711 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:39:31,711 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:39:31,711 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 1049789a-a542-4e19-b41b-80f6c66368c5
+2024-12-03 06:39:31,711 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 1049789a-a542-4e19-b41b-80f6c66368c5
+2024-12-03 06:39:47,214 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:39:47,214 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:39:47,214 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 36c69ead-f0f3-4d81-a22b-cf844c28939d
+2024-12-03 06:39:47,214 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 36c69ead-f0f3-4d81-a22b-cf844c28939d
+2024-12-03 06:40:05,358 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:40:05,358 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:40:05,359 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3097df9f-3232-4350-a2b4-7a0dfc0496e7
+2024-12-03 06:40:05,359 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3097df9f-3232-4350-a2b4-7a0dfc0496e7
+2024-12-03 06:40:43,142 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:40:43,142 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:40:43,142 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 88e26479-5717-408e-8110-c77caab1bfd9
+2024-12-03 06:40:43,142 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 88e26479-5717-408e-8110-c77caab1bfd9
+2024-12-03 06:41:24,520 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:41:24,520 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:41:24,520 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 077b5616-3242-44bc-9f4e-7ab205d822ae
+2024-12-03 06:41:24,520 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 077b5616-3242-44bc-9f4e-7ab205d822ae
+2024-12-03 06:43:09,138 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:43:09,138 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:43:09,138 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 391c9d9d-a271-46d7-a9bd-8ffa05216ac1
+2024-12-03 06:43:09,138 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 391c9d9d-a271-46d7-a9bd-8ffa05216ac1
+2024-12-03 06:43:32,866 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:43:32,866 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:43:32,866 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6cc23816-1e5e-42f5-8b81-4c4753477a80
+2024-12-03 06:43:32,866 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 6cc23816-1e5e-42f5-8b81-4c4753477a80
+2024-12-03 06:43:49,024 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:43:49,024 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:43:49,025 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9c8622a0-ebaa-4d31-8fdd-5e01eb3f5b44
+2024-12-03 06:43:49,025 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 9c8622a0-ebaa-4d31-8fdd-5e01eb3f5b44
+2024-12-03 06:44:37,684 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:44:37,684 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:44:37,684 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 7c4c39a4-1f46-4fe6-97f6-74b59f9e2caf
+2024-12-03 06:44:37,684 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 7c4c39a4-1f46-4fe6-97f6-74b59f9e2caf
+2024-12-03 06:46:30,576 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:46:30,576 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:46:30,576 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3caada99-4ae2-4e5a-99de-7152f62d932e
+2024-12-03 06:46:30,576 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: 3caada99-4ae2-4e5a-99de-7152f62d932e
+2024-12-03 06:46:43,529 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:46:43,529 - INFO - Type: AUTH_ATTEMPT, IP: 127.0.0.1, Status: SUCCESS, Details: Key validation attempt
+2024-12-03 06:46:43,530 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: b9a7d493-0380-4747-b5e7-c2f563175617
+2024-12-03 06:46:43,530 - INFO - Type: SESSION_CREATED, IP: 127.0.0.1, Status: SUCCESS, Details: New session created, Session: b9a7d493-0380-4747-b5e7-c2f563175617

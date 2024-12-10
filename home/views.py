@@ -473,78 +473,15 @@ from urllib.parse import urljoin
 
 logger = logging.getLogger(__name__)
 
-# @login_required
-# def new_view(request, path=''):
-#     username = request.user.username
-#     logger.info(f"new_view called with path: '{path}'")
-
-#     try:
-#         # Proxy the request to the service running on port 5459
-#         target_url = f'http://129.114.108.204:5459/{path}'
-#         logger.info(f"Proxying request to: {target_url}")
-        
-#         response = requests.get(target_url, timeout=5)
-#         response.raise_for_status()  # Raise an exception for bad status codes
-        
-#         content_type = response.headers.get('Content-Type', '')
-        
-#         # If the content is not HTML, return it as-is
-#         if 'text/html' not in content_type:
-#             return HttpResponse(response.content, content_type=content_type)
-        
-#         # For HTML content, wrap it in our template
-#         html_template = Template("""
-#         {% extends 'histogram.html' %}
-#         {% block content %}
-#         <style>
-          
-                    
-
-#         </style>
-       
-#        <div id="proxied-content-box">
-#             <div id="proxied-content">
-#                 {{ proxied_content|safe }}
-#             </div>
-#         </div>
-#         {% endblock %}
-#         """)
-        
-#         # Render the template with the proxied content
-#         context = Context({
-#             'username': username,
-#             'content_type': content_type,
-#             'proxied_content': response.content.decode('utf-8', errors='replace')
-#         })
-#         rendered_html = html_template.render(context)
-        
-#         # Return the wrapped content as HTML
-#         return HttpResponse(rendered_html, content_type='text/html')
-    
-#     except requests.RequestException as e:
-#         if '.map' in path:  # If it's a source map file
-#             logger.warning(f"Source map file not found: {path}")
-#             return HttpResponse(status=404)
-#         logger.error(f"Error proxying request: {str(e)}")
-#         return JsonResponse({"error": "Failed to proxy request", "details": str(e)}, status=500)
-
-
-from django.http import HttpResponse, JsonResponse
-import requests
-import logging
-import re
-from django.shortcuts import render
-from django.template import Template, Context
-import base64
-from urllib.parse import urljoin
-
-logger = logging.getLogger(__name__)
-
 @login_required
 def new_view(request, path=''):
     username = request.user.username
     logger.info(f"new_view called with path: '{path}'")
 
+    # Define base URL at the beginning
+    BASE_URL = 'http://localhost:5459'
+    AUTH_KEY = 'Zmlyc3Rfa2V5'
+    
     try:
         session = requests.Session()
         
@@ -569,7 +506,7 @@ def new_view(request, path=''):
         is_static_file = file_extension in mime_types
 
         # Step 1: Initial authentication request
-        auth_url = 'http://localhost:5459?key=Zmlyc3Rfa2V5'
+        auth_url = f'{BASE_URL}?key={AUTH_KEY}'
         headers = {
             'Host': 'localhost:5459',
             'User-Agent': 'Mozilla/5.0',
@@ -586,23 +523,21 @@ def new_view(request, path=''):
             headers=headers,
             timeout=10,
             verify=False,
-            allow_redirects=False  # Don't follow redirect automatically
+            allow_redirects=False
         )
         
         logger.info(f"Auth response status: {auth_response.status_code}")
         logger.info(f"Auth response headers: {dict(auth_response.headers)}")
 
         if auth_response.status_code == 302:
-            # Get cookies from auth response
             auth_cookies = session.cookies.get_dict()
             logger.info(f"Received cookies: {auth_cookies}")
 
             # Step 2: Follow redirect with cookies
             redirect_url = auth_response.headers.get('Location', '/')
             if not redirect_url.startswith('http'):
-                redirect_url = f'http://localhost:5459{redirect_url}'
+                redirect_url = f'{BASE_URL}{redirect_url}'
 
-            # Add cookies and CSRF token to headers
             if 'csrf_token' in auth_cookies:
                 headers['X-CSRF-Token'] = auth_cookies['csrf_token']
             
@@ -610,7 +545,7 @@ def new_view(request, path=''):
             headers['Cookie'] = cookie_header
 
             # Make the actual content request
-            target_url = f'http://localhost:5459/{path}' if path else redirect_url
+            target_url = f'{BASE_URL}/{path}' if path else redirect_url
             logger.info(f"Making content request to: {target_url}")
             
             response = session.get(
@@ -625,31 +560,27 @@ def new_view(request, path=''):
             logger.info(f"Content response status: {response.status_code}")
             
             if response.status_code == 200:
-                # For static files, return with correct MIME type
                 if is_static_file:
                     return HttpResponse(
                         response.content,
                         content_type=mime_types[file_extension]
                     )
 
-                # For HTML content, modify and wrap
                 content = response.text
                 content = content.replace(
-                    'ws://localhost:5459',
+                    f'ws://{BASE_URL.replace("http://", "")}',
                     f'ws://{request.get_host()}/new'
                 )
                 content = content.replace(
-                    'http://localhost:5459',
+                    BASE_URL,
                     f'http://{request.get_host()}/new'
                 )
 
-                # Create Django response
                 django_response = render(request, 'histogram.html', {
                     'username': username,
                     'proxied_content': content
                 })
 
-                # Forward cookies
                 for name, value in auth_cookies.items():
                     django_response.set_cookie(
                         name,

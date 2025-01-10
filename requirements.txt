@@ -1,13 +1,14 @@
 pandas
 trame>3
 trame-vuetify
+trame-router
 trame-components
 trame-matplotlib
 numpy
 trame[vuetify]
 django
 pymongo
-matplotlib
+matplotlib==3.9.0
 scikit-learn
 trame
 trame-client
@@ -16,3 +17,4 @@ trame-vtk
 watchdog
 requests
 pydicom
+django-cors-headers

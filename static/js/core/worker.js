@@ -1,10 +1,24 @@
 importScripts('https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.min.js');
 
-self.onmessage = async function(e) {
-    const { chunk, compressionLevel } = e.data;
+self.onmessage = async function (e) {
+    const { mode, data } = e.data;
+
     try {
-        const compressed = await compressChunk(chunk, compressionLevel);
-        self.postMessage({ success: true, data: compressed });
+        if (mode === 'batch') {
+            const { chunks, compressionLevel } = data;
+            const results = [];
+            for (const chunk of chunks) {
+                const compressed = await compressChunk(chunk, compressionLevel);
+                results.push(compressed);
+            }
+            self.postMessage({ success: true, data: results });
+        } else if (mode === 'single') {
+            const { chunk, compressionLevel } = data;
+            const compressed = await compressChunk(chunk, compressionLevel);
+            self.postMessage({ success: true, data: compressed });
+        } else {
+            throw new Error('Invalid mode specified.');
+        }
     } catch (error) {
         self.postMessage({ success: false, error: error.message });
     }

@@ -36,13 +36,13 @@ BUFFER_SIZE = 32
 MAX_WORKERS = min(os.cpu_count() or 4, 8)   
 PAGE_SIZE = resource.getpagesize()          
 
-class ByteMe:
-    class _ByteMeUp:
+class Distributor:
+    class _Warehouse:
         def __init__(self, chunk_size: int, file_size: int, num_consumers: int):
             self.chunk_size = chunk_size
             self.total_chunks = (file_size + chunk_size - 1) // chunk_size
 
-            print(f"{BLUE}Initializing ByteMeUp with file_size={file_size}, chunk_size={chunk_size}{RESET}")
+            print(f"{BLUE}Initializing Warehouse with file_size={file_size}, chunk_size={chunk_size}{RESET}")
             print(f"{BLUE}Calculated total chunks={self.total_chunks}{RESET}")
             
             chunks_per_consumer = self.total_chunks // num_consumers 
@@ -723,7 +723,7 @@ class ByteMe:
         buffer: Queue = Queue(maxsize=BUFFER_SIZE)
         # buffer = SimpleQueue("Disruptor")
         # buffer = ConcurrentQueue()
-        byte_map = self._ByteMeUp(CHUNK_SIZE, file_size, num_consumers)
+        byte_map = self._Warehouse(CHUNK_SIZE, file_size, num_consumers)
 
         expected_chunks = set()
         produced_chunks = set()

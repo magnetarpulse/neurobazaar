@@ -11,3 +11,5 @@ asker
 save
 test
 test_env
+db.sqlite3
+cli_mongodb.txt

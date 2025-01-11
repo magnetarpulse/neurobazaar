@@ -59,7 +59,7 @@ from home.models import Collections, Files, Datastores, LocalFSDatastores, Mongo
 
 from neurobazaar.services.datastorage.datastore_manager import getDataStoreManager, get_datastore_manager_sync     
 from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
-from neurobazaar.services.core.downloader import ByteMe
+from neurobazaar.services.core.downloader import Distributor
 from benchmarks.utils.logger import ReLogger
 
 RED = "\033[31m"
@@ -1116,7 +1116,7 @@ async def _download_file(request: HttpRequest, compressor: str = 'gzip') -> Stre
     try:
         logger = ReLogger()
         logger.run()
-        streamer = ByteMe()
+        streamer = Distributor()
         
         if 'download_file' not in request.POST:
             raise ValueError("Missing download_file parameter")

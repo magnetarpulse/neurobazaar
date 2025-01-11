@@ -22,56 +22,90 @@
     </div>
 </nav>
 
-<!-- Sections for Content -->
-<section id="uploadDatasetsSection" class="content-section d-none">
-    <!-- Upload Datasets Section -->
-    <section id="uploaddataset" class="page-section bg-light" style="padding: 60px 0;">
-        <div class="container">
-            <div class="text-center mb-4">
-                <h2 class="section-heading text-uppercase" style="font-weight: bold; letter-spacing: 1.2px;">Upload Your Datasets</h2>
-                <p class="text-muted">Easily upload your datasets with metadata and repository options.</p>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-8 col-lg-6">
-                    <div class="card shadow p-4" style="border-radius: 15px; border: none;">
-                        <h4 class="mb-3 text-center" style="font-weight: bold;">Upload Datasets</h4>
-                        <form action="{% url 'datasets' %}" method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <!-- Hidden field to identify the form -->
-                            <input type="hidden" name="form_type" value="dataset_upload">
-                            <!-- For individual file uploads -->
-                            <div class="mb-3">
-                                <input type="file" class="form-control" id="singleFile" name="dataset_file" required>
-                                <label for="singleFile" class="form-label mt-2">Select Dataset File</label>
+<!-- Upload Datasets Section -->
+<section id="uploadDatasetsSection" class="page-section bg-light" style="padding: 60px 0;">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2 class="section-heading text-uppercase" style="font-weight: bold; letter-spacing: 1.2px;">Upload Your Datasets</h2>
+            <p class="text-muted">Easily upload your datasets with metadata and repository options.</p>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow p-4" style="border-radius: 15px; border: none;">
+                    <h4 class="mb-3 text-center" style="font-weight: bold;">Upload Datasets</h4>
+                    <form id="datasetUploadForm" action="{% url 'datasets' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="dataset_upload">
+                        <div class="mb-3">
+                            <input type="file" class="form-control" id="singleFile" name="dataset_file" required>
+                            <label for="singleFile" class="form-label mt-2">Select Dataset File</label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Add a brief description" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="useCompression" name="use_compression">
+                                <label class="form-check-label" for="useCompression">
+                                    Enable compression for chunks (recommended for large files)
+                                </label>
                             </div>
-                            <div class="mb-3">
-                                <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control" id="description" name="description" rows="3" placeholder="Add a brief description" required></textarea>
+                        </div>
+                        <div class="mb-3" id="compressionLevelContainer" style="display: none;">
+                            <label for="compressionLevel" class="form-label">Compression Level (1 = fastest, higher = slower but better compression)</label>
+                            <select class="form-select" name="compression_level" id="compressionLevel">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="useParallel" name="use_parallel">
+                                <label class="form-check-label" for="useParallel">
+                                    Enable parallel upload (recommended for fast connections)
+                                </label>
                             </div>
-                            <div class="mb-3">
-                                <label for="repo" class="form-label">Repository</label>
-                                <select class="form-select" name="repo" id="repo">
-                                    <option value="public" selected>Public</option>
-                                    <option value="private">Private</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="datastore" class="form-label">Select Datastore</label>
-                                <select class="form-select" name="datastore" id="datastore">
-                                    {% for datastore in datastores %}
-                                        <option value="{{ datastore.UUID }}">{{ datastore.Name }} | {{ datastore.Type }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-primary btn-lg w-100">Upload Dataset</button>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="mb-3" id="parallelCountContainer" style="display: none;">
+                            <label for="parallelCount" class="form-label">Number of parallel chunks (higher values require faster connections)</label>
+                            <input type="number" class="form-control" id="parallelCount" name="parallel_count" value="4" min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="chunkSize" class="form-label">Chunk Size (MB)</label>
+                            <input type="number" class="form-control" id="chunkSize" name="chunk_size" value="10" min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="repo" class="form-label">Repository</label>
+                            <select class="form-select" name="repo" id="repo">
+                                <option value="public" selected>Public</option>
+                                <option value="private">Private</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="datastore" class="form-label">Select Datastore</label>
+                            <select class="form-select" name="datastore" id="datastore">
+                                {% for datastore in datastores %}
+                                    <option value="{{ datastore.UUID }}">{{ datastore.Name }} | {{ datastore.Type }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg w-100">Upload Dataset</button>
+                        </div>
+                    </form>
+                    <div id="uploadProgress" class="text-center mt-3"></div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 </section>
 
 <section id="uploadCollectionsSection" class="content-section d-none">
@@ -127,7 +161,6 @@
 </section>
 
 <!-- View Datasets Section -->
-<!-- View Datasets Section -->
 <section id="viewDatasetsSection" class="content-section d-none">
     <section class="page-section bg-light">
         <div class="container text-center">
@@ -178,8 +211,14 @@
                                             <i class="fas fa-star"></i>
                                         </button>
                                     </form>
-                                    <form onsubmit="event.preventDefault(); startDownload('{{ file.UUID }}');" class="d-inline">
+                                    <form onsubmit="event.preventDefault(); downloadFile('{{ file.UUID }}', this.elements['compressor'].value);" class="d-inline">
                                         {% csrf_token %}
+                                        <select name="compressor" class="form-select d-inline" style="width: auto;">
+                                            <option value="none">None</option>
+                                            <option value="gzip">Gzip</option>
+                                            <option value="zstandard">Zstandard</option>
+                                            <option value="brotli">Brotli</option>
+                                        </select>
                                         <button type="submit" class="btn btn-outline-info" title="Download">
                                             <i class="fas fa-download"></i>
                                         </button>
@@ -212,11 +251,17 @@
                                             <i class="fas fa-star"></i>
                                         </button>
                                     </form>
-                                    <form onsubmit="event.preventDefault(); startDownload('{{ file.UUID }}');" class="d-inline">
+                                    <form onsubmit="event.preventDefault(); downloadFile('{{ file.UUID }}', this.elements['compressor'].value);" class="d-inline">
                                         {% csrf_token %}
+                                        <select name="compressor" class="form-select d-inline" style="width: auto;">
+                                            <option value="gzip">Gzip</option>
+                                            <option value="zstandard">Zstandard</option>
+                                            <option value="brotli">Brotli</option>
+                                        </select>
                                         <button type="submit" class="btn btn-outline-info" title="Download">
                                             <i class="fas fa-download"></i>
                                         </button>
+                                    </form>
                                     </form>
                                 </div>
                             </td>
@@ -361,7 +406,6 @@
     </section>
 </section>
 
-
 <!-- Explore Datasets & Collections Section with Enhancements -->
 <section class="page-section bg-light" id="explore-datasets" style="padding: 60px 0;">
     <div class="container">
@@ -417,7 +461,6 @@
         </div>
     </div>
 </section>
-
 
 <!-- Footer-->
 <footer class="footer py-4">
@@ -658,10 +701,863 @@
     
 </style>
 
+<!----------------------- Scripts for the dataset page ----------------------->
 
+<!-------------------------- Upload datasets script -------------------------->
+<script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const workerScript = `
+        importScripts('https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.min.js');
 
+        self.onmessage = async function (e) {
+            const { mode, data } = e.data;
 
+            try {
+                if (mode === 'batch') {
+                    const { chunks, compressionLevel } = data;
+                    const results = [];
+                    for (const chunk of chunks) {
+                        const compressed = await compressChunk(chunk, compressionLevel);
+                        results.push(compressed);
+                    }
+                    self.postMessage({ success: true, data: results });
+                } else if (mode === 'single') {
+                    const { chunk, compressionLevel } = data;
+                    const compressed = await compressChunk(chunk, compressionLevel);
+                    self.postMessage({ success: true, data: compressed });
+                } else {
+                    throw new Error('Invalid mode specified.');
+                }
+            } catch (error) {
+                self.postMessage({ success: false, error: error.message });
+            }
+        };
 
+        function compressChunk(chunk, compressionLevel) {
+            return new Promise((resolve, reject) => {
+                const gzs = new fflate.AsyncGzip({ level: parseInt(compressionLevel) });
+                let compressedChunks = [];
+                let totalSize = 0;
+
+                gzs.ondata = (err, chunk, final) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+
+                    compressedChunks.push(chunk);
+                    totalSize += chunk.length;
+
+                    if (final) {
+                        const compressedData = new Uint8Array(totalSize);
+                        let offset = 0;
+                        for (let chunk of compressedChunks) {
+                            compressedData.set(chunk, offset);
+                            offset += chunk.length;
+                        }
+                        resolve(compressedData);
+                    }
+                };
+
+                gzs.push(new Uint8Array(chunk), true);
+            });
+        }
+    `;
+
+    const workerBlob = new Blob([workerScript], { type: 'application/javascript' });
+    const workerUrl = URL.createObjectURL(workerBlob);
+
+    const form = document.getElementById('datasetUploadForm');
+    const fileInput = document.getElementById('singleFile');
+    const progressDisplay = document.getElementById('uploadProgress');
+    const uploadButton = form.querySelector('button[type="submit"]');
+    const compressionCheckbox = document.getElementById('useCompression');
+    const parallelCheckbox = document.getElementById('useParallel');
+    const chunkSizeInput = document.getElementById('chunkSize');
+    const parallelCountInput = document.getElementById('parallelCount');
+    const compressionLevelSelect = document.getElementById('compressionLevel');
+
+    const CONFIG = {
+        RETRY_ATTEMPTS: 3,
+        BENCHMARK_LIMIT: 600000,
+        DEBUG: true,
+        LOG_LEVEL: 'TRACE',
+        PRELOAD_CHUNKS: 2, 
+        MEMORY_LIMIT: 500 * 1024 * 1024, 
+        MAX_WORKERS: navigator.hardwareConcurrency || 4, 
+        MIN_WORKERS: 2,  
+        WORKER_TIMEOUT: 30000,  
+        WORKER_RETRY_ATTEMPTS: 3,
+        WORKER_PROCESSING_TIMEOUT: 60000,
+        ARRAY_BUFFER_TIMEOUT: 30000 
+    };
+
+    const uploadState = {
+        isUploading: false,
+        currentChunk: 0,
+        totalChunks: 0,
+        preloadedChunks: new Map(),
+        activeWorkers: new Set(),
+        abortController: null,
+        pause: false,
+        workers: []
+    };
+
+    class WorkerPool {
+        constructor(workerScript, maxWorkers) {
+            this.workerScript = workerScript;
+            this.maxWorkers = maxWorkers;
+            this.workers = new Map(); 
+            this.initializeWorkers();
+        }
+
+        initializeWorkers() {
+            const workerCount = Math.min(CONFIG.MIN_WORKERS, this.maxWorkers);
+            for (let i = 0; i < workerCount; i++) {
+                this.createWorker();
+            }
+        }
+
+        createWorker() {
+            const worker = new Worker(this.workerScript);
+            this.workers.set(worker, { busy: false, lastUsed: Date.now() });
+            return worker;
+        }
+
+        async getAvailableWorker() {
+            try {
+                for (let [worker, status] of this.workers) {
+                    if (!status.busy) {
+                        return worker;
+                    }
+                }
+
+                if (this.workers.size < this.maxWorkers) {
+                    const worker = this.createWorker();
+                    return worker;
+                }
+
+                return await new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => {
+                        clearInterval(checkWorkers);
+                        reject(new Error('Timed out waiting for available worker'));
+                    }, CONFIG.WORKER_TIMEOUT);
+
+                    const checkWorkers = setInterval(() => {
+                        for (let [worker, status] of this.workers) {
+                            if (!status.busy) {
+                                clearInterval(checkWorkers);
+                                clearTimeout(timeout);
+                                resolve(worker);
+                                return;
+                            }
+                        }
+                    }, 100);
+                });
+            } catch (error) {
+                Logger.warn('WorkerPool', 'Failed to get available worker', { error });    
+                this.cleanupStaleWorkers();     
+                throw error;
+            }
+        }
+
+        markWorkerAsBusy(worker) {
+            const status = this.workers.get(worker);
+            if (status) {
+                status.busy = true;
+                status.lastUsed = Date.now();
+            }
+        }
+
+        markWorkerAsAvailable(worker) {
+            const status = this.workers.get(worker);
+            if (status) {
+                status.busy = false;
+                status.lastUsed = Date.now();
+            }
+        }
+        cleanupStaleWorkers() {
+            const now = Date.now();
+            for (let [worker, status] of this.workers) {
+                if (status.busy && (now - status.lastUsed > CONFIG.WORKER_TIMEOUT)) {
+                    worker.terminate();
+                    this.workers.delete(worker);
+                    
+                    if (this.workers.size < this.maxWorkers) {
+                        this.createWorker();
+                    }
+                }
+            }
+        }
+
+        terminateAll() {
+            for (let [worker] of this.workers) {
+                worker.terminate();
+            }
+            this.workers.clear();
+        }
+    }
+
+    const workerPool = new WorkerPool(workerUrl, CONFIG.MAX_WORKERS);
+
+    const Logger = {
+        LEVELS: {
+            TRACE: 0,
+            DEBUG: 1,
+            INFO: 2,
+            WARN: 3,
+            ERROR: 4
+        },
+
+        timestamp() {
+            return new Date().toISOString();
+        },
+
+        safeStringify(obj, maxDepth = 3) {
+            const seen = new WeakSet();
+            
+            return JSON.stringify(obj, (key, value) => {
+                if (value === undefined) return '[undefined]';
+                if (value === null) return null;
+                if (Number.isNaN(value)) return '[NaN]';
+                
+                if (value instanceof Error) {
+                    return {
+                        message: value.message,
+                        stack: value.stack,
+                        name: value.name
+                    };
+                }
+
+                if (value instanceof HTMLElement) {
+                    return `[HTMLElement ${value.tagName.toLowerCase()}]`;
+                }
+
+                if (typeof value !== 'object' || 
+                    value instanceof Number ||
+                    value instanceof String ||
+                    value instanceof Boolean) {
+                    return value;
+                }
+
+                if (Array.isArray(value)) {
+                    return value;
+                }
+
+                if (seen.has(value)) {
+                    return '[Circular]';
+                }
+                seen.add(value);
+
+                if (maxDepth <= 0) {
+                    return '[Object]';
+                }
+
+                try {
+                    const processed = {};
+                    for (const [k, v] of Object.entries(value)) {
+                        processed[k] = this.safeStringify(v, maxDepth - 1);
+                    }
+                    return processed;
+                } catch (error) {
+                    return `[Unable to stringify: ${error.message}]`;
+                }
+            });
+        },
+
+        formatMessage(level, context, message, data = null) {
+            const timestamp = this.timestamp();
+            let dataString = '';
+            
+            if (data !== null) {
+                try {
+                    dataString = ` | data: ${this.safeStringify(data)}`;
+                } catch (error) {
+                    dataString = ` | data: [Error stringifying data: ${error.message}]`;
+                }
+            }
+            
+            return `[${timestamp}] ${level.padEnd(5)} [${context}] ${message}${dataString}`;
+        },
+
+        shouldLog(level) {
+            return CONFIG.DEBUG && this.LEVELS[level] >= this.LEVELS[CONFIG.LOG_LEVEL];
+        },
+
+        trace(context, message, data = null) {
+            if (this.shouldLog('TRACE')) {
+                this._log('TRACE', context, message, data);
+            }
+        },
+
+        debug(context, message, data = null) {
+            if (this.shouldLog('DEBUG')) {
+                this._log('DEBUG', context, message, data);
+            }
+        },
+
+        info(context, message, data = null) {
+            if (this.shouldLog('INFO')) {
+                this._log('INFO', context, message, data);
+            }
+        },
+
+        warn(context, message, data = null) {
+            if (this.shouldLog('WARN')) {
+                this._log('WARN', context, message, data);
+            }
+        },
+
+        error(context, message, error = null) {
+            if (this.shouldLog('ERROR')) {
+                const errorData = error ? {
+                    message: error.message,
+                    stack: error.stack,
+                    name: error.name
+                } : null;
+                this._log('ERROR', context, message, errorData);
+            }
+        },
+
+        _log(level, context, message, data) {
+            const formattedMessage = this.formatMessage(level, context, message, data);
+            switch (level) {
+                case 'ERROR':
+                    console.error(formattedMessage);
+                    break;
+                case 'WARN':
+                    console.warn(formattedMessage);
+                    break;
+                default:
+                    console.log(formattedMessage);
+            }
+        }
+    };
+
+    compressionCheckbox.addEventListener('change', function() {
+        document.getElementById('compressionLevelContainer').style.display = 
+            this.checked ? 'block' : 'none';
+        Logger.info('Compression', 'Compression setting changed', { enabled: this.checked });
+    });
+
+    parallelCheckbox.addEventListener('change', function() {
+        document.getElementById('parallelCountContainer').style.display = 
+            this.checked ? 'block' : 'none';
+        Logger.info('ParallelUpload', 'Parallel upload setting changed', { enabled: this.checked });
+    });
+
+    class UploadProgress {
+        constructor(totalSize) {
+            this.totalSize = totalSize;
+            this.uploadedSize = 0;
+            this.startTime = Date.now();
+            this.chunkTimes = [];
+
+            Logger.info('UploadProgress', 'Upload initiated', {
+                totalSize: `${(totalSize / (1024 * 1024)).toFixed(2)} MB`
+            });
+        }
+
+        addChunkTime(time) {
+            this.chunkTimes.push(time);
+            Logger.debug('UploadProgress', 'Chunk upload completed', {
+                chunkNumber: this.chunkTimes.length,
+                uploadTime: `${time.toFixed(2)}s`
+            });
+        }
+
+        complete(totalChunks) {
+            const totalTime = (Date.now() - this.startTime) / 1000;
+            const averageChunkTime = (this.chunkTimes.reduce((a, b) => a + b, 0) / this.chunkTimes.length).toFixed(2);
+
+            const completionData = {
+                totalChunks,
+                averageChunkTime: `${averageChunkTime}s`,
+                totalTime: `${totalTime.toFixed(2)}s`,
+                totalUploaded: `${(this.uploadedSize / (1024 * 1024)).toFixed(2)} MB`
+            };
+
+            Logger.info('UploadProgress', 'Upload completed', completionData);
+
+            alert(`Upload Complete!\nTotal Chunks: ${totalChunks}` +
+                  `\nAverage Chunk Time: ${averageChunkTime} seconds\nTotal Time: ${totalTime.toFixed(2)} seconds`);
+            uploadButton.disabled = false;
+        }
+    }
+
+    class MemoryManager {
+        constructor(config = {}) {
+            this.config = {
+                warningThreshold: config.warningThreshold || 0.8, 
+                criticalThreshold: config.criticalThreshold || 0.9, 
+                checkInterval: config.checkInterval || 5000, 
+                cleanupCallback: config.cleanupCallback || null
+            };
+            
+            this.isMonitoring = false;
+            this.monitorInterval = null;
+        }
+
+        async estimateMemoryPressure() {
+            try {
+                if (navigator.deviceMemory) {
+                    const maxMemory = navigator.deviceMemory * 1024; // Convert to MB
+                    const estimate = await this.getMemoryEstimate();
+                    return estimate / maxMemory;
+                }
+
+                if ('scheduling' in window && 'isInputPending' in scheduling) {
+                    const pressure = await navigator.scheduling.getCurrentPressure();
+                    return pressure.value;
+                }
+
+                const resources = performance.getEntriesByType('resource');
+                const totalTransferSize = resources.reduce((total, resource) => 
+                    total + (resource.transferSize || 0), 0);
+            
+                return Math.min(totalTransferSize / (50 * 1024 * 1024), 1); 
+            
+            } catch (error) {
+            console.warn('Memory estimation failed:', error);
+            return 0;
+            }
+        }
+
+        async getMemoryEstimate() {
+            if ('memory' in performance) {
+            return performance.memory.usedJSHeapSize;
+            }
+
+            try {
+                const measurement = await performance.measureUserAgentSpecificMemory();
+                return measurement.bytes;
+            } catch {
+            return 0;
+            }
+        }
+
+        startMonitoring() {
+            if (this.isMonitoring) return;
+            
+            this.isMonitoring = true;
+            this.monitorInterval = setInterval(async () => {
+            const pressure = await this.estimateMemoryPressure();
+            
+            if (pressure >= this.config.criticalThreshold) {
+                this.handleCriticalMemory();
+            } else if (pressure >= this.config.warningThreshold) {
+                this.handleWarningMemory();
+            }
+            }, this.config.checkInterval);
+        }
+
+        stopMonitoring() {
+            if (!this.isMonitoring) return;
+            
+            clearInterval(this.monitorInterval);
+            this.isMonitoring = false;
+        }
+
+        async handleCriticalMemory() {
+            if (this.config.cleanupCallback) {
+                await this.config.cleanupCallback();
+            }
+
+            if (window.gc) {
+                try {
+                    window.gc();
+                } catch (e) {
+                    console.warn('Manual GC failed:', e);
+                }
+            }
+
+            if ('caches' in window) {
+                try {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(
+                    cacheNames.map(name => caches.delete(name))
+                    );
+                } catch (e) {
+                    console.warn('Cache cleanup failed:', e);
+                }
+            }
+        }
+
+        handleWarningMemory() {
+            window.dispatchEvent(new CustomEvent('memory-warning', {
+            detail: {
+                timestamp: Date.now()
+            }
+            }));
+        }
+    }
+
+    let benchmarkTimer;
+
+    function startBenchmarkTimer(progressTracker) {
+        clearTimeout(benchmarkTimer);
+        benchmarkTimer = setTimeout(() => {
+            const elapsedTime = (Date.now() - progressTracker.startTime) / 1000;
+            const uploadedMB = (progressTracker.uploadedSize / (1024 * 1024)).toFixed(2);
+
+            Logger.warn('Benchmark', 'Benchmark timeout reached', {
+                uploadedSize: `${uploadedMB} MB`,
+                elapsedTime: `${elapsedTime.toFixed(2)}s`
+            });
+
+            alert(`Benchmark Timeout Reached:\nTotal Uploaded: ${uploadedMB} MB\nElapsed Time: ${elapsedTime.toFixed(2)} seconds`);
+            uploadButton.disabled = false;
+            throw new Error('Benchmark timer exceeded 5 minutes.');
+        }, CONFIG.BENCHMARK_LIMIT);
+    }
+
+    async function processBatchWithWorker(batch, compressionLevel, workerPool) {
+        let worker;
+        try {
+            for (let attempt = 0; attempt < CONFIG.WORKER_RETRY_ATTEMPTS; attempt++) {
+                try {
+                    worker = await workerPool.getAvailableWorker();
+                    break;
+                } catch (error) {
+                    if (attempt === CONFIG.WORKER_RETRY_ATTEMPTS - 1) {
+                        throw new Error(`Failed to acquire worker after ${CONFIG.WORKER_RETRY_ATTEMPTS} attempts: ${error.message}`);
+                    }
+                    Logger.warn('WorkerManager', `Retry attempt ${attempt + 1} to acquire worker`, { error });
+                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+                }
+            }
+
+            workerPool.markWorkerAsBusy(worker);
+
+            const arrayBuffers = await Promise.all(batch.map(chunk => chunk.arrayBuffer()));
+
+            const result = await new Promise((resolve, reject) => {
+                const timeoutId = setTimeout(() => {
+                    cleanup();
+                    reject(new Error('Worker processing timeout'));
+                }, CONFIG.WORKER_PROCESSING_TIMEOUT);
+
+                const onMessage = (e) => {
+                    if (e.data.success) {
+                        clearTimeout(timeoutId);
+                        cleanup();
+                        resolve(e.data.data);
+                    } else {
+                        clearTimeout(timeoutId);
+                        cleanup();
+                        reject(new Error(e.data.error || 'Unknown worker error'));
+                    }
+                };
+
+                const onError = (error) => {
+                    clearTimeout(timeoutId);
+                    cleanup();
+                    reject(new Error(`Worker error: ${error.message}`));
+                };
+
+                const cleanup = () => {
+                    worker.removeEventListener('message', onMessage);
+                    worker.removeEventListener('error', onError);
+                };
+
+                worker.addEventListener('message', onMessage);
+                worker.addEventListener('error', onError);
+
+                try {
+                    worker.postMessage({
+                        mode: 'batch',
+                        data: {
+                            chunks: arrayBuffers,
+                            compressionLevel
+                        }
+                    }, arrayBuffers);
+                } catch (error) {
+                    clearTimeout(timeoutId);
+                    cleanup();
+                    reject(new Error(`Failed to post message to worker: ${error.message}`));
+                }
+            });
+
+            return result;
+
+        } catch (error) {
+            Logger.error('WorkerManager', 'Chunk processing failed', {
+                error: error.message,
+                stack: error.stack
+            });
+            throw error;
+
+        } finally {
+            if (worker) {
+                try {
+                    workerPool.markWorkerAsAvailable(worker);
+                } catch (error) {
+                    Logger.warn('WorkerManager', 'Failed to mark worker as available', { error });
+                }
+            }
+        }
+    }
+
+    class ChunkPreloader {
+        constructor(file, chunkSize, maxPreloadChunks) {
+            this.file = file;
+            this.chunkSize = chunkSize;
+            this.maxPreloadChunks = maxPreloadChunks;
+            this.preloadedChunks = new Map();
+            this.currentIndex = 0;
+            this.lastLoadedIndex = -1;  
+        }
+
+        async preloadNextChunks() {
+            while (this.preloadedChunks.size < this.maxPreloadChunks && 
+                this.currentIndex < Math.ceil(this.file.size / this.chunkSize)) {
+                const start = this.currentIndex * this.chunkSize;
+                const end = Math.min(start + this.chunkSize, this.file.size);
+                
+                if (!this.preloadedChunks.has(this.currentIndex) && this.currentIndex > this.lastLoadedIndex) {
+                    const chunk = this.file.slice(start, end);
+                    this.preloadedChunks.set(this.currentIndex, {
+                        chunk,
+                        start,
+                        end
+                    });
+                    this.lastLoadedIndex = this.currentIndex;
+                }
+                this.currentIndex++;
+            }
+        }
+
+        getBatch(startIndex, batchSize) {
+            const batch = [];
+            for (let i = 0; i < batchSize; i++) {
+                const index = startIndex + i;
+                if (index >= Math.ceil(this.file.size / this.chunkSize)) break;
+                batch.push(this.getChunk(index).chunk); // Use existing `getChunk` method.
+            }
+            return batch;
+        }
+
+        getChunk(index) {
+            const chunkData = this.preloadedChunks.get(index);
+            if (chunkData) {
+                this.preloadedChunks.delete(index);
+                return chunkData;
+            }
+        
+            const start = index * this.chunkSize;
+            const end = Math.min(start + this.chunkSize, this.file.size);
+            return {
+                chunk: this.file.slice(start, end),
+                start,
+                end
+            };
+        }
+
+        clear() {
+            this.preloadedChunks.clear();
+            this.lastLoadedIndex = -1;
+        }
+    }
+
+    async function uploadBatch(batchIndex, batch, formMetadata, csrfToken, progressTracker, useCompression, compressionLevel, workerPool) {
+        const chunkFormData = new FormData();
+        
+        try {
+            const startTime = Date.now();
+            Logger.debug('BatchUpload', `Starting batch upload`, {
+                batchIndex,
+                batchSize: batch.length
+            });
+
+            const processedBatch = await processBatchWithWorker(batch, compressionLevel, workerPool);
+
+            processedBatch.forEach((processedChunk, i) => {
+                chunkFormData.append(`dataset_file_${batchIndex}_${i}`, 
+                    new Blob([processedChunk], { type: 'application/octet-stream' }));
+            });
+
+            chunkFormData.append('batch_index', batchIndex);
+            chunkFormData.append('batch_size', batch.length);
+            chunkFormData.append('is_compressed', useCompression.toString());
+
+            for (let [key, value] of formMetadata.entries()) {
+                chunkFormData.append(key, value);
+            }
+
+            const signal = uploadState.abortController?.signal;
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: chunkFormData,
+                signal
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const responseText = await response.text();
+            Logger.debug('BatchUpload', `Server response for batch ${batchIndex}`, {
+                response: responseText
+            });
+
+            const endTime = Date.now();
+            const uploadTime = (endTime - startTime) / 1000;
+
+            progressTracker.addChunkTime(uploadTime * batch.length);
+            batch.forEach(chunk => {
+                progressTracker.uploadedSize += chunk.size;
+            });
+
+            Logger.info('BatchUpload', `Batch ${batchIndex} completed successfully`, {
+                uploadTime: `${uploadTime.toFixed(2)}s`,
+                batchSize: batch.length
+            });
+
+        } catch (error) {
+            Logger.error('BatchUpload', `Batch ${batchIndex} upload failed`, {
+                error: error.message,
+                stack: error.stack
+            });
+            throw error;
+        }
+    }
+
+    async function uploadLargeFile(file) {
+        uploadState.isUploading = true;
+        uploadState.abortController = new AbortController();
+        const chunkSize = parseInt(chunkSizeInput.value) * 1024 * 1024;
+        const batchSize = 5; // Example batch size
+        const totalChunks = Math.ceil(file.size / chunkSize);
+        const useCompression = compressionCheckbox.checked;
+        const useParallel = parallelCheckbox.checked;
+        const compressionLevel = compressionLevelSelect.value;
+        const parallelCount = useParallel ? parseInt(parallelCountInput.value) : 1;
+
+        const chunkPreloader = new ChunkPreloader(file, chunkSize, CONFIG.PRELOAD_CHUNKS);
+        await chunkPreloader.preloadNextChunks();
+
+        const progressTracker = new UploadProgress(file.size);
+        const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+        const formMetadata = new FormData(form);
+        formMetadata.delete('dataset_file');
+        formMetadata.append('total_chunks', totalChunks);
+        formMetadata.append('original_filename', file.name);
+        formMetadata.append('upload_session_id', generateUUID());
+        formMetadata.append('remainder', totalChunks % batchSize);
+
+        let activeUploads = [];
+
+        try {
+            for (let i = 0; i < totalChunks; i += batchSize) {
+                if (uploadState.pause) {
+                    await new Promise(resolve => {
+                        const checkPause = () => {
+                            if (!uploadState.pause) {
+                                resolve();
+                            } else {
+                                setTimeout(checkPause, 100);
+                            }
+                        };
+                        checkPause();
+                    });
+                }
+
+                const batch = chunkPreloader.getBatch(i, batchSize);
+
+                const uploadPromise = (async () => {
+                    for (let attempt = 0; attempt < CONFIG.RETRY_ATTEMPTS; attempt++) {
+                        try {
+                            await uploadBatch(i / batchSize, batch, formMetadata, csrfToken, progressTracker, useCompression, compressionLevel, workerPool);
+                            return;
+                        } catch (error) {
+                            if (attempt === CONFIG.RETRY_ATTEMPTS - 1) throw error;
+                            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+                        }
+                    }
+                })();
+
+                activeUploads.push(uploadPromise);
+
+                if (activeUploads.length >= CONFIG.MAX_WORKERS) {
+                    await Promise.race(activeUploads);
+                }
+
+                await chunkPreloader.preloadNextChunks();
+            }
+
+            await Promise.all(activeUploads);
+
+            progressTracker.complete(totalChunks);
+
+        } catch (error) {
+            Logger.error('UploadManager', 'Upload failed', error);
+            progressDisplay.textContent = `Error: ${error.message}`;
+        } finally {
+            uploadButton.disabled = false;
+            uploadState.isUploading = false;
+            uploadState.abortController = null;
+            chunkPreloader.clear();
+            workerPool.terminateAll();
+        }
+    }
+
+    function generateUUID(){
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    const pauseButton = document.createElement('button');
+    pauseButton.textContent = 'Pause Upload';
+    pauseButton.onclick = () => {
+        uploadState.pause = !uploadState.pause;
+        pauseButton.textContent = uploadState.pause ? 'Resume Upload' : 'Pause Upload';
+    };
+    form.appendChild(pauseButton);
+
+    const cancelButton = document.createElement('button');
+    cancelButton.textContent = 'Cancel Upload';
+    cancelButton.onclick = () => {
+        if (uploadState.isUploading && uploadState.abortController) {
+            uploadState.abortController.abort();
+        }
+    };
+    form.appendChild(cancelButton);
+
+    if (form) {
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const file = fileInput.files[0];
+            if (!file) {
+                Logger.warn('FormValidation', 'No file selected');
+                alert('Please select a file to upload');
+                return;
+            }
+
+            if (file.size > 1024 * 1024 * 1024 * 1024) {
+                Logger.warn('FormValidation', 'File size exceeds limit', {
+                    fileSize: `${(file.size / (1024 * 1024 * 1024)).toFixed(2)} GB`,
+                    limit: '1 TB'
+                });
+                alert('File size exceeds maximum upload limit');
+                return;
+            }
+
+            uploadButton.disabled = true;
+            await uploadLargeFile(file);
+        });
+    }
+});
+</script>
+<!-------------------------- Upload datasets script -------------------------->
+
+<!------------------ Captures the relative file path script ------------------>
 <script>
     function captureRelativePaths() {
         const paths = [];
@@ -675,44 +1571,93 @@
         document.getElementById('relativePaths').value = JSON.stringify(paths);
     }
 </script>
+<!------------------ Captures the relative file path script ------------------>
 
+<!--------------------- Initiates a file download script --------------------->
 <script>
-    function startDownload(fileUUID) {
-        const startTime = Date.now();
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '{% url "datasets" %}';
-        form.style.display = 'none';
-
-        const csrfTokenInput = document.createElement('input');
-        csrfTokenInput.name = 'csrfmiddlewaretoken';
-        csrfTokenInput.value = '{{ csrf_token }}';
-        form.appendChild(csrfTokenInput);
-
-        const fileUUIDInput = document.createElement('input');
-        fileUUIDInput.type = 'hidden';
-        fileUUIDInput.name = 'download_file';
-        fileUUIDInput.value = fileUUID;
-        form.appendChild(fileUUIDInput);
-
-        document.body.appendChild(form);
-
-        form.submit();
-
-        const checkInterval = 50;
-        const intervalId = setInterval(() => {
-            const endTime = Date.now();
-            const downloadTime = (endTime - startTime) / 1000;
-
-            if (downloadTime > 0) {
-                clearInterval(intervalId);
-                alert(`Download completed in approximately ${downloadTime.toFixed(2)} seconds.`);
-            }
-        }, checkInterval);
+    function downloadFile(fileUUID, compressor) {
+        console.log('Downloading file:', fileUUID);
+        console.log('Using compressor:', compressor);
+        startDownload(fileUUID, compressor);
     }
 </script>
+<script>
+    async function startDownload(fileUUID, compressor = 'gzip') {
+        try {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            const tokenResponse = await fetch('/get_download_token/', {  
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',  
+                    'X-CSRFToken': csrfToken
+                }
+            });
+            
+            if (!tokenResponse.ok) {
+                const errorData = await tokenResponse.json();
+                if (tokenResponse.status === 429) {
+                    const waitMinutes = Math.ceil(errorData.wait_time / 60);
+                    alert(`Rate limit exceeded. Please try again in ${waitMinutes} minutes.`);
+                    return;
+                }
+                throw new Error(`Failed to get download token: ${tokenResponse.status}`);
+            }
+            
+            const tokenData = await tokenResponse.json();
 
-<!-- Script for showing/hiding sections -->
+            const startTime = Date.now();
+            
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/download_async/?compressor=${compressor}`; 
+            
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+            
+            const tokenInput = document.createElement('input');
+            tokenInput.type = 'hidden';
+            tokenInput.name = 'token';
+            tokenInput.value = tokenData.token;
+            form.appendChild(tokenInput);
+            
+            const fileInput = document.createElement('input');
+            fileInput.type = 'hidden';
+            fileInput.name = 'download_file';
+            fileInput.value = fileUUID;
+            form.appendChild(fileInput);
+            
+            const ajaxInput = document.createElement('input');
+            ajaxInput.type = 'hidden';
+            ajaxInput.name = 'X-Requested-With';
+            ajaxInput.value = 'XMLHttpRequest';
+            form.appendChild(ajaxInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+
+            const checkInterval = 50;
+            const intervalId = setInterval(() => {
+                const endTime = Date.now();
+                const downloadTime = (endTime - startTime) / 1000;
+
+                if (downloadTime > 0) {
+                    clearInterval(intervalId);
+                    alert(`Download completed in approximately ${downloadTime.toFixed(2)} seconds.`);
+                }
+            }, checkInterval);
+        } catch (error) {
+            console.error('Download error:', error);
+            alert('An error occurred during download. Please try again.');
+        }
+    }
+</script>
+<!--------------------- Initiates a file download script --------------------->
+
+<!--------------------- Toggle section visibility script --------------------->
 <script>
     function showSection(sectionId) {
         document.getElementById('uploadDatasetsSection').classList.add('d-none');
@@ -723,22 +1668,20 @@
         document.getElementById(sectionId).classList.remove('d-none');
     }
 </script>
+<!--------------------- Toggle section visibility script --------------------->
 
-<!-- Script for managing subgroups (public, private, favourites) -->
+<!-------------------- Toggle subgroups visibility script -------------------->
 <script>
     function showSubgroup(subgroup, type) {
-        // Hide all groups for the specified type (either 'dataset' or 'collection')
         document.querySelectorAll(`.${type}-group`).forEach(group => group.classList.add('d-none'));
 
-        // Show the selected group
         document.getElementById(`${subgroup}_${type}`).classList.remove('d-none');
 
-        // Set active button
         document.querySelectorAll(`.${type}-btn`).forEach(btn => btn.classList.remove('active'));
         document.getElementById(`${subgroup}Btn_${type}`).classList.add('active');
     }
 </script>
-
+<!-------------------- Toggle subgroups visibility script -------------------->
 
 {% if messages %}
 <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">

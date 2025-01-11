@@ -37,7 +37,7 @@ class BaseHistogramApp:
         self.server = get_server(name, client_type="vue2")
         self.port = port
 
-        self.np_data = np_data if np_data is not None else np.random.normal(size=1_000)
+        self.np_data = np_data if np_data is not None else np.random.normal(size=1_000_000_000)
         self.dask_data = da.empty(shape=(0,))
         
         self.server.state.bins = 5 
@@ -353,7 +353,7 @@ class BaseHistogramApp:
     @abstractmethod
     def start_new_server_immediately(self):
         print(f"Starting {self.server.name} at http://localhost:{self.port}/index.html")
-        self.server.start(exec_mode="main", port=self.port)
+        self.server.start(exec_mode="main", port=self.port, auth_key="key")
 
     # ---------------------------------------------------------------------------------------------
     # Method to start a new server (async). To be used in a multi-process environment

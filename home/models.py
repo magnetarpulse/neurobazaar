@@ -1,5 +1,5 @@
-from django.db import models
-from django.contrib.auth.models import User
+from django.db import models                 # type: ignore
+from django.contrib.auth.models import User  # type: ignore
 
 import uuid
     
@@ -24,6 +24,7 @@ class MongoDBDatastores(Datastores):
 
 class Files(models.Model):
     UUID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    _UUID = models.UUIDField(default=uuid.uuid4, editable=False)
     Datastore_UUID = models.ForeignKey(Datastores, on_delete=models.PROTECT, editable=False)
     Username = models.ForeignKey(User, on_delete=models.PROTECT)
     Name = models.CharField(max_length=256)
@@ -36,6 +37,7 @@ class Files(models.Model):
     Modified = models.DateField(auto_now=True)
     Collections_UUID = models.ForeignKey('Collections', on_delete=models.PROTECT, editable=False, null=True)
     Collection_Name = models.CharField(max_length=256, null=True, blank=True)
+    Chunk_Counter = models.IntegerField(default=0)
 
 class Collections(models.Model):
     Collections_UUID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -45,5 +47,3 @@ class Collections(models.Model):
     Repository = models.CharField(max_length=16, choices=[('public', 'Public'), ('private', 'Private')])
     Created = models.DateField(auto_now_add=True)
     Modified = models.DateField(auto_now=True)
-
-

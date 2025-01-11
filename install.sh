@@ -57,6 +57,9 @@ pip install --no-deps trame
 # Install the rest of the dependencies from requirements.txt
 pip install -r requirements.txt
 
+# Install Playwright browsers
+python -m playwright install
+
 # Fix ownership of installed Python packages if needed
 if [ "$EUID" -eq 0 ]; then
     echo "Fixing ownership of site-packages to $SUDO_USER"

@@ -125,9 +125,4 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('btn-' + color);
         });
     });
-
-    const submitButton = document.getElementById('submit-btn');
-    submitButton.addEventListener('click', function() {
-        // You can add your submission logic here
-    });
 });

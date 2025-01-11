@@ -4,7 +4,7 @@ import time
 import threading
 
 from neurobazaar.services.datastorage.abstract_datastore import AbstractDatastore, DatastoreType
-from django.core.files.uploadedfile import UploadedFile
+from django.core.files.uploadedfile import UploadedFile                                           # type: ignore
 
 from typing import Optional, Dict, List, Union
 
@@ -35,6 +35,9 @@ class LocalFSDatastore(AbstractDatastore):
         self._datasets_dir = os.path.join(self._storeDirPath, ".datasets")
         os.makedirs(self._datasets_dir, exist_ok=True)
 
+        self._chunked_dir = os.path.join(self._storeDirPath, ".chunked_files")
+        os.makedirs(self._chunked_dir, exist_ok=True)
+
     def putDataset(self, uploadedFile: UploadedFile) -> str:
         """
         Stores the uploaded file in the datastore.
@@ -46,7 +49,7 @@ class LocalFSDatastore(AbstractDatastore):
             str: The UUID of the stored dataset.
         """
         datasetUUID = str(uuid.uuid4())
-        print("Storing dataset with UUID:", datasetUUID)
+        print(f"\033[34mStoring dataset with UUID: {datasetUUID}\033[0m")
 
         destinationPath = os.path.join(self._storeDirPath, datasetUUID)
         with open(destinationPath, 'wb') as fileout:
@@ -77,6 +80,31 @@ class LocalFSDatastore(AbstractDatastore):
             return open(sourcePath, 'rb')
         else:
             return None
+
+    def get_dataset_object(self, dataset_uuid:str, original_name: str, object:bool = False):
+        """
+        Retrieves a dataset object from the datastore.
+
+        Args:
+            dataset_uuid (str): The UUID of the dataset to retrieve.
+            original_name (str): The original name of the dataset to retrieve.
+            object (bool): Whether to return the dataset object as a file object 
+        
+        Returns:
+            str or file object: Full path to the file or file object
+        """
+        print(f"\033[94mGetting dataset object with UUID: {dataset_uuid}\033[0m")
+        print(f"\033[94mGetting dataset object with original name: {original_name}\033[0m")
+
+        full_file = f"{dataset_uuid}_{original_name}"
+        find_path = os.path.join(self._datasets_dir, full_file)
+        
+        if os.path.exists(find_path):
+            if object:
+                return find_path 
+            with open(find_path, 'rb') as file:
+                return file.read()
+        return None
 
     def delDataset(self, datasetUUID: str) -> None:
         """
@@ -290,3 +318,12 @@ class LocalFSDatastore(AbstractDatastore):
             except Exception as e:
                 print(f"Error reading metadata file: {e}")
                 return None
+    
+    def generate_uuid(self) -> str:
+        """
+        Generates a UUID.
+
+        Returns:
+            str: The generated UUID.
+        """
+        return str(uuid.uuid4())

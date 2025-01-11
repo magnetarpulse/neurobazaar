@@ -24,12 +24,17 @@ from visualizations.histograms.backends.utils.dask_utils import DaskUtils
 from visualizations.histograms.backends.utils.numpy_utils import NumpyUtils
 from visualizations.histograms.backends.computing.csv.localfs_watcher import LocalFSDataConverter
 from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
+from home.models import Files
 from queue import Queue
 import asyncio
 import threading
 from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 import numpy.typing as npt
+
+def test():
+    files = Files.objects.all()
+    print(files)
 
 @TrameApp()
 class GenericHistogramApp(BaseHistogramApp):    
@@ -137,6 +142,8 @@ class GenericHistogramApp(BaseHistogramApp):
         Args:
             bins (int): Number of bins for the histogram.
         """
+        init_time = time.time()
+
         bins = int(bins)
 
         if self.data_changed:
@@ -155,6 +162,10 @@ class GenericHistogramApp(BaseHistogramApp):
             self.histogram_renderer.arrY.InsertNextValue(self.hist[i])
 
         self.update_the_client_view()
+
+        final_time = time.time()
+
+        print(f"Time to update histogram: {final_time - init_time} seconds")
 
     def update_the_client_view(self) -> None:
         """Update the client-side view with the current render window state.
@@ -483,5 +494,6 @@ class GenericHistogramApp(BaseHistogramApp):
         self.server.stop()
     
 if __name__ == "__main__":
-    app = GenericHistogramApp("Histogram", 8080)
-    app.start_now()
+    # app = GenericHistogramApp("Histogram", 8080)
+    # app.start_now()
+    test()

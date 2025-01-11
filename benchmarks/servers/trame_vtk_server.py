@@ -1,50 +1,88 @@
-from trame.app import get_server
-from trame.decorators import TrameApp, change
-from trame.widgets import vtk, vuetify
-from trame.ui.vuetify import SinglePageLayout
-import vtk as standard_vtk
-
-import numpy as np
-import dask.array as da
-import dask_histogram as dh
-import boost_histogram as bh
-
+import os
+import sys
+import logging
 import time
 
+def get_neurobazaar_dir() -> str:
+    """Returns the neurobazaar directory."""
+    cwd = os.getcwd()
+    index = cwd.index('neurobazaar')
+    return cwd[:index + len('neurobazaar')]
+
+neurobazaar = get_neurobazaar_dir()
+sys.path.insert(0, neurobazaar)
+
+from trame.app import get_server              # type: ignore
+from trame.decorators import TrameApp, change # type: ignore
+from trame.widgets import vtk, vuetify        # type: ignore
+from trame.ui.vuetify import SinglePageLayout # type: ignore
+import vtk as standard_vtk
+
+import numpy as np                            # type: ignore
+import dask.array as da                       # type: ignore
+import dask_histogram as dh                   # type: ignore
+import boost_histogram as bh                  # type: ignore
+
+from benchmarks.utils.find_statistics import FindStatistics
+from benchmarks.utils.logger import ReLogger
+from benchmarks.utils.csv_reporter import CsvReporter
+
+# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
+
 @TrameApp()
-class HistogramApp:    
-    def __init__(self, np_data=None):
+class VtkApp:  
+    def __init__(self, data_size=1_000, ui_type = "slider ", port: int = 8080, remote_rendering: bool = True):
         self.server = get_server(client_type="vue2")
+        self.state, self.ctrl = self.server.state, self.server.controller
+        self.port = port
+        self._remote_rendering = remote_rendering
         
-        self.np_data = np_data if np_data is not None else np.random.normal(size=1_000_000_000)
-        self.dask_data = da.empty(shape=(0,))
+        if isinstance(data_size, int):
+            print("Data size is an integer")
+            self.data = da.from_array(np.random.normal(size=data_size), chunks='auto')
+        elif isinstance(data_size, np.ndarray):
+            print("Data size is a numpy array")
+            self.data = da.from_array(data_size, chunks='auto')
+        elif isinstance(data_size, list):
+            print("Data size is a list of integers")
+            self.data = da.from_array(np.array(data_size), chunks='auto')
+        else:
+            raise ValueError("data_size must be an integer, numpy array, or list of integers")
         
-        self.server.state.bins = 5 
-        
-        self.dask_method_invoked = 0
-        
-        self.numpy_method_invoked = 0
-        
-        self.data_min = None
-        self.data_max = None
+        self.data_min, self.data_max = self._compute_min_max(self.data)
+        self.state.bins = 5 
 
-        self._last_np_data = False
-        self.dask_manager = False
+        self.benchmark_counter = 0
+        self.computing_total = []
+        self.server_side_rendering_total = []
+
+        self.find_statistics_computing = FindStatistics("computing")
+        self.find_statistics_rendering = FindStatistics("server side rendering")
         
-        self.histogram_vtk() 
+        self._initial_histogram()
 
-        self.client_view = vtk.VtkRemoteView(
-            self.renderWindow, trame_server=self.server, ref="view"
-        )
+        if self._remote_rendering:
+            self.client_view = vtk.VtkRemoteView(
+                self.renderWindow, trame_server=self.server, ref="view"
+            )
+        else:
+            self.client_view = vtk.VtkLocalView(self.renderWindow, trame_server=self.server)
 
-        self.setup_layout()
-    
-    # ---------------------------------------------------------------------------------------------
-    # Method using VTK to define histogram from data and render it
-    # ---------------------------------------------------------------------------------------------
-    
-    def histogram_vtk(self):        
-        self.compute_histogram_data_with_dask(self.np_data, self.server.state.bins)
+        if ui_type == "slider":
+            print("Slider interactor was chosen")
+            self._setup_slider_layout()
+        elif ui_type == "input":
+            print("Input interactor was chosen")
+            self._setup_input_layout()
+        else:
+            raise ValueError("Invalid ui_type")
+        
+        print("Data size: " + str(data_size))
+
+    def _vtk_histogram(self):
+        """Initialize histogram"""
+        self.hist, self.bin_edges = self._compute_hist(self.data, self.state.bins)
+
         self.table = standard_vtk.vtkTable()
             
         self.arrX = standard_vtk.vtkFloatArray()
@@ -73,147 +111,77 @@ class HistogramApp:
             
         self.view = standard_vtk.vtkContextView()
         self.view.GetScene().AddItem(self.chart)
-            
+
         self.renderWindow = self.view.GetRenderWindow()
         self.view.GetRenderWindow().SetSize(800, 600)
     
-    # ---------------------------------------------------------------------------------------------
-    # Method using VTK to update histogram and render it on the server-side
-    # ---------------------------------------------------------------------------------------------
-    
-    def update_histogram(self, bins):
-        start_time_to_update_histogram = time.time() 
+    def _update_histogram(self):
+        """Update histogram"""
+        self.benchmark_counter += 1
+        print("Bin size: " + str(self.state.bins))
+
+        compute_start = time.time()
+        self.hist, self.bin_edges = self._compute_hist(self.data, self.state.bins)
+        compute_end = time.time()
+
+        print(f"Benchmark {self.benchmark_counter} -> Computing Time: {compute_end - compute_start}")
+        self.computing_total.append(compute_end - compute_start)
         
-        bins = int(bins)
-        print("Type of self.np_data: ", type(self.np_data))
-        print("Number of data: ", len(self.np_data))
-        print("Bins: ", bins)
-        if self.dask_manager==False:
-            self.dask_data = da.empty(shape=(0,))
-        else:
-            self.dask_data = self.dask_data
-        if not isinstance(self.np_data, da.Array) and self._last_np_data==False:
-            self.dask_data = da.from_array(self.np_data, chunks='auto')
-            self.dask_manager=True
-            self._last_np_data = True
-        else:
-            pass
-        self.compute_histogram_data_with_dask(self.dask_data, bins)
-        start_time_vtk = time.time()
+        render_start = time.time()
         self.arrX.Reset()
         self.arrY.Reset()
         
         for i in range(len(self.hist)):
             self.arrX.InsertNextValue(self.bin_edges[i])
             self.arrY.InsertNextValue(self.hist[i])
-        
-        self.update_the_client_view()
-        end_time_vtk = time.time()
-        
-        end_time_to_update_histogram = time.time()
-        print(f"VTK rendering took {end_time_vtk - start_time_vtk} seconds")
-        print(f"Updating the histogram, after all computations and rendering, took {end_time_to_update_histogram - start_time_to_update_histogram} seconds")
-    
-    # ---------------------------------------------------------------------------------------------
-    # Method to update the render window to the client-side
-    # ---------------------------------------------------------------------------------------------
-    
-    def update_the_client_view(self):
-        self.client_view.update()    
+        render_end = time.time()
 
-    # ---------------------------------------------------------------------------------------------
-    # Method using Dask to compute histogram data
-    # ---------------------------------------------------------------------------------------------
-    
-    def compute_histogram_data_with_dask(self, dask_data, bins):
-        computation_type = "Dask (threaded scheduler)"
+        print(f"Benchmark {self.benchmark_counter} -> Rendering Time: {render_end - render_start}")
+        self.server_side_rendering_total.append(render_end - render_start)
         
-        if not isinstance(dask_data, da.Array):
-            dask_data = da.from_array(dask_data, chunks='auto')
-            print("Data converted to Dask array")
-        else:
-            dask_data = dask_data
-        
-        if self.data_min is None or self.data_max is None:
-            self.data_min, self.data_max = self.compute_min_and_max_values_using_dask(dask_data)
-            print("Data min and max computed")
-            print("Data min: ", self.data_min)
-            print("Data max: ", self.data_max)
-        
-        start_time_to_calculate_histogram = time.time()
-        
-        dask_hist = dh.factory(dask_data, axes=(bh.axis.Regular(bins, self.data_min, self.data_max),))
-        dask_hist = dask_hist.persist() 
-        hist_result = self.convert_agghistogram_to_numpy_array_of_frequencies(dask_hist)
-        self.hist = hist_result
-        _, self.bin_edges = da.histogram(dask_data, bins=bins, range=(self.data_min, self.data_max))
-        
-        end_time_to_calculate_histogram = time.time()
-        if not isinstance(self.hist, np.ndarray):
-            self.hist = self.convert_dask_to_numpy(self.hist)
-        print(f"Calculating the histogram using {computation_type} took {end_time_to_calculate_histogram - start_time_to_calculate_histogram} seconds")
+        if self._remote_rendering is True:
+            self.client_view.update()
 
-    # ---------------------------------------------------------------------------------------------
-    # Method using Dask compute method to convert AggHistogram to a NumPy array of frequencies
-    # ---------------------------------------------------------------------------------------------
-    def convert_agghistogram_to_numpy_array_of_frequencies(self, dask_object):
-        result = dask_object.compute(scheduler='threads', num_workers=21) 
-        frequencies = result.to_numpy()[0]
-        return frequencies
+    def _compute_min_max(self, dask_data):
+        """Compute min and max efficiently"""
+        return dask_data.min().compute(), dask_data.max().compute()
     
-    # ---------------------------------------------------------------------------------------------
-    # Method using Dask compute method to convert Dask object to NumPy array
-    # ---------------------------------------------------------------------------------------------
-    def convert_dask_to_numpy(self, dask_object):
-        result = dask_object.compute(scheduler='threads', num_workers=21) 
-        return result
-    
-    # ---------------------------------------------------------------------------------------------
-    # Method using Dask to calculate the minimum and maximum values of data
-    # ---------------------------------------------------------------------------------------------
-    
-    def compute_min_and_max_values_using_dask(self, dask_data):
-        if not isinstance(dask_data, da.Array):
-            start_time_to_change_data_to_dask_data = time.time()
-            dask_data = da.from_array(dask_data, chunks='auto')
-            end_time_to_change_data_to_dask_data = time.time()
-            print(f"Changing the data to Dask data during min and max took {end_time_to_change_data_to_dask_data - start_time_to_change_data_to_dask_data} seconds")
-        else:
-            dask_data = dask_data
+    def _compute_hist(self, dask_data, bins):
+        """Optimize histogram computation"""
+        try:
+            bins = int(bins)
+            dask_hist = dh.factory(dask_data, axes=(bh.axis.Regular(bins, self.data_min, self.data_max),))
+            hist_result = dask_hist.persist().compute(scheduler='threads')
+            frequencies = hist_result.to_numpy()[0]
+            
+            bin_edges = np.linspace(self.data_min, self.data_max, bins + 1)
+            return frequencies, bin_edges
         
-        data_min = dask_data.min().compute()
-        data_max = dask_data.max().compute()
-        
-        self.dask_method_invoked += 1
+        except Exception as e:
+            logging.error(f"Histogram computation error: {e}")
+            return None, None
     
-        print("The number of times the compute_min_and_max_values_using_dask method has been been called: ", self.dask_method_invoked)
-        
-        return data_min, data_max
-    
-    # ---------------------------------------------------------------------------------------------
-    # State change handler for bins
-    # ---------------------------------------------------------------------------------------------
+    def _initial_histogram(self):
+        """Initialize histogram"""
+        self._vtk_histogram()
     
     @change("bins")
-    def on_bins_change(self, bins, **kwargs):
-        self.update_histogram(bins)
-
+    def _on_bins_change(self, **kwargs):
+        """Efficiently handle bin changes"""
+        logging.info(f"Bins changed to: {self.state.bins}")
+        self._update_histogram()
     
-    # ---------------------------------------------------------------------------------------------
-    # Set up the UI layout
-    # ---------------------------------------------------------------------------------------------
-
-    def setup_layout(self) -> None:
-        """Set up the UI layout using Vuetify components."""
+    def _setup_slider_layout(self):
+        """Setup layout with slider"""
         with SinglePageLayout(self.server) as layout:
-            layout.title.set_text(self.server.name)
-
+            layout.title.set_text("Optimized Interactive Histogram")
+            
             with layout.toolbar:
                 vuetify.VSpacer()
                 vuetify.VSlider(
                     v_model=("bins", 5), 
                     min=1,
-                    max=100,
+                    max=1000,
                     label="Number of Bins",  
                     hide_details=False,
                     dense=True,
@@ -221,17 +189,99 @@ class HistogramApp:
                     thumb_size=20, 
                     style="padding-top: 20px;", 
                 )
-            with layout.content:
-                with vuetify.VContainer(
-                    fluid=True,
-                    classes="pa-0 fill-height", 
-                ):
-                    self.client_view = vtk.VtkRemoteView(
-                        self.renderWindow,
-                        trame_server=self.server, 
-                        ref="view"
-                    )
+
+            if self._remote_rendering:
+                with layout.content:
+                    with vuetify.VContainer(
+                        fluid=True,
+                        classes="pa-0 fill-height", 
+                    ):
+                        self.client_view = vtk.VtkRemoteView(
+                            self.renderWindow,
+                            trame_server=self.server, 
+                            ref="view"
+                        )
+            else:
+                with layout.content:
+                    with vuetify.VContainer(
+                        fluid=True,
+                        classes="pa-0 fill-height", 
+                    ):
+                        self.client_view = vtk.VtkLocalView(self.renderWindow, trame_server=self.server, ref="view")
+                        self.ctrl.view_update = self.client_view.update
+    
+    def _setup_input_layout(self):
+        """Setup input layout"""
+        with SinglePageLayout(self.server) as layout:
+            layout.title.set_text("Optimized Interactive Histogram")
+            
+            with layout.toolbar:
+                vuetify.VSpacer()
+                vuetify.VTextField(
+                    v_model=("bins", 5),  
+                    label="Number of Bins",
+                    type="number",
+                    style="padding-top: 20px;", 
+                )
+
+            if self._remote_rendering:
+                with layout.content:
+                    with vuetify.VContainer(
+                        fluid=True,
+                        classes="pa-0 fill-height", 
+                    ):
+                        self.client_view = vtk.VtkRemoteView(
+                            self.renderWindow,
+                            trame_server=self.server, 
+                            ref="view"
+                        )
+            else:
+                with layout.content:
+                    with vuetify.VContainer(
+                        fluid=True,
+                        classes="pa-0 fill-height", 
+                    ):
+                        self.client_view = vtk.VtkLocalView(self.renderWindow, trame_server=self.server, ref="view")
+                        self.ctrl.view_update = self.client_view.update
+
+    def start_now(self):
+        """Start server now"""
+        self.server.start(auth_key="key", port = self.port)
+
+    async def start_later(self):
+        """Start server later"""
+        return await self.server.start(exec_mode="task", port=self.port, auth_key="key")
+    
+    def stop(self):
+        """Stop server"""
+        self.server.stop()
+
+        # Find statistics for computing 
+        self.find_statistics_computing.find_average(self.computing_total)
+        self.find_statistics_computing.find_median(self.computing_total)
+        self.find_statistics_computing.find_standard_deviation(self.computing_total)
+        self.find_statistics_computing.find_quartiles(self.computing_total)
+        self.find_statistics_computing.find_length(self.computing_total)
+
+        # Find statistics for rendering
+        self.find_statistics_rendering.find_average(self.server_side_rendering_total)
+        self.find_statistics_rendering.find_median(self.server_side_rendering_total)
+        self.find_statistics_rendering.find_standard_deviation(self.server_side_rendering_total)
+        self.find_statistics_rendering.find_quartiles(self.server_side_rendering_total)
+        self.find_statistics_rendering.find_length(self.server_side_rendering_total)
     
 if __name__ == "__main__":
-    histogram_app= HistogramApp()
-    histogram_app.server.start(auth_key="key")
+    # csv_reporter = CsvReporter("/home/huy/neurobazaar/datastore/.datasets/1c04b103-94be-47c8-81b5-934fc843c78f_UCI_ParkinsonsTeleMonitoring.csv")
+    # csv_reporter = CsvReporter("/home/huy/neurobazaar/datastore/.datasets/1f228abf-e960-4a37-91d3-4e36b07097e4_AllSlices_Manuf.csv")
+    # csv_reporter = CsvReporter("/home/huy/neurobazaar/datastore/.datasets/bd76490a-f07d-4024-9a1d-0aba00217ccf_MaxSlices_newMode_Manuf_Int.csv")
+    # csv_reporter = CsvReporter("/home/huy/neurobazaar/datastore/.datasets/8e66f108-945b-4d84-a4f6-b921ff061d96_diabetes_012_health_indicators_BRFSS2015.csv")
+    logging_statistics = ReLogger(log_file="vtk_server.log", create_dir="results/render")
+    logging_statistics.run()
+    # vtk_app= VtkApp(data_size=csv_reporter.search("NHR"), ui_type="input", remote_rendering=True)
+    # vtk_app = VtkApp(data_size=csv_reporter.search("Area"), ui_type="input", remote_rendering=True)
+    # vtk_app = VtkApp(data_size=csv_reporter.search("Area"), ui_type="input", remote_rendering=True)
+    # vtk_app = VtkApp(data_size=csv_reporter.search("BMI"), ui_type="input", remote_rendering=True)
+    vtk_app = VtkApp(data_size=200_000_000, ui_type="input", remote_rendering=True)
+    vtk_app.start_now()
+    vtk_app.stop()
+    logging_statistics.stop()

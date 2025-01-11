@@ -1,8 +1,7 @@
-from django.urls import path
-from django.contrib import admin                                                                                                    
 from home import views
-from django.conf import settings
-from django.conf.urls.static import static
+from django.urls import path                # type: ignore                                                                                        
+from django.conf import settings            # type: ignore
+from django.conf.urls.static import static  # type: ignore
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -16,5 +15,7 @@ urlpatterns = [
     path('datastore/', views.datastore, name='datastore'),
     path('download_collection/<uuid:collection_uuid>/', views.download_collection, name='download_collection'),
     path('visualization_server_manager/', views.visualization_server_manager, name='visualization_server_manager'),
+    path('get_download_token/', views.get_download_token, name='get_download_token'),
+    path('download_async/', views.wrapper_download_file, name='download_async'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

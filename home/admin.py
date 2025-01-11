@@ -7,5 +7,3 @@ admin.site.register(Datastores)
 admin.site.register(LocalFSDatastores)
 admin.site.register(MongoDBDatastores)
 admin.site.register(Collections)
-
-

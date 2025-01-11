@@ -1,1 +1,13 @@
 .venv
+.vscode
+.ssl
+.history
+pycpp
+cpp
+vtk
+build
+emsdk
+asker
+save
+test
+test_env

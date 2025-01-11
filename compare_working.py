@@ -43,9 +43,10 @@ class BaseOoDHistogram:
         self.port = port                                                                                                                                                                      
         self.state, self.ctrl = self.server.state, self.server.controller                                                                                                                     
         global SERVER_IP                                                                                                                                                                      
-        SERVER_IP = '192.5.86.254'                                                                                                                                                            
+        SERVER_IP = '64.131.114.160'                                                                                                                                                            
         global PORT                                                                                                                                                                           
-        PORT ='8000'                                                                                                                                                                          
+        PORT ='8000' 
+        self.state.no_image = [f"http://{SERVER_IP}:{PORT}{settings.MEDIA_URL}no_image_available.png"]                                                                                                                                                                        
                                                                                                                                                                                               
         self.state.selected_image = ""                                                                                                                                                        
         self.state.selected_image_index=""                                                                                                                                                    
@@ -59,7 +60,7 @@ class BaseOoDHistogram:
         self.state.collection_base_url = os.path.join(settings.MEDIA_ROOT, collection_path)  # Folder containing media/LIDC_Dataset
 
         global files
-        files = "/home/cc/neurobazaar/media/dicom_images" #Folder containing dicom downloaded images
+        files = "/home/areena/neurobazaar/media/dicom_images" #Folder containing dicom downloaded images
         
         if csv_path and not data_column:                                                                                                                                                      
             raise ValueError("data_column argument is required when csv_path is provided")                                                                                                                
@@ -89,7 +90,8 @@ class BaseOoDHistogram:
         self.state.pixel_array=[]                                                                                                                                                             
         self.state.dicom_images=[]                                                                                                                                                            
         self.state.image_items={}                                                                                                                                                             
-        self.state.image_details=[]                                                                                                                                                           
+        self.state.image_details=[] 
+        self.state.compare_details=[]                                                                                                                                                          
         self.state.coords_dict={}                                                                                                                                                             
         self.state.checkboxed_images=[] 
         self.state.compare_images=[]
@@ -586,7 +588,7 @@ class BaseOoDHistogram:
     # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
     def original_images(self):                                                                                                                                                                
                                                                                                                                                                                               
-        dicom_folder = "/home/cc/neurobazaar_new/neurobazaar/media/dicom_images"  # Folder to save images                                                                                                                                                                                                                                                                                  
+        dicom_folder = "/home/areena/neurobazaar/media/dicom_images"  # Folder to save images                                                                                                                                                                                                                                                                                  
                                                                                                                                                                                               
         if not os.path.exists(dicom_folder):                                                                                                                                                  
             os.makedirs(dicom_folder)                                                                                                                                                         
@@ -676,8 +678,15 @@ class BaseOoDHistogram:
         self.ctrl.trigger("navigate_to_data_view")(self.navigate_to_data_view)  
         self.ctrl.trigger("checkbox_method")(self.checkbox_method)                                                                                                                            
         self.ctrl.trigger("compare_page")(self.compare_page)  
-                                                                                                                                                                                                                                                   
-                                                                                                                                                                                              
+        self.ctrl.trigger("restore_checkboxed_state")(self.restore_checkboxed_state)
+
+    def restore_checkboxed_state(self):
+        if hasattr(self.state, 'checkboxed_images'):
+            self.state.checkboxed_images = []
+            self.state.compare_images =[]
+        self.server.state.dirty("checkboxed_images")
+
+                                                                                                                                                                                                                                                                                                                                                                                                       
     # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                         
     # Navigate to Selected Image View on Clicking a Dicom or a Segmented Lung Nodule image                                                                                                                                                                                                                                                                                
     # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                         
@@ -698,19 +707,21 @@ class BaseOoDHistogram:
     # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                         
     # Trigger for clickable checkbox                                                                                                                                                             
     # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                         
-    def checkbox_method(self,dicom, imgIndex):
-        if dicom and imgIndex:
+    def checkbox_method(self, dicom, imgIndex):
+        # Ensure imgIndex is an integer
+        imgIndex = int(imgIndex) if isinstance(imgIndex, str) else imgIndex
+
+        if dicom and imgIndex is not None:
             # Add to the list if it's not already there
             if {imgIndex: dicom} not in self.state.checkboxed_images:
                 self.state.checkboxed_images.append({imgIndex: dicom})
-
-            # Remove from the list if it's already there
             else:
+                # Remove from the list if it's already there
                 self.state.checkboxed_images = [
-                entry for entry in self.state.checkboxed_images if imgIndex not in entry
-                ]   
-                print(f"Image {imgIndex} removed from the list.")
-        print("Updated Checkbox Contents:", self.state.checkboxed_images)
+                    entry for entry in self.state.checkboxed_images if imgIndex not in entry
+                ]
+                #print(f"Image {imgIndex} removed from the list.")
+        #print("Updated Checkbox Contents:", self.state.checkboxed_images)
                 
     # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                         
     # For side by side comparison of features                                                                                                                                                                                                                                                                                
@@ -719,15 +730,31 @@ class BaseOoDHistogram:
     def compare_page(self):
         # Retrieve the checkboxes list from state
         if hasattr(self.state, 'checkboxed_images'):
-            self.state.compare_images = self.state.checkboxed_images
-            print(f"Checkboxed images on /compare route: {self.state.compare_images}")
-        
+            for entry in self.state.checkboxed_images:
+                for imgIndex, dicom in entry.items():
+                    #print(f"Image {key}: {value}")
+                    self.state.compare_images.append(
+                        { "Original_Dicom": [dicom],                                                                                                                                                        
+                            "Segmented_Nodule": [f"http://{SERVER_IP}:{PORT}{settings.MEDIA_URL}lidc_pixConvImg/{imgIndex}.png"], 
+                        })
+                    self.server.state.dirty("compare_images")
+            #print(f"Checkboxed images on /compare route: {self.state.compare_images}")
+                    self.all_node_ids = self.df[self.state.node_id] 
+                    for i, node_id in enumerate(self.all_node_ids):                                                                                                                                       
+                        if str(node_id) == str(imgIndex):                                                                                                                                                 
+                            compare_data = self.df.iloc[i].to_dict()                                                                                                                                          
+                            break                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+                    compare_info = { **compare_data }                                                                                                                                                           
+                    details = [{"Property": key, "Value": value} for key, value in compare_info.items()]
+                    self.state.compare_details.append(details)
+            self.server.state.dirty("compare_details")
+            print(f"Details: {self.state.compare_details}")
+
         else:
             self.state.compare_images = []
             print("No images selected for comparison.")
 
-        #self.state.compare_images = self.state.checkboxed_images if hasattr(self.state, 'checkboxed_images') else []
-        #print(f"Checkboxed images on /compare route: {self.state.compare_images}")
+        
         
 
     # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                         
@@ -770,7 +797,8 @@ class BaseOoDHistogram:
                                                 with vuetify.VRow(style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start;",):                                                                                                                                                                                                                                                                                                                                                                                                  
                                                     with vuetify.Template(v_for="(dicom, imgIndex) in item.dicom_imgs", key="imgIndex"):                                                                                                                                                               
                                                         with vuetify.VCol(cols="auto", class_="d-inline-block", style="flex: 0 0 auto; padding: 5px; max-width:100%"):                                                                                                                                                               
-                                                            vuetify.VCheckbox(color="blue",
+                                                            vuetify.VCheckbox(
+                                                                            color="blue",
                                                                             change="trigger('checkbox_method',[dicom,imgIndex])",
                                                                             style="padding:0; margin-left:50px",)
                                                             with vuetify.VCard(style="padding-top: 2px;padding-left:12px; max-height: 800px;"):   
@@ -885,7 +913,6 @@ class BaseOoDHistogram:
                             with vuetify.VCol(xs="12", sm="12", md="3", lg="5", xl="5"):  
                                 #with vuetify.VRow(style="justify-content: center; align-items: center; padding-bottom: 10px;"):
                                     #vuetify.VSubheader("Selected Image View:", style="font-size: 28px; font-weight: bold; color: rgb(0, 71, 171);")
-
                                 with vuetify.VRow(style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start; justify-content: center",):
                                     with vuetify.Template(v_for="(dicom, dicomIndex) in image_items.Original_Dicom", key="dicomIndex"):
                                         with vuetify.VCol(cols="auto", class_="d-inline-block", style="flex: 0 0 auto; padding-left: 20px; text-align:left;"):
@@ -932,32 +959,63 @@ class BaseOoDHistogram:
         # Compare Images route                                                                                                                                                                
         with RouterViewLayout(self.server, "/compare/", style="width: 100%; padding: 0; margin: 0;"):   
             with vuetify.VRow():                                                                                                                                                                                                                                                                                                                         
-                with vuetify.VBtn("Take me back", click="$router.back()", style="margin: 20px; justify-content: flex-start; align-items: center;"):                                                                                                                                                                                                                                                                                           
+                with vuetify.VBtn("Take me back", 
+                #click="$router.back()",
+                click = """
+                trigger('restore_checkboxed_state')
+                $router.back()
+                """, 
+                style="margin: 20px; justify-content: flex-start; align-items: center;"):                                                                                                                                                                                                                                                                                           
                     vuetify.VIcon("mdi-arrow-left-bold", color="red", size=20)                                                                                                                                                                                                                                                                                     
 
             #with vuetify.VContainer(style="overflow-x: auto; white-space: nowrap; overflow-y: auto; padding-right: 15px; padding-top:25px; max-width: 100%; max-height:100%"):
             with vuetify.VRow(style="display: flex; justify-content: center; align-items: center; padding-top: 2px;"):
                     vuetify.VSubheader("Compare Images:", style="font-size: 28px; font-weight: bold; color: rgb(0, 71, 171); justify-content: center; align-items: center;")
                     
-            with vuetify.VRow(v_if="compare_images.length > 0", style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start; justify-content: center;"):
-              
-                with vuetify.Template(v_for="(item, index) in compare_images", key="index"):
-                    with vuetify.VCol(cols="auto", class_="d-inline-block", style="flex: 0 0 auto; padding: 10px;"):                                                                                                                                                              
-                        with vuetify.Template(v_for="(dicom, imgIndex) in item", key="imgIndex"):  
-                            with vuetify.VRow(cols="auto", class_="d-inline-block", style="flex: 0 0 auto; padding: 5px;"):
-                                vuetify.VImg(                                                                                                                                                                                                                                                                                                                                                                                        
-                                src=("dicom", lambda name: f"{name}"),                                                                                                                                                                                                                                                                                                                                                   
-                                lazy_src="http://via.placeholder.com/150x150",                                                                                                                                                                                                                                                                                                                                           
-                                alt=("imgIndex", lambda imgIndex: f"Dicom_Img{imgIndex}"),                                                                                                                                                                                                                                                                                                                               
-                                style="width: 150px; height: 150px; object-fit: contain;",                                                                                                                                                                                                                                                                                                             
-                                eager=False,                                                                                                                                                                                                                                                                                                                                                                      
-                                )                         
-                                                                                                                                                                                                                                                                                          
-            with vuetify.VRow(v_else=True):                                                                                                                                                                                                                                                                                                                                                                                        
-                vuetify.VChip("No selected images...",style="margin-left: 25px;justify-content: center; align-items: center;")
-                        
-                        
-                                                                                                                                                                                                                                                                                                                                  
+            with vuetify.VRow(v_if="compare_images.length > 0", style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start; justify-content: center;",):
+                    with vuetify.Template(v_for="(item, index) in compare_images", key="index"):
+                        with vuetify.VCol(cols="auto", class_="d-inline-block", style="flex: 0 0 auto; padding: 30px; max-width:100%"):                                                                                               
+                            with vuetify.VCard(style="padding-top: 2px;padding-left:12px; max-height: 900px;"):
+                                with vuetify.Template(v_for="(dicom, dicomIndex) in item.Original_Dicom", key="dicomIndex"):
+                                    with vuetify.VRow(style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start;padding-top:10px;padding-right:10px",):
+                                        vuetify.VImg(
+                                            src=("dicom", lambda name: f"{name}"),
+                                            lazy_src="http://via.placeholder.com/150x150",
+                                            alt=(f"dicomIndex", lambda dicomIndex: f"Dicom_Img_{dicomIndex}"),
+                                            style="width: 150px; height: 150px; object-fit: contain; padding: 20px;",
+                                            eager=False,
+                                        )
+                                with vuetify.Template(v_for="(img, imgIndex) in item.Segmented_Nodule", key="imgIndex"):
+                                    with vuetify.VRow(style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start;padding-top:10px;padding-right:10px",):    
+                                        vuetify.VImg(
+                                            src=("img", lambda name: f"{name}"),
+                                            lazy_src="http://via.placeholder.com/150x150",
+                                            alt=(f"imgIndex", lambda dicomIndex: f"Dicom_Img_{imgIndex}"),
+                                            style="width: 150px; height: 150px; object-fit: contain; padding: 20px;",
+                                            eager=False,
+                                        )
+            
+            with vuetify.VRow(v_else=True):    
+                with vuetify.VRow(style="display: flex; justify-content: center; align-items: center; padding-top: 30px;"):
+                    with vuetify.VCard(style="max-height: 700px;"):
+                        with vuetify.Template(v_for="(item, index) in no_image", key="index"):
+                            vuetify.VImg(
+                                src=("item", lambda name: f"{name}"),
+                                lazy_src="http://via.placeholder.com/500x500",
+                                alt="No Image Selected",
+                                style="width: 600px; height: 600px; object-fit: contain; justify-content: center; align-items: center;",
+                                eager=True,
+                            )
+                        with vuetify.VCardText(style="font-size: 20px; text-align: center;"):
+                            vuetify.VAlert(
+                            "No image selected. Please choose an image to continue.",
+                            type="warning",
+                            prominent=True,
+                            icon="mdi-alert",
+                            style="font-size: 16px; margin-bottom: 20px; justify-content: center; align-items: center;"
+                        )
+                            
+
         # Main layout and navigation drawer                                                                                                                                                   
         #with SinglePageWithDrawerLayout(self.server) as layout:                                                                                                                              
         with SinglePageLayout(self.server) as layout:                                                                                                                                         

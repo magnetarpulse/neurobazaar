@@ -748,11 +748,11 @@ class BaseOoDHistogram:
                     details = [{"Property": key, "Value": value} for key, value in compare_info.items()]
                     self.state.compare_details.append(details)
             self.server.state.dirty("compare_details")
-            print(f"Details: {self.state.compare_details}")
+            #print(f"Details: {self.state.compare_details}")
 
         else:
             self.state.compare_images = []
-            print("No images selected for comparison.")
+            #print("No images selected for comparison.")
 
         
         
@@ -902,21 +902,18 @@ class BaseOoDHistogram:
                                                                                                                                                                                               
         # Data route                                                                                                                                                                          
         with RouterViewLayout(self.server, "/data/:imgIndex/:dicom", style="width: 100%; padding: 0; margin: 0;"):                                                                                                                                                                                                                                                           
-            with vuetify.VRow(style="width: 100%; padding: 20px; margin: 0;"):                                                                                                                                                              
-                #vuetify.VSpacer()                                                                                                                                                            
-                with vuetify.VBtn("Take me back", click="$router.back()", style="margin: 20px;"):                                                                                                                                                                                                                                                                                           
-                    vuetify.VIcon("mdi-arrow-left-bold", color="red", size=20)                                                                                                                                                                                                                                                                                         
+            with vuetify.VRow(style="width: 100%; padding-top: 10px; margin: 0;"):                                                                                                                                                                                                                                                                                                                          
+                with vuetify.VBtn("Take me back", click="$router.back()", style="margin: 20px; font-size: 16px; padding-left:10px;"):                                                                                                                                                                                                                                                                                           
+                    vuetify.VIcon("mdi-arrow-left-bold", color="red", size=25)                                                                                                                                                                                                                                                                                         
                 with vuetify.VRow(style="display: flex; justify-content: center;padding-top: 20px;"):
                     with vuetify.VContainer(style="overflow-x: auto; white-space: nowrap; overflow-y: auto; padding-right: 15px; width: 100%;padding-top:25px"):  
                         with vuetify.VRow(style="display: flex; justify-content: space-between;"): 
                             # Left Column (Images)
                             with vuetify.VCol(xs="12", sm="12", md="3", lg="5", xl="5"):  
-                                #with vuetify.VRow(style="justify-content: center; align-items: center; padding-bottom: 10px;"):
-                                    #vuetify.VSubheader("Selected Image View:", style="font-size: 28px; font-weight: bold; color: rgb(0, 71, 171);")
                                 with vuetify.VRow(style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start; justify-content: center",):
                                     with vuetify.Template(v_for="(dicom, dicomIndex) in image_items.Original_Dicom", key="dicomIndex"):
                                         with vuetify.VCol(cols="auto", class_="d-inline-block", style="flex: 0 0 auto; padding-left: 20px; text-align:left;"):
-                                            vuetify.VSubheader("Original DICOM Image:", style="font-size: 20px; font-weight: bold; color: rgb(0, 71, 171);")
+                                            vuetify.VSubheader("Original DICOM:", style="font-size: 20px; font-weight: bold; color: rgb(0, 71, 171); padding-left:10px")
                                             vuetify.VImg(
                                                 src=("dicom", lambda name: f"{name}"),
                                                 lazy_src="http://via.placeholder.com/320x320",
@@ -928,7 +925,7 @@ class BaseOoDHistogram:
                                 with vuetify.VRow(style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start; justify-content: center",):    
                                     with vuetify.Template(v_for="(segment, segmentIndex) in image_items.Segmented_Nodule", key="segmentIndex"):
                                         with vuetify.VCol(cols="auto", class_="d-inline-block", style="flex: 0 0 auto; padding-right: 20px; text-align:right;"):
-                                            vuetify.VSubheader("Segmented Nodule Image:", style="font-size: 20px; font-weight: bold; color: rgb(0, 71, 171);")
+                                            vuetify.VSubheader("Segmented Nodule:", style="font-size: 20px; font-weight: bold; color: rgb(0, 71, 171); padding-left:10px")
                                             vuetify.VImg(
                                                 src=("segment", lambda name: f"{name}"),
                                                 lazy_src="http://via.placeholder.com/320x320",
@@ -947,8 +944,8 @@ class BaseOoDHistogram:
                                         with vuetify.VSimpleTable(style="padding-left: 80px;",):
                                             with html.Thead():
                                                 with html.Tr():
-                                                    html.Th(children=["PROPERTY"], classes="font-weight-bold", style="font-size: 24px;color: rgb(0, 71, 171); ")
-                                                    html.Th(children=["VALUE"], classes="font-weight-bold", style="font-size: 24px;color: rgb(0, 71, 171);")
+                                                    html.Th(children=["FEATURES"], classes="font-weight-bold", style="font-size: 24px;color: rgb(0, 71, 171); ")
+                                                    html.Th(children=["FEATURE DATA"], classes="font-weight-bold", style="font-size: 24px;color: rgb(0, 71, 171);")
                                             with html.Tbody():
                                                 with vuetify.Template(v_for="(value, key) in image_details", key="key"):
                                                     with html.Tr():
@@ -965,35 +962,67 @@ class BaseOoDHistogram:
                 trigger('restore_checkboxed_state')
                 $router.back()
                 """, 
-                style="margin: 20px; justify-content: flex-start; align-items: center;"):                                                                                                                                                                                                                                                                                           
-                    vuetify.VIcon("mdi-arrow-left-bold", color="red", size=20)                                                                                                                                                                                                                                                                                     
+                style="margin: 10px; justify-content: flex-start; align-items: center; font-size: 16px; padding-left:10px;"):                                                                                                                                                                                                                                                                                           
+                    vuetify.VIcon("mdi-arrow-left-bold", color="red", size=25)                                                                                                                                                                                                                                                                                     
 
-            #with vuetify.VContainer(style="overflow-x: auto; white-space: nowrap; overflow-y: auto; padding-right: 15px; padding-top:25px; max-width: 100%; max-height:100%"):
-            with vuetify.VRow(style="display: flex; justify-content: center; align-items: center; padding-top: 2px;"):
-                    vuetify.VSubheader("Compare Images:", style="font-size: 28px; font-weight: bold; color: rgb(0, 71, 171); justify-content: center; align-items: center;")
+            with vuetify.VRow(style="display: flex; justify-content: center; align-items: center; padding-top: 2px; padding-bottom: 15px;"):
+                    vuetify.VSubheader("Selected Images for Comparison:", style="font-size: 28px; font-weight: bold; color: rgb(0, 71, 171); justify-content: center; align-items: center;")
                     
-            with vuetify.VRow(v_if="compare_images.length > 0", style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start; justify-content: center;",):
-                    with vuetify.Template(v_for="(item, index) in compare_images", key="index"):
-                        with vuetify.VCol(cols="auto", class_="d-inline-block", style="flex: 0 0 auto; padding: 30px; max-width:100%"):                                                                                               
-                            with vuetify.VCard(style="padding-top: 2px;padding-left:12px; max-height: 900px;"):
-                                with vuetify.Template(v_for="(dicom, dicomIndex) in item.Original_Dicom", key="dicomIndex"):
-                                    with vuetify.VRow(style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start;padding-top:10px;padding-right:10px",):
+            with vuetify.VContainer(style="padding-top: 60px; overflow-y: auto; max-height: 800px; max-width: 100%; display: flex; justify-content: center; align-items: center;",classes="d-flex flex-column flex-md-row"):
+                with vuetify.VCol(cols="auto", style="flex: 0 0 auto; padding-top:17px; max-width: 350px;justify-content: center; align-items: center; max-height:800px;"):
+                    #with vuetify.VCard(style="padding-top: 430px;"):
+                    with vuetify.VCard(style="padding-top: 5px;"):
+                        with vuetify.VCardText("Original DICOM",style="font-size: 20px; text-align: center; padding-top: 95px; padding-bottom: 95px;"):
+                            vuetify.VIcon("mdi-arrow-right-bold", color="black", size=25)
+                        with vuetify.VCardText("Segmented Nodule",style="font-size: 20px; text-align: center; padding-top: 95px; padding-bottom: 95px;"):
+                            vuetify.VIcon("mdi-arrow-right-bold", color="black", size=25)
+                        vuetify.VDivider(style="margin-top: 10px 0;")
+                        with vuetify.VSimpleTable(style="margin-top: 10px;"):
+                                    with html.Thead():
+                                        with html.Tr():
+                                            html.Th(
+                                                "FEATURES", 
+                                                classes="font-weight-bold", 
+                                                style="font-size:18px; text-align: left; color: rgb(0, 71, 171);",
+                                            )
+                                    with html.Tbody():
+                                        with vuetify.Template(v_for="(feature, featureIndex) in compare_details[0]", key="featureIndex"):
+                                            with html.Tr():
+                                                html.Td("{{ feature.Property }}", style="font-size: 16px; text-align: left;",classes="font-weight-bold")
+                
+                with vuetify.VCol(cols="auto", style="flex: 0 0 auto; padding-left: 20px; justify-content: center; align-items: center; max-height:800px;"):
+                    with vuetify.VRow(
+                        v_if="compare_images.length > 0 && compare_details.length > 0",
+                        style="display: flex; justify-content: center; align-items: flex-start; flex-wrap: nowrap; overflow-x: auto;",):
+                        with vuetify.Template(v_for="(item, index) in compare_images", key="index"):
+                            with vuetify.VCol(cols="auto", style="flex: 0 0 auto; padding-top:15px; max-width: 300px; padding-left: 20px; text-align: center;",):
+                                with vuetify.VCard(style="padding-top: 5px;"):
+                                    with vuetify.Template(v_for="(dicom, dicomIndex) in item.Original_Dicom", key="dicomIndex"):
                                         vuetify.VImg(
                                             src=("dicom", lambda name: f"{name}"),
                                             lazy_src="http://via.placeholder.com/150x150",
-                                            alt=(f"dicomIndex", lambda dicomIndex: f"Dicom_Img_{dicomIndex}"),
-                                            style="width: 150px; height: 150px; object-fit: contain; padding: 20px;",
-                                            eager=False,
+                                            alt=("dicom", lambda img: f"{img}"),
+                                            style="width: 200px; height: 200px; object-fit: contain; margin: 10px auto;",
                                         )
-                                with vuetify.Template(v_for="(img, imgIndex) in item.Segmented_Nodule", key="imgIndex"):
-                                    with vuetify.VRow(style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start;padding-top:10px;padding-right:10px",):    
-                                        vuetify.VImg(
-                                            src=("img", lambda name: f"{name}"),
-                                            lazy_src="http://via.placeholder.com/150x150",
-                                            alt=(f"imgIndex", lambda dicomIndex: f"Dicom_Img_{imgIndex}"),
-                                            style="width: 150px; height: 150px; object-fit: contain; padding: 20px;",
-                                            eager=False,
-                                        )
+                                    with vuetify.Template(v_for="(img, imgIndex) in item.Segmented_Nodule", key="imgIndex"):
+                                            vuetify.VImg(
+                                                src=("img", lambda name: f"{name}"),
+                                                lazy_src="http://via.placeholder.com/150x150",
+                                                alt=("img", lambda img: f"{img}"),
+                                                style="width: 200px; height: 200px; object-fit: contain; margin: 10px auto;",
+                                                )
+                                    vuetify.VDivider(style="margin: 10px 0;")
+                                    with vuetify.VSimpleTable(style="margin-top: 10px;"):
+                                        with html.Thead():
+                                            with html.Tr():
+                                                html.Th("FEATURE DATA", classes="font-weight-bold", style="font-size:18px; text-align: left; color: rgb(0, 71, 171)")
+                                        with html.Tbody():
+                                            with vuetify.Template(v_for="(feature, featureIndex) in compare_details[index]", key="featureIndex"):
+                                                with html.Tr():
+                                                    html.Td("{{ feature.Value }}", style="font-size: 16px; text-align: left;")
+
+                                        
+
             
             with vuetify.VRow(v_else=True):    
                 with vuetify.VRow(style="display: flex; justify-content: center; align-items: center; padding-top: 30px;"):
@@ -1099,5 +1128,5 @@ class BaseOoDHistogram:
 # -----------------------------------------------------------------------------                                                                                                               
                                                                                                                                                                                               
 if __name__ == "__main__":                                                                                                                                                                    
-    server = BaseOoDHistogram("Ood Visualizer", 8090, "MaxSlices_wOoDScore.csv", "LIDC_Dataset", "lidc_pixConvImg", "Log_Loss_ALL","imageSOP_UID","noduleID")                                                                                                                                                                                                                              
+    server = BaseOoDHistogram("Ood Visualizer", 8091, "MaxSlices_wOoDScore.csv", "LIDC_Dataset", "lidc_pixConvImg", "Log_Loss_ALL","imageSOP_UID","noduleID")                                                                                                                                                                                                                              
     server.start_server_immediately()                                                                                              

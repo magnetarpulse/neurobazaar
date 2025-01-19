@@ -1,0 +1,27 @@
+#Setting up firewall: 
+sudo apt install ufw
+sudo ufw enable
+sudo ufw 8000 allow
+sudo ufw 8090 allow
+
+# expose ports globally
+sudo firewall-cmd --zone=public --add-port=8000/tcp
+sudo firewall-cmd --zone=public --add-port=8090/tcp
+
+
+#Mounting of Share:
+sudo mount -t nfs -o nfsvers=4.2,proto=tcp 10.31.0.14:/volumes/_nogroup/a19a0db2-372c-4d7f-b554-f0590e86bacb/b65c2958-9b82-488a-87e7-7108f7d151fc /mnt
+
+#change directory to mounted share
+cd /mnt
+
+#Coping to Share:
+sudo cp -r /home/cc/neurobazaar_new/neurobazaar/media/LIDC_Dataset/LIDC-IDRI-0005 /mnt
+
+
+#Copying from share to instance:
+sudo cp -r /mnt/LIDC_Dataset /home/cc/neurobazaar_new/neurobazaar/media/
+                                                                                        
+                                                                                                                                                                
+#copy all from a folder                                                                                                                                      
+sudo cp -r /home/cc/neurobazaar_new/neurobazaar/media/LIDC_Dataset/* /mnt/LIDC_Dataset/

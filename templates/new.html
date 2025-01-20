@@ -1,0 +1,23 @@
+<!-- {% extends 'base.html' %}
+
+{% block content %}
+<h1>New Page with Visualization</h1>
+<div id="visualization-container">Loading...</div>
+
+<script>
+    fetch(window.location.pathname + 'api/data')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById('visualization-container').innerText = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('visualization-container').innerText = 'Error loading data: ' + error.message;
+        });
+</script>
+{% endblock %} -->

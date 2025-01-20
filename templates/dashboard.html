@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+<style>
+    .dashboard-container {
+        padding-top: 6rem;
+        padding-bottom: 2rem;
+        min-height: calc(100vh - 60px);
+        background: #f8fafc;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .welcome-message {
+        margin-bottom: 2rem;
+        color: #1e293b;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: transform 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-icon.datasets {
+        background: #dbeafe;
+        color: #3b82f6;
+    }
+
+    .stat-icon.workspaces {
+        background: #dcfce7;
+        color: #22c55e;
+    }
+
+    .stat-icon.collections {
+        background: #fae8ff;
+        color: #d946ef;
+    }
+
+    .stat-icon.servers {
+        background: #fee2e2;
+        color: #ef4444;
+    }
+
+    .stat-value {
+        font-size: 1.875rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+
+    .recent-activity {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .activity-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .activity-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: 8px;
+        background: #f8fafc;
+    }
+
+    .activity-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        background: #e2e8f0;
+        color: #64748b;
+    }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-text {
+        color: #1e293b;
+        font-size: 0.95rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .activity-time {
+        color: #94a3b8;
+        font-size: 0.875rem;
+    }
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        color: #1e293b;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+        background: #f1f5f9;
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="dashboard-container">
+    <div class="container">
+        <h1 class="welcome-message">Welcome back, {{ username }}!</h1>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon datasets">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="stat-value">{{ stats.datasets }}</div>
+                <div class="stat-label">Total Datasets</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon workspaces">
+                    <i class="fas fa-laptop-code"></i>
+                </div>
+                <div class="stat-value">{{ stats.workspaces }}</div>
+                <div class="stat-label">Active Workspaces</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon collections">
+                    <i class="fas fa-folder"></i>
+                </div>
+                <div class="stat-value">{{ stats.collections }}</div>
+                <div class="stat-label">Collections</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon servers">
+                    <i class="fas fa-server"></i>
+                </div>
+                <div class="stat-value">{{ stats.servers }}</div>
+                <div class="stat-label">Active Servers</div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="recent-activity">
+            <div class="activity-header">
+                <h2 class="activity-title">Recent Activity</h2>
+            </div>
+            <div class="activity-list">
+                {% for activity in recent_activities %}
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="{{ activity.icon }}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-text">{{ activity.text }}</div>
+                        <div class="activity-time">{{ activity.time }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <a href="/datasets" class="action-btn">
+                <i class="fas fa-upload"></i>
+                Upload Dataset
+            </a>
+            <a href="/workspaces" class="action-btn">
+                <i class="fas fa-plus"></i>
+                New Workspace
+            </a>
+            <a href="/visualization_server_manager" class="action-btn">
+                <i class="fas fa-chart-line"></i>
+                Visualization Tools
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

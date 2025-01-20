@@ -1,0 +1,833 @@
+{% extends 'base.html' %}
+
+{% block title %}Datasets{% endblock title %}
+{% block nav4 %} d-none {% endblock nav4 %}
+
+{% block body %}
+<!-- Modern Page Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>Dataset Management</h1>
+                <p>Explore and manage your data collections</p>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <span class="stat-value">{{ public_files|length|add:private_files|length }}</span>
+                    <span class="stat-label">Datasets</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ public_collections|length|add:private_collections|length }}</span>
+                    <span class="stat-label">Collections</span>
+                </div>
+            </div>
+                </div>
+            </div>
+        </div>
+
+<!-- Modern Navigation Tabs -->
+<div class="dataset-tabs">
+    <div class="container">
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="showSection('uploadDatasetsSection')">
+                <i class="fas fa-upload"></i>
+                Upload Datasets
+                                    </button>
+            <button class="tab-btn" onclick="showSection('uploadCollectionsSection')">
+                <i class="fas fa-folder-plus"></i>
+                Upload Collections
+                                    </button>
+            <button class="tab-btn" onclick="showSection('viewDatasetsSection')">
+                <i class="fas fa-database"></i>
+                View Datasets
+                                        </button>
+            <button class="tab-btn" onclick="showSection('viewCollectionsSection')">
+                <i class="fas fa-folder-open"></i>
+                View Collections
+                                        </button>
+                </div>
+            </div>
+        </div>
+
+<!-- Content Sections -->
+<section class="page-section bg-light">
+    <div class="container">
+        <!-- Upload Datasets Section -->
+        <div id="uploadDatasetsSection" class="content-section">
+            <div class="upload-card">
+                <div class="upload-header">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h2>Upload Dataset</h2>
+                </div>
+                <form action="{% url 'datasets' %}" method="post" enctype="multipart/form-data" id="uploadForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="dataset_upload">
+                    
+                    <div class="upload-dropzone">
+                        <input type="file" class="file-input" id="singleFile" name="dataset_file" required>
+                        <label for="singleFile">
+                            <i class="fas fa-file-upload"></i>
+                            <span>Drag and drop your file or click to browse</span>
+                        </label>
+            </div>
+
+                    <!-- Add progress bar -->
+                    <div id="uploadProgress" class="upload-progress" style="display: none;">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-info">
+                            <span class="progress-percentage">0%</span>
+                            <span class="progress-status">Uploading...</span>
+                            <span class="upload-speed"></span>
+                            <span class="time-remaining"></span>
+                        </div>
+            </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                </div>
+
+                    <div class="form-group">
+                        <label for="repo">Repository Type</label>
+                        <select class="form-select" name="repo" id="repo">
+                            <option value="public">Public</option>
+                            <option value="private">Private</option>
+                        </select>
+            </div>
+
+                    <div class="form-group">
+                        <label for="datastore">Select Datastore</label>
+                        <select class="form-select" name="datastore" id="datastore">
+                            {% for datastore in datastores %}
+                                <option value="{{ datastore.UUID }}">{{ datastore.Name }} | {{ datastore.Type }}</option>
+                            {% endfor %}
+                        </select>
+                </div>
+
+                    <button type="submit" class="btn btn-primary upload-btn">
+                        <i class="fas fa-upload me-2"></i>Upload Dataset
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Upload Collections Section -->
+        <div id="uploadCollectionsSection" class="content-section" style="display: none;">
+            <div class="upload-card">
+                <div class="upload-header">
+                    <i class="fas fa-folder-plus"></i>
+                    <h2>Upload Collection</h2>
+                </div>
+                <!-- Add collection upload form here -->
+            </div>
+        </div>
+
+        <!-- View Datasets Section -->
+        <div id="viewDatasetsSection" class="content-section" style="display: none;">
+            <div class="row">
+                <div class="col-12">
+                    <!-- Navigation tabs for dataset views -->
+                    <ul class="nav nav-tabs mb-4" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#public" role="tab">
+                                <i class="fas fa-globe"></i> Public Files
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#private" role="tab">
+                                <i class="fas fa-lock"></i> Private Files
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#favorites" role="tab">
+                                <i class="fas fa-star"></i> Favorites
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- Tab content -->
+                    <div class="tab-content">
+                        <!-- Public Files -->
+                        <div class="tab-pane fade show active" id="public" role="tabpanel">
+                            <div class="files-grid">
+                                {% for file in public_files %}
+                                <div class="file-card">
+                                    <div class="file-header">
+                                        <h5 class="file-name">{{ file.name }}</h5>
+                                        <span class="file-date">{{ file.created|date:"M d, Y" }}</span>
+                                    </div>
+                                    <div class="file-body">
+                                        <p class="file-description">{{ file.description }}</p>
+                                        <div class="file-details">
+                                            <span class="file-owner">By: {{ file.username }}</span>
+                                            <span class="file-store">Store: {{ file.datastore }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="file-footer">
+                                        <div class="file-actions">
+                                            <form method="post" style="display: inline;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="download_file" value="{{ file.uuid }}">
+                                                <button type="submit" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-download"></i> Download
+                                                </button>
+                                            </form>
+                                            <form method="post" style="display: inline;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="delete_file" value="{{ file.uuid }}">
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this file?');">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                            <div class="file-stats">
+                                                <form method="post" style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="like_file" value="{{ file.uuid }}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                                        <i class="fas fa-thumbs-up"></i> {{ file.likes }}
+                                                    </button>
+                                                </form>
+                                                <form method="post" style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="dislike_file" value="{{ file.uuid }}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                        <i class="fas fa-thumbs-down"></i> {{ file.dislikes }}
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="no-files">
+                                    <p>No public files available</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Private Files -->
+                        <div class="tab-pane fade" id="private" role="tabpanel">
+                            <div class="files-grid">
+                                {% for file in private_files %}
+                                <div class="file-card">
+                                    <div class="file-header">
+                                        <h5 class="file-name">{{ file.name }}</h5>
+                                        <span class="file-date">{{ file.created|date:"M d, Y" }}</span>
+                                    </div>
+                                    <div class="file-body">
+                                        <p class="file-description">{{ file.description }}</p>
+                                        <div class="file-details">
+                                            <span class="file-store">Store: {{ file.datastore }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="file-footer">
+                                        <div class="file-actions">
+                                            <form method="post" style="display: inline;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="download_file" value="{{ file.uuid }}">
+                                                <button type="submit" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-download"></i> Download
+                                                </button>
+                                            </form>
+                                            <form method="post" style="display: inline;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="delete_file" value="{{ file.uuid }}">
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this file?');">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="no-files">
+                                    <p>No private files available</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Favorites -->
+                        <div class="tab-pane fade" id="favorites" role="tabpanel">
+                            <div class="files-grid">
+                                {% for file in favorite_files %}
+                                <div class="file-card">
+                                    <div class="file-header">
+                                        <h5 class="file-name">{{ file.name }}</h5>
+                                        <span class="file-date">{{ file.created|date:"M d, Y" }}</span>
+                                    </div>
+                                    <div class="file-body">
+                                        <p class="file-description">{{ file.description }}</p>
+                                        <div class="file-details">
+                                            <span class="file-owner">By: {{ file.username }}</span>
+                                            <span class="file-store">Store: {{ file.datastore }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="file-footer">
+                                        <div class="file-actions">
+                                            <form method="post">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="download_file" value="{{ file.uuid }}">
+                                                <button type="submit" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-download"></i> Download
+                                                </button>
+                                            </form>
+                                            <form method="post" style="display: inline;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="delete_file" value="{{ file.uuid }}">
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this file?');">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="no-files">
+                                    <p>No favorite files available</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Collections Section -->
+        <div id="viewCollectionsSection" class="content-section" style="display: none;">
+            <!-- Add collections view here -->
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Modern styling for datasets page */
+    .dataset-tabs {
+        background: white;
+        padding: 0.75rem 0;
+        position: sticky;
+        top: 60px;
+        z-index: 100;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .tab-container {
+        display: flex;
+        gap: 0.75rem;
+        overflow-x: auto;
+        padding: 0.25rem 0;
+    }
+
+    .tab-btn {
+        background: none;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 8px;
+        color: #64748b;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        font-size: 0.9rem;
+    }
+
+    .tab-btn:hover {
+        background: #f1f5f9;
+        color: #3b82f6;
+    }
+
+    .tab-btn.active {
+        background: #dbeafe;
+        color: #3b82f6;
+    }
+
+    .upload-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .upload-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .upload-header i {
+        font-size: 2.5rem;
+        color: #3b82f6;
+        margin-bottom: 1rem;
+    }
+
+    .upload-dropzone {
+        border: 2px dashed #e2e8f0;
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .upload-dropzone:hover {
+        border-color: #3b82f6;
+        background: #f8fafc;
+    }
+
+    .file-input {
+        display: none;
+    }
+
+    .upload-dropzone label {
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .upload-dropzone i {
+        font-size: 2rem;
+        color: #64748b;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.625rem;
+        transition: all 0.2s ease;
+        background-color: #ffffff;
+        color: #1a1a1a;
+        font-size: 0.95rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        outline: none;
+    }
+
+    .upload-btn {
+        width: 100%;
+        padding: 0.75rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    /* File display styling */
+    .files-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        padding: 1.5rem 0;
+    }
+
+    .file-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        padding: 1rem;
+        transition: transform 0.2s ease;
+    }
+
+    .file-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .file-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 0.75rem;
+    }
+
+    .file-name {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    .file-date {
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .file-body {
+        margin-bottom: 1rem;
+    }
+
+    .file-description {
+        font-size: 0.95rem;
+        color: #444;
+        margin-bottom: 0.75rem;
+    }
+
+    .file-details {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .file-footer {
+        border-top: 1px solid #eee;
+        padding-top: 0.75rem;
+    }
+
+    .file-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .file-stats {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .no-files {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        color: #666;
+    }
+
+    /* Upload Progress Styles */
+    .upload-progress {
+        margin: 1rem 0;
+    }
+
+    .progress {
+        height: 0.5rem;
+        border-radius: 0.25rem;
+        background-color: #e2e8f0;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background-color: #3b82f6;
+        transition: width 0.2s ease;
+    }
+
+    .progress-info {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+
+    .progress-percentage {
+        font-weight: 600;
+    }
+
+    .progress-status {
+        font-style: italic;
+    }
+
+    .upload-speed {
+        text-align: right;
+        font-family: monospace;
+    }
+
+    .time-remaining {
+        text-align: right;
+        color: #94a3b8;
+    }
+</style>
+
+<!-- Add LZ4 compression library -->
+<script src="https://cdn.jsdelivr.net/npm/lz4@0.6.3/build/lz4.min.js"></script>
+<script>
+    // Fallback if primary CDN fails
+    if (typeof LZ4 === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/lz4@0.6.3/build/lz4.min.js';
+        document.head.appendChild(script);
+    }
+</script>
+
+<script>
+    function showSection(sectionId) {
+        // Hide all sections
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => section.style.display = 'none');
+
+        // Remove active class from all buttons
+        const buttons = document.querySelectorAll('.tab-btn');
+        buttons.forEach(button => button.classList.remove('active'));
+
+        // Show the selected section
+        const targetSection = document.getElementById(sectionId);
+        if (targetSection) {
+            targetSection.style.display = 'block';
+        }
+
+        // Add active class to the clicked button
+        const clickedButton = Array.from(buttons).find(button => button.getAttribute('onclick').includes(sectionId));
+        if (clickedButton) {
+            clickedButton.classList.add('active');
+        }
+    }
+
+    // Initialize by showing the first section by default
+    document.addEventListener('DOMContentLoaded', () => {
+        showSection('uploadDatasetsSection');
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('uploadForm');
+        const progressBar = document.querySelector('.progress-bar');
+        const progressPercentage = document.querySelector('.progress-percentage');
+        const progressStatus = document.querySelector('.progress-status');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const uploadSpeed = document.querySelector('.upload-speed');
+        const timeRemaining = document.querySelector('.time-remaining');
+        const dropZone = document.querySelector('.upload-dropzone');
+        const fileInput = document.getElementById('singleFile');
+
+        // Add drag and drop event handlers
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('border-primary');
+            dropZone.style.backgroundColor = '#f0f9ff';
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('border-primary');
+            dropZone.style.backgroundColor = '';
+        }
+
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0) {
+                fileInput.files = files;
+                // Trigger change event to update UI
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+            }
+        }
+
+        const CHUNK_SIZE = 1024 * 1024 * 2; // 2MB chunks for better performance
+        let startTime;
+        let lastLoaded = 0;
+        let lastTime = Date.now();
+        let speedSamples = [];
+        const MAX_SAMPLES = 5; // Number of samples to average for speed calculation
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const file = document.getElementById('singleFile').files[0];
+            if (!file) return;
+
+            // Show progress bar
+            uploadProgress.style.display = 'block';
+            progressStatus.textContent = 'Preparing upload...';
+
+            try {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const fileData = new Uint8Array(e.target.result);
+                    const totalChunks = Math.ceil(fileData.length / CHUNK_SIZE);
+                    let uploadedChunks = 0;
+                    startTime = Date.now();
+
+                    // Process file in chunks
+                    for (let start = 0; start < fileData.length; start += CHUNK_SIZE) {
+                        const chunk = fileData.slice(start, start + CHUNK_SIZE);
+                        const formData = new FormData(form);
+                        
+                        // Try to compress chunk
+                        let finalChunk = chunk;
+                        let isCompressed = false;
+                        
+                        try {
+                            if (typeof LZ4 !== 'undefined') {
+                                progressStatus.textContent = 'Compressing chunk...';
+                                const compressed = LZ4.compress(chunk);
+                                if (compressed && compressed.length < chunk.length) {
+                                    finalChunk = compressed;
+                                    isCompressed = true;
+                                }
+                            }
+                        } catch (compressionError) {
+                            console.warn('Compression skipped:', compressionError);
+                        }
+                        
+                        // Prepare form data
+                        formData.delete('dataset_file');
+                        formData.append('chunk', new Blob([finalChunk]));
+                        formData.append('chunk_number', uploadedChunks);
+                        formData.append('total_chunks', totalChunks);
+                        formData.append('original_filename', file.name);
+                        formData.append('total_size', fileData.length);
+                        formData.append('compressed', isCompressed.toString());
+                        formData.append('compression', 'lz4');
+
+                        await uploadChunk(formData, start, fileData.length);
+                        uploadedChunks++;
+                        
+                        // Update status
+                        const percentComplete = (uploadedChunks / totalChunks) * 100;
+                        progressStatus.textContent = `Uploading... ${Math.round(percentComplete)}%`;
+                    }
+
+                    progressStatus.textContent = 'Upload complete!';
+                    setTimeout(() => {
+                        window.location.href = '{% url "datasets" %}';
+                    }, 500);
+                };
+
+                reader.onerror = function() {
+                    progressStatus.textContent = 'Error reading file';
+                    progressBar.style.backgroundColor = '#ef4444';
+                };
+
+                reader.readAsArrayBuffer(file);
+            } catch (error) {
+                console.error('Upload failed:', error);
+                progressStatus.textContent = 'Upload failed';
+                progressBar.style.backgroundColor = '#ef4444';
+            }
+        });
+
+        async function uploadChunk(formData, uploaded, total) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                
+                xhr.upload.addEventListener('progress', function(e) {
+                    if (e.lengthComputable) {
+                        const currentLoaded = uploaded + e.loaded;
+                        const percentComplete = (currentLoaded / total) * 100;
+                        
+                        // Update progress bar
+                        progressBar.style.width = percentComplete + '%';
+                        progressPercentage.textContent = Math.round(percentComplete) + '%';
+
+                        // Calculate speed with moving average
+                        const currentTime = Date.now();
+                        const timeDiff = (currentTime - lastTime) / 1000; // seconds
+                        const loadedDiff = currentLoaded - lastLoaded;
+                        const currentSpeed = loadedDiff / timeDiff; // bytes per second
+
+                        // Add current speed to samples
+                        speedSamples.push(currentSpeed);
+                        if (speedSamples.length > MAX_SAMPLES) {
+                            speedSamples.shift(); // Remove oldest sample
+                        }
+
+                        // Calculate average speed
+                        const avgSpeed = speedSamples.reduce((a, b) => a + b, 0) / speedSamples.length;
+
+                        // Update speed display
+                        uploadSpeed.textContent = formatSpeed(avgSpeed);
+
+                        // Calculate time remaining using average speed
+                        const remainingBytes = total - currentLoaded;
+                        const remainingTime = remainingBytes / avgSpeed;
+                        timeRemaining.textContent = formatTimeRemaining(remainingTime);
+
+                        // Update last values
+                        lastLoaded = currentLoaded;
+                        lastTime = currentTime;
+                    }
+                });
+
+                xhr.addEventListener('load', function() {
+                    if (xhr.status === 200) {
+                        resolve();
+                    } else {
+                        reject(new Error(`HTTP ${xhr.status}`));
+                    }
+                });
+
+                xhr.addEventListener('error', () => reject(new Error('Network error')));
+                xhr.open('POST', form.action, true);
+                xhr.send(formData);
+            });
+        }
+
+        function formatSpeed(bytesPerSecond) {
+            const units = ['B/s', 'KB/s', 'MB/s', 'GB/s'];
+            let value = bytesPerSecond;
+            let unitIndex = 0;
+
+            while (value > 1024 && unitIndex < units.length - 1) {
+                value /= 1024;
+                unitIndex++;
+            }
+
+            return `${value.toFixed(1)} ${units[unitIndex]}`;
+        }
+
+        function formatTimeRemaining(seconds) {
+            if (!isFinite(seconds) || seconds < 0) return '';
+            
+            if (seconds < 60) {
+                return `${Math.round(seconds)}s remaining`;
+            } else if (seconds < 3600) {
+                return `${Math.round(seconds / 60)}m remaining`;
+            } else {
+                return `${Math.round(seconds / 3600)}h remaining`;
+            }
+        }
+
+        // Reset progress when selecting a new file
+        document.getElementById('singleFile').addEventListener('change', function() {
+            progressBar.style.width = '0%';
+            progressPercentage.textContent = '0%';
+            progressStatus.textContent = 'Ready to upload';
+            progressBar.style.backgroundColor = '#3b82f6';
+            uploadProgress.style.display = 'none';
+            uploadSpeed.textContent = '';
+            timeRemaining.textContent = '';
+            lastLoaded = 0;
+            lastTime = Date.now();
+            speedSamples = []; // Reset speed samples
+        });
+    });
+</script>
+
+{% endblock body %}

@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+{% block title %}Workspaces{% endblock title %}
+{% block nav3 %} d-none {% endblock nav3 %}
+
+{% block body %}
+<!-- Modern Page Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>Workspaces</h1>
+                <p>Manage your development environments</p>
+            </div>
+            <div class="header-controls">
+                <select id="workspaceDropdown" class="form-select">
+                    <option value="" disabled selected>Select Workspace</option>
+                </select>
+                <button id="addWorkspaceButton" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    New Workspace
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Workspace Management Section -->
+<section class="page-section bg-light">
+    <div class="container">
+        <div class="workspace-manager">
+            <!-- Workspace Controls -->
+            <div class="workspace-controls">
+                <div class="control-group">
+                    <select id="workspaceDropdown" class="workspace-select">
+                        <option value="" disabled selected>Select Workspace</option>
+                    </select>
+                    <button id="addWorkspaceButton" class="btn btn-primary add-workspace-btn">
+                        <i class="fas fa-plus"></i>
+                        New Workspace
+                    </button>
+                </div>
+                <div class="workspace-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Active Workspaces</span>
+                        <span class="stat-value" id="activeWorkspaces">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Available Slots</span>
+                        <span class="stat-value" id="availableSlots">5</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workspace Container -->
+            <div id="workspacesContainer" class="workspaces-container"></div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .page-header {
+        background: #0f172a;
+        margin-top: 60px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.15));
+        z-index: 1;
+    }
+
+    .header-content {
+        position: relative;
+        z-index: 2;
+        padding: 2rem 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-title h1 {
+        color: white;
+        font-size: 1.875rem;
+        font-weight: 600;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .header-title p {
+        color: #94a3b8;
+        margin: 0.5rem 0 0;
+        font-size: 1rem;
+    }
+
+    .header-controls {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .form-select {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        min-width: 200px;
+    }
+
+    .form-select option {
+        background: #0f172a;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            text-align: center;
+            gap: 1.5rem;
+        }
+
+        .header-controls {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .form-select {
+            width: 100%;
+        }
+    }
+
+    /* Modern styling for workspaces */
+    .workspace-manager {
+        padding: 1.5rem 0;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .workspace-controls {
+        background: white;
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .control-group {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .workspace-select {
+        flex: 1;
+        padding: 0.625rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        color: #0f172a;
+    }
+
+    .add-workspace-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        background: #3b82f6;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .add-workspace-btn:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+    }
+
+    .workspace-stats {
+        display: flex;
+        gap: 1.5rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .workspaces-container {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .workspace-frame {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .workspace-frame iframe {
+        width: 100%;
+        height: 60vh;
+        border: none;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .workspace-manager {
+            padding: 1rem 0;
+        }
+
+        .workspace-controls {
+            padding: 1rem;
+        }
+
+        .workspace-frame iframe {
+            height: 50vh;
+        }
+    }
+</style>
+
+<script>
+$(document).ready(function(){
+    var workspaceCounter = 0;
+    var initialPort = 5459;
+
+    function updateStats() {
+        $('#activeWorkspaces').text(workspaceCounter);
+        $('#availableSlots').text(5 - workspaceCounter);
+    }
+
+    $('#addWorkspaceButton').click(function(){
+        if (workspaceCounter >= 5) {
+            alert('Maximum of 5 workspaces reached.');
+            return;
+        }
+
+        workspaceCounter++;
+        updateStats();
+
+        var newWorkspaceId = 'workspace' + workspaceCounter;
+        var portNumber = initialPort + workspaceCounter - 1;
+
+        var newWorkspace = $(`
+            <div id="${newWorkspaceId}" class="workspace-frame" style="display:none;">
+                <iframe src="http://localhost:${portNumber}/index.html"></iframe>
+            </div>
+        `);
+
+        $('#workspacesContainer').append(newWorkspace);
+        $('#workspaceDropdown').append(`
+            <option value="${newWorkspaceId}">Workspace ${workspaceCounter}</option>
+        `);
+    });
+
+    $('#workspaceDropdown').change(function(){
+        var selectedWorkspace = $(this).val();
+        $('.workspace-frame').hide();
+        $('#' + selectedWorkspace).show();
+    });
+
+    updateStats();
+});
+</script>
+{% endblock body %}

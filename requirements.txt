@@ -13,8 +13,8 @@ trame-matplotlib
 trame-plotly
 trame-vtk
 trame-vuetify
-dask[complete]
-dask-histogram
+dask[complete]==2024.11.2
+dask-histogram==2024.9.1
 boost-histogram
 brotli
 zstandard

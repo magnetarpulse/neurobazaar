@@ -925,7 +925,7 @@ def new_view(request, path=''):
     logger.info(f"new_view called with path: '{path}'")
 
     # Define base URL and auth key
-    BASE_URL = 'https://localhost:5464'
+    BASE_URL = 'https://localhost:5459'
     AUTH_KEY = 'Zmlyc3Rfa2V5'  # This should match the auth_key in ServerManager
     
     try:

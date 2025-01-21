@@ -8,7 +8,7 @@ trame
 trame-client
 trame-components
 trame-matplotlib
-trame-server
+git+https://github.com/HuyNguyenDePaul/trame-server.git@master
 trame-vtk
 trame-vuetify
 dask[complete]

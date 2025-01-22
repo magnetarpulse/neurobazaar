@@ -25,6 +25,7 @@ admin.site.index_title = 'Welcome to Neurobazaar Administration Portal'
 urlpatterns = [
     path('', include('home.urls')),
     path('admin/', admin.site.urls),
-    re_path(r'^new/ws/?$', MultiPortWebSocketProxy.as_asgi()),
-    re_path(r'^new2/ws/?$', MultiPortWebSocketProxy.as_asgi()),
+    re_path(r'^histogram\d+/ws/?$', MultiPortWebSocketProxy.as_asgi()),
+    re_path(r'^histogramgeneral\d+/ws/?$', MultiPortWebSocketProxy.as_asgi()),
+    re_path(r'^oodanalyzer\d+/ws/?$', MultiPortWebSocketProxy.as_asgi()),
 ]

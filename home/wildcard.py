@@ -7,6 +7,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.apps import apps
 from asgiref.sync import sync_to_async
 from home.models import UpstreamServer, ServerInstance
+from urllib.parse import parse_qs
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +15,38 @@ class MultiPortWebSocketProxy(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
         self.upstream_connections = {}
-        connect_tasks = []
+        
+        # Extract section type from the URL path
+        path = self.scope['path']
+        self.section_type = None
+        if 'histogram' in path and 'general' not in path:
+            self.section_type = 'basic'
+        elif 'histogramgeneral' in path:
+            self.section_type = 'general'
+        elif 'oodanalyzer' in path:
+            self.section_type = 'ood'
+            
+        # Get cookies from query string
+        query_string = self.scope['query_string'].decode()
+        cookies = parse_qs(query_string).get('cookies', [None])[0]
+        
+        if cookies:
+            # Parse the cookies string and extract the ones for this section
+            cookie_dict = {}
+            for cookie in cookies.split(';'):
+                if '=' in cookie:
+                    name, value = cookie.strip().split('=', 1)
+                    # Only use cookies for the current section
+                    if self.section_type == 'basic' and name.startswith('basic_'):
+                        cookie_dict[name[6:]] = value  # Remove 'basic_' prefix
+                    elif self.section_type == 'general' and name.startswith('general_'):
+                        cookie_dict[name[8:]] = value  # Remove 'general_' prefix
+                    elif self.section_type == 'ood' and name.startswith('ood_'):
+                        cookie_dict[name[4:]] = value  # Remove 'ood_' prefix
+            
+            self.cookies = cookie_dict
+        else:
+            self.cookies = {}
 
         # Get the port from URL if provided
         port = self.scope['url_route']['kwargs'].get('port')
@@ -23,15 +55,12 @@ class MultiPortWebSocketProxy(AsyncWebsocketConsumer):
             # Direct port connection
             server_instance = await self.get_server_instance(port)
             if server_instance:
-                connect_tasks.append(self.connect_to_upstream(server_instance.ip, server_instance.port))
+                await self.connect_to_upstream(server_instance.ip, server_instance.port)
         else:
-            # Route-based connection (legacy support)
-            route = self.scope['url_route']['kwargs'].get('route', 'new')
-            upstream_servers = await self.get_upstream_servers(route)
+            # Route-based connection
+            upstream_servers = await self.get_upstream_servers(self.section_type)
             for server in upstream_servers:
-                connect_tasks.append(self.connect_to_upstream(server.ip, server.port))
-
-        await asyncio.gather(*connect_tasks)
+                await self.connect_to_upstream(server.ip, server.port)
 
     @sync_to_async
     def get_server_instance(self, port):
@@ -51,15 +80,22 @@ class MultiPortWebSocketProxy(AsyncWebsocketConsumer):
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
             
+            # Construct headers with cookies
+            headers = {}
+            if self.cookies:
+                cookie_str = '; '.join([f"{k}={v}" for k, v in self.cookies.items()])
+                headers['Cookie'] = cookie_str
+            
             ws = await websockets.connect(
                 f'wss://{ip}:{port}/ws',
                 open_timeout=5,
                 close_timeout=5,
-                ssl=ssl_context
+                ssl=ssl_context,
+                extra_headers=headers
             )
             self.upstream_connections[(ip, port)] = ws
             asyncio.create_task(self.receive_from_upstream(ip, port))
-            logger.info(f"WebSocket connection established to {ip}:{port}")
+            logger.info(f"WebSocket connection established to {ip}:{port} for section {self.section_type}")
         except Exception as e:
             logger.error(f"Failed to connect to upstream {ip}:{port}: {str(e)}")
 
@@ -72,8 +108,17 @@ class MultiPortWebSocketProxy(AsyncWebsocketConsumer):
         send_tasks = []
         for (ip, port), ws in self.upstream_connections.items():
             if text_data:
-                logger.info(f"Sending text message to upstream {ip}:{port}: {text_data}")
-                send_tasks.append(ws.send(text_data))
+                try:
+                    # Parse the message to add section type if it's JSON
+                    data = json.loads(text_data)
+                    data['section_type'] = self.section_type
+                    modified_text_data = json.dumps(data)
+                    logger.info(f"Sending text message to upstream {ip}:{port}: {modified_text_data}")
+                    send_tasks.append(ws.send(modified_text_data))
+                except json.JSONDecodeError:
+                    # If not JSON, send as is
+                    logger.info(f"Sending non-JSON text message to upstream {ip}:{port}: {text_data}")
+                    send_tasks.append(ws.send(text_data))
             elif bytes_data:
                 logger.info(f"Sending binary message to upstream {ip}:{port}: {len(bytes_data)} bytes")
                 send_tasks.append(ws.send(bytes_data))
@@ -86,12 +131,15 @@ class MultiPortWebSocketProxy(AsyncWebsocketConsumer):
             while True:
                 message = await ws.recv()
                 if isinstance(message, str):
-                    logger.info(f"Received text message from upstream {ip}:{port}: {message}")
                     try:
                         data = json.loads(message)
+                        # Add clientID if missing
                         if 'clientID' not in data and 'id' in data:
                             data['clientID'] = data['id']
+                        # Add section type to response
+                        data['section_type'] = self.section_type
                         message = json.dumps(data)
+                        logger.info(f"Received text message from upstream {ip}:{port}: {message}")
                     except json.JSONDecodeError:
                         logger.warning(f"Received non-JSON message from {ip}:{port}: {message}")
                     await self.send(text_data=message)
@@ -100,6 +148,8 @@ class MultiPortWebSocketProxy(AsyncWebsocketConsumer):
                     await self.send(bytes_data=message)
         except websockets.exceptions.ConnectionClosed:
             logger.info(f"Upstream connection closed for {ip}:{port}")
+        except Exception as e:
+            logger.error(f"Error in receive_from_upstream for {ip}:{port}: {str(e)}")
 
     async def send(self, text_data=None, bytes_data=None):
         if text_data:

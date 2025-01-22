@@ -58,7 +58,7 @@
                         </button>
                     </div>
                     <div class="col-md-4">
-                        <button class="btn btn-primary w-100 mb-2" onclick="startServer('analyzer')">
+                        <button class="btn btn-primary w-100 mb-2" onclick="startServer('ood')">
                             <i class="fas fa-plus me-2"></i>
                             Start OoD Analyzer Server
                         </button>
@@ -94,7 +94,7 @@
                         <h5 class="mb-0">OoD Analyzer Servers</h5>
                     </div>
                     <div class="card-body">
-                        <div id="analyzer-server-list" class="server-list"></div>
+                        <div id="ood-server-list" class="server-list"></div>
                     </div>
                 </div>
             </div>
@@ -271,6 +271,7 @@
             .then(data => {
                 let totalServers = 0;
                 let histogramCount = 0;  // Counter for histogram servers
+                let oodCount = 0;  // Counter for OOD servers
                 
                 // Update basic servers
                 const basicList = document.getElementById('basic-server-list');
@@ -290,12 +291,13 @@
                     generalList.innerHTML += createServerItem(server, 'general', histogramCount);
                 });
 
-                // Update analyzer servers
-                const analyzerList = document.getElementById('analyzer-server-list');
-                analyzerList.innerHTML = '';
-                data.analyzer.forEach(server => {
+                // Update OOD servers
+                const oodList = document.getElementById('ood-server-list');
+                oodList.innerHTML = '';
+                data.ood.forEach(server => {
                     totalServers++;
-                    analyzerList.innerHTML += createServerItem(server, 'analyzer', null);
+                    oodCount++;  // Increment OOD counter
+                    oodList.innerHTML += createServerItem(server, 'ood', oodCount);
                 });
 
                 // Update active servers count
@@ -304,25 +306,25 @@
             .catch(error => console.error('Error:', error));
     }
 
-    function createServerItem(server, type, histogramNumber) {
+    function createServerItem(server, type, number) {
         // For basic/general type servers, use the histogram URL format
         const isBasicHistogram = type === 'basic';
         const isGeneralHistogram = type === 'general';
-        const isHistogramServer = isBasicHistogram || isGeneralHistogram;
+        const isOodServer = type === 'ood';
         
         // Use appropriate URL format based on server type
-        const serverUrl = isHistogramServer 
-            ? isBasicHistogram 
-                ? `/histogram${histogramNumber}`
-                : `/histogramgeneral${histogramNumber}`
-            : `http://${server.ip}:${server.port}`;
+        const serverUrl = isBasicHistogram 
+            ? `/histogram${number}`
+            : isGeneralHistogram
+                ? `/histogramgeneral${number}`
+                : `/oodanalyzer${number}`;
         
         // Display URL for the link
-        const displayUrl = isHistogramServer 
-            ? isBasicHistogram
-                ? `localhost:8000/histogram${histogramNumber}`
-                : `localhost:8000/histogramgeneral${histogramNumber}`
-            : `${server.ip}:${server.port}`;
+        const displayUrl = isBasicHistogram
+            ? `localhost:8000/histogram${number}`
+            : isGeneralHistogram
+                ? `localhost:8000/histogramgeneral${number}`
+                : `localhost:8000/oodanalyzer${number}`;
 
         return `
             <div class="server-item">

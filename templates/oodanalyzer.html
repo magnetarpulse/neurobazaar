@@ -52,6 +52,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% block extra_head %}{% endblock %}
+
+    <script>
+        // Function to handle WebSocket connections
+        function setupWebSocket() {
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${wsProtocol}//${window.location.host}${window.location.pathname}ws`;
+            
+            const ws = new WebSocket(wsUrl);
+            
+            ws.onopen = function() {
+                console.log('WebSocket connection established');
+                // Send authentication key
+                ws.send(JSON.stringify({
+                    type: 'auth',
+                    key: 'key'  // This should match the auth_key in the server
+                }));
+            };
+            
+            ws.onmessage = function(event) {
+                console.log('Message received:', event.data);
+                // Handle incoming messages
+                try {
+                    const data = JSON.parse(event.data);
+                    // Process the data as needed
+                } catch (e) {
+                    console.error('Error parsing WebSocket message:', e);
+                }
+            };
+            
+            ws.onerror = function(error) {
+                console.error('WebSocket error:', error);
+            };
+            
+            ws.onclose = function() {
+                console.log('WebSocket connection closed');
+                // Attempt to reconnect after a delay
+                setTimeout(setupWebSocket, 5000);
+            };
+            
+            return ws;
+        }
+
+        // Initialize WebSocket when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            setupWebSocket();
+        });
+    </script>
 </head>
 <body
     id="page-top">
@@ -282,7 +329,7 @@
                         <img src="/static/assets/img/logo-main.png" alt="Neurobazaar Logo" class="header-logo">
                     </div>
                     <div class="header-title">
-                        <h1>Histogram Visualization</h1>
+                        <h1>OOD Analyzer</h1>
                         <p>Interactive data visualization and analysis</p>
                     </div>
                 </div>

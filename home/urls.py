@@ -32,6 +32,11 @@ urlpatterns = [
     re_path(r'^histogramgeneral\d+/(?P<path>.*)$', views.new_view2, name='histogram_general_proxy'),
     path('histogramgeneral/', views.new_view2, name='default_histogram_general'),
     
+    # OOD analyzer routes
+    path('oodanalyzer<int:num>/', views.new_view3, name='ood_analyzer'),
+    re_path(r'^oodanalyzer\d+/(?P<path>.*)$', views.new_view3, name='ood_analyzer_proxy'),
+    path('oodanalyzer/', views.new_view3, name='default_ood_analyzer'),
+    
     path('new2/', views.new_view2, name='new_view2'),
     re_path(r'^new2/(?P<path>.*)$', views.new_view2, name='new_proxy2'),
     path('dashboard/', views.dashboard, name='dashboard'),

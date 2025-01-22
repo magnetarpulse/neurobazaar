@@ -49,7 +49,7 @@ except Exception as e:
 from trame.server.example_server_manager import ServerManager
 from trame.server.example_standalone_histogram import BasicHistogramApp
 from trame.server.example_generic_histogram import GenericHistogramApp
-from trame.server.example_simple_server import main_async
+from trame.server.updated_dask_working_code import BaseOoDHistogram
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -840,8 +840,8 @@ def start_server(request, server_type):
             manager.start_new_basic_server()
         elif server_type == 'general':
             manager.start_new_general_server()
-        elif server_type == 'analyzer':
-            manager.start_new_simple_server()
+        elif server_type == 'ood':
+            manager.start_new_ood_server()
         else:
             return JsonResponse({'error': 'Invalid server type'}, status=400)
         
@@ -853,11 +853,11 @@ def start_server(request, server_type):
             is_running=True
         )
         
-        # Create corresponding UpstreamServer entry
+        # Create corresponding UpstreamServer entry with correct route
         UpstreamServer.objects.update_or_create(
             ip=server_instance.ip,
             port=server_instance.port,
-            defaults={'route': 'new'}  # 'new' maps to display value 'Histogram'
+            defaults={'route': server_type}  # Use server_type as the route
         )
         
         return JsonResponse({'status': 'success', 'port': server_instance.port})
@@ -877,8 +877,8 @@ def stop_server(request, server_type, port):
             manager.stop_basic_server(port)
         elif server_type == 'general':
             manager.stop_general_server(port)
-        elif server_type == 'analyzer':
-            manager.stop_simple_server(port)
+        elif server_type == 'ood':
+            manager.stop_ood_server(port)
         else:
             return JsonResponse({'error': 'Invalid server type'}, status=400)
         
@@ -908,7 +908,7 @@ def get_server_status(request):
         status = {
             'basic': [],
             'general': [],
-            'analyzer': []
+            'ood': []
         }
         
         for instance in server_instances:
@@ -1300,7 +1300,7 @@ def new_view3(request, path='', num=None):
     except IndexError:
         return HttpResponse(f"Histogram {histogram_num} not found", status=404)
 
-    AUTH_KEY = 'Zmlyc3Rfa2V5'  # This should match the auth_key in ServerManager
+    AUTH_KEY = 'a2V5'  # This should match the auth_key in ServerManager
     
     try:
         session = requests.Session()

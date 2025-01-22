@@ -26,6 +26,7 @@ from trame.ui.vuetify import SinglePageLayout
 from trame.server.example_generic_histogram import GenericHistogramApp
 from trame.server.example_standalone_histogram import BasicHistogramApp
 from trame.server.example_simple_server import main_async
+from trame.server.updated_dask_working_code import BaseOoDHistogram
 
 ## ================================================================== ## 
 ## Visualization service. Server Manager sub service. The base class. ##         
@@ -50,6 +51,9 @@ class ServerManager:
 
         self.simple_servers = {}
         self.control_state.simple_server_list = []
+
+        self.ood_servers = {}
+        self.control_state.ood_server_list = []
 
         self.control_state.level_to_color = {
         "Running": "green",
@@ -153,6 +157,40 @@ class ServerManager:
         self.next_port += 1
 
         self.control_state.dirty("simple_server_list")
+
+        self.render_ui_layout()
+
+    # ---------------------------------------------------------------------------------------------
+    # Method to start an OOD server
+    # ---------------------------------------------------------------------------------------------
+    
+    def start_new_ood_server(self):
+        print("Starting a new OOD server")
+
+        command = [
+            "python",
+            "trame/server/example_server_manager.py",  
+            "--launch_ood_server",
+            str(self.next_port)
+        ]
+
+        process = subprocess.Popen(command)
+        self.ood_servers = getattr(self, 'ood_servers', {})
+        self.ood_servers[self.next_port] = process
+
+        print(f"Started a new OOD server on port {self.next_port} with PID {process.pid}")
+
+        self.control_state.ood_server_list = getattr(self.control_state, 'ood_server_list', [])
+        self.control_state.ood_server_list.append({
+            'port': self.next_port,
+            'status': 'Running'
+        })
+
+        print(f"Server list after starting a new OOD server: {self.control_state.ood_server_list}") 
+
+        self.next_port += 1
+
+        self.control_state.dirty("ood_server_list")
 
         self.render_ui_layout()
     
@@ -265,6 +303,42 @@ class ServerManager:
         print(f"Simple server at port {port} has been removed from the list of servers")
     
     # ---------------------------------------------------------------------------------------------
+    # Method to stop an OOD server
+    # ---------------------------------------------------------------------------------------------
+
+    def stop_ood_server(self, port):
+        port = int(port)
+
+        print(f"Attempting to stop OOD server at port {port}")
+
+        server = self.ood_servers.get(port)
+
+        print("Server: ", server)
+
+        if server is None:
+            print(f"ERROR: No OOD server found at port {port}")
+            return
+
+        try:
+            os.kill(server.pid, signal.SIGTERM) 
+            print(f"Server at port {port} has been stopped")
+        except Exception as e:
+            print(f"An error occurred while stopping OOD server at port {port}: {e}")
+
+        del self.ood_servers[port]
+
+        for server in self.control_state.ood_server_list:
+            if server['port'] == port:
+                server['status'] = 'Stopped'
+                break
+
+        self.control_state.dirty("ood_server_list")
+
+        self.render_ui_layout()
+
+        print(f"OOD server at port {port} has been removed from the list of servers")
+    
+    # ---------------------------------------------------------------------------------------------
     # Method to register triggers with the controller
     # ---------------------------------------------------------------------------------------------
 
@@ -272,6 +346,7 @@ class ServerManager:
         self.control_ctrl.trigger("trigger_stop_basic_server")(self.trigger_stop_basic_server)
         self.control_ctrl.trigger("trigger_stop_general_server")(self.trigger_stop_general_server)
         self.control_ctrl.trigger("trigger_stop_simple_server")(self.trigger_stop_simple_server)
+        self.control_ctrl.trigger("trigger_stop_ood_server")(self.trigger_stop_ood_server)
 
     # ---------------------------------------------------------------------------------------------
     # Trigger to handle stopping a standalone histogram server
@@ -296,6 +371,14 @@ class ServerManager:
     def trigger_stop_simple_server(self, port):
         print("Stopping simple server at port:", port)
         self.stop_simple_server(port) 
+
+    # ---------------------------------------------------------------------------------------------
+    # Trigger to handle stopping an OOD server
+    # ---------------------------------------------------------------------------------------------
+
+    def trigger_stop_ood_server(self, port):
+        print("Stopping OOD server at port:", port)
+        self.stop_ood_server(port)
 
     # ---------------------------------------------------------------------------------------------
     # The interface for the server manager
@@ -459,6 +542,56 @@ class ServerManager:
                                                 ):
                                                     vuetify.VIcon("mdi-stop-circle")
 
+                        with vuetify.VCol(cols="12", md="4", classes="pa-2"):
+                            with vuetify.VCard(elevation=1):
+                                with vuetify.VCardTitle(classes="warning white--text py-3"):
+                                    with vuetify.VRow(align="center", classes="ma-0"):
+                                        with vuetify.VCol(cols="auto", classes="pa-0 mr-3"):
+                                            vuetify.VIcon("mdi-server", color="white", size="24")
+                                        with vuetify.VCol(classes="pa-0"):
+                                            vuetify.VCardText("OOD Servers", classes="white--text text-h6 mb-0")
+
+                            with vuetify.VCardText(classes="pa-4"):
+                                vuetify.VBtn(
+                                    "START NEW SERVER",
+                                    prepend_icon="mdi-plus",
+                                    click=self.start_new_ood_server,
+                                    color="warning",
+                                    classes="mb-6 py-2",
+                                    style_="height: 44px;",
+                                    block=True,
+                                )   
+                                
+                                with vuetify.VList(nav=True, classes="pa-0"):
+                                    with vuetify.VListItem(
+                                        v_for="(server, idx) in ood_server_list",
+                                        key="idx",
+                                        classes="rounded-lg mb-3 grey lighten-5"
+                                    ):
+                                        with vuetify.VListItemIcon():
+                                            vuetify.VIcon(
+                                                "mdi-server",
+                                                color=("level_to_color[server.status]",),
+                                                classes="mr-3"
+                                            )
+                                        with vuetify.VListItemContent():
+                                            vuetify.VListItemTitle(
+                                                "Port: {{ server.port }}",
+                                                classes="font-weight-medium"
+                                            )
+                                            vuetify.VListItemSubtitle(
+                                                "{{ server.status }}",
+                                                classes="text-capitalize"
+                                            )
+                                        with vuetify.VListItemAction():
+                                            with vuetify.VBtn(
+                                                icon=True,
+                                                color="error",
+                                                click="trigger('trigger_stop_ood_server', [server.port.toString()])",
+                                                classes="mr-2"
+                                            ):
+                                                vuetify.VIcon("mdi-stop-circle")
+
     # ---------------------------------------------------------------------------------------------
     # Method to start the server manager
     # ---------------------------------------------------------------------------------------------
@@ -509,6 +642,15 @@ class ServerManager:
 
             for port in ports:
                 asyncio.run(main_async(port, static_auth_key))
+
+        elif "--launch_ood_server" in sys.argv:
+            ports = [int(arg) for arg in sys.argv[sys.argv.index("--launch_ood_server") + 1:]]
+
+            static_auth_key = "key"
+
+            for port in ports:
+                ood_histogram = BaseOoDHistogram("OOD Visualizer", port, "MaxSlices_wOoDScore.csv", "LIDC_Dataset", "lidc_pixConvImg", "Log_Loss_ALL", "StudyInstanceUID", "SeriesInstanceUid", "imageSOP_UID", "noduleID")
+                ood_histogram.start_server_immediately()
 
         else:
             self.start(port=8080)

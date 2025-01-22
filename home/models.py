@@ -1,7 +1,9 @@
 from django.db import models
 from django.conf import settings
 import uuid
-    
+from django.contrib.auth.models import User
+from django.utils import timezone
+
 class Datastores(models.Model):
     UUID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     Name = models.CharField(max_length=128)
@@ -48,13 +50,17 @@ class Collections(models.Model):
 class UpstreamServer(models.Model):
     ip = models.CharField(max_length=255)
     port = models.IntegerField()
-    route = models.CharField(max_length=50, choices=[('new', 'Histogram'), ('new2', 'Server')])
+    route = models.CharField(max_length=50)
+    display_name = models.CharField(max_length=100, blank=True)
+    description = models.TextField(blank=True)
 
     class Meta:
-        unique_together = ('ip', 'port', 'route')
+        unique_together = ('ip', 'port')
+        verbose_name = 'Upstream Server'
+        verbose_name_plural = 'Upstream Servers'
 
     def __str__(self):
-        return f"{self.ip}:{self.port} ({self.route})"
+        return f"{self.display_name} ({self.ip}:{self.port})"
 
 class ServerInstance(models.Model):
     SERVER_TYPE_CHOICES = [

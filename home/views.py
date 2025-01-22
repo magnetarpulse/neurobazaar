@@ -853,6 +853,13 @@ def start_server(request, server_type):
             is_running=True
         )
         
+        # Create corresponding UpstreamServer entry
+        UpstreamServer.objects.update_or_create(
+            ip=server_instance.ip,
+            port=server_instance.port,
+            defaults={'route': 'new'}  # 'new' maps to display value 'Histogram'
+        )
+        
         return JsonResponse({'status': 'success', 'port': server_instance.port})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
@@ -875,8 +882,14 @@ def stop_server(request, server_type, port):
         else:
             return JsonResponse({'error': 'Invalid server type'}, status=400)
         
+        # Get the server instance before deleting it to get its IP
+        server_instance = ServerInstance.objects.get(port=port, server_type=server_type)
+        
+        # Delete the corresponding UpstreamServer entry
+        UpstreamServer.objects.filter(ip=server_instance.ip, port=port).delete()
+        
         # Delete server instance from database
-        ServerInstance.objects.filter(port=port, server_type=server_type).delete()
+        server_instance.delete()
         
         return JsonResponse({'status': 'success'})
     except Exception as e:
@@ -920,12 +933,32 @@ from urllib.parse import urljoin
 import re
 
 
-def new_view(request, path=''):
+def new_view(request, path='', num=None):
     username = request.user.username
-    logger.info(f"new_view called with path: '{path}'")
+    logger.info(f"new_view called with path: '{path}', num: {num}")
 
-    # Define base URL and auth key
-    BASE_URL = 'https://localhost:5459'
+    # Get all running histogram servers
+    server_instances = ServerInstance.objects.filter(is_running=True).order_by('port')
+    
+    # If num is provided directly (from URL pattern), use it
+    if num is not None:
+        histogram_num = num
+    else:
+        # Extract histogram number from path (e.g., 'histogram1' -> 1)
+        match = re.match(r'histogram(\d+)', path)
+        if match:
+            histogram_num = int(match.group(1))
+        else:
+            # Default to 1 if no specific histogram requested
+            histogram_num = 1
+
+    # Get the corresponding server instance (1-based index)
+    try:
+        server = server_instances[histogram_num - 1]
+        BASE_URL = f'https://localhost:{server.port}'
+    except IndexError:
+        return HttpResponse(f"Histogram {histogram_num} not found", status=404)
+
     AUTH_KEY = 'Zmlyc3Rfa2V5'  # This should match the auth_key in ServerManager
     
     try:
@@ -954,7 +987,7 @@ def new_view(request, path=''):
         # Step 1: Initial authentication request
         auth_url = f'{BASE_URL}?key={AUTH_KEY}'
         headers = {
-            'Host': 'localhost:5459',
+            'Host': f'localhost:{server.port}',
             'User-Agent': 'Mozilla/5.0',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
@@ -1013,18 +1046,27 @@ def new_view(request, path=''):
                     )
 
                 content = response.text
+                # Update WebSocket URLs to use our proxy
                 content = content.replace(
                     f'ws://{BASE_URL.replace("https://", "")}',
-                    f'ws://{request.get_host()}/new'
+                    f'ws://{request.get_host()}/histogram{histogram_num}'
                 )
                 content = content.replace(
                     BASE_URL,
-                    f'https://{request.get_host()}/new'
+                    f'https://{request.get_host()}/histogram{histogram_num}'
                 )
+
+                # Get all available histogram servers for the navigation
+                histogram_servers = [
+                    {'number': i+1, 'port': s.port} 
+                    for i, s in enumerate(server_instances)
+                ]
 
                 django_response = render(request, 'histogram.html', {
                     'username': username,
-                    'proxied_content': content
+                    'proxied_content': content,
+                    'histogram_servers': histogram_servers,
+                    'current_histogram': str(histogram_num)
                 })
 
                 for name, value in auth_cookies.items():
@@ -1066,144 +1108,338 @@ from urllib.parse import urljoin
 import re
 
 
-@login_required
-def new_view2(request, path=''):
+def new_view2(request, path='', num=None):
     username = request.user.username
-    logger.info(f"new_view2 called with path: '{path}'")
+    logger.info(f"new_view called with path: '{path}', num: {num}")
 
-    try:
-        # Proxy the request to the service running on port 1235
-        base_url = 'http://localhost:5460/'
-        target_url = urljoin(base_url, path)
-        logger.info(f"Proxying request to: {target_url}")
-        
-        # Forward the original request headers
-        headers = {key: value for key, value in request.headers.items()
-                   if key.lower() not in ['host', 'cookie']}
-        
-        # Forward the request method and body
-        method = request.method
-        data = request.body if method in ['POST', 'PUT', 'PATCH'] else None
-        
-        # Make the request to the upstream server
-        response = requests.request(method, target_url, headers=headers, data=data, stream=True, timeout=10)
-        
-        logger.info(f"Response status code: {response.status_code}")
-        logger.info(f"Response headers: {response.headers}")
-        
-        content_type = response.headers.get('Content-Type', '')
-        
-        # For HTML content, modify URLs and wrap in template
-        if 'text/html' in content_type:
-            content = response.content.decode('utf-8', errors='replace')
-            content = re.sub(r'(src|href)="/', r'\1="/new2/', content)
-            content = re.sub(r'(src|href)="\./', r'\1="/new2/', content)
-            content = re.sub(r'(ws://localhost:8080)', r'ws://' + request.get_host() + '/new2', content)
-            
-            # Use an inline template
-            html_template = Template("""
-            {% extends 'histogram.html' %}
-            {% block content %}
-            <style>
-                #proxied-content-box {
-                    width: 100%;
-                    height: 100%;
-                    overflow: auto;
-                }
-            </style>
-            <div id="proxied-content-box">
-                <div id="proxied-content">
-                    {{ proxied_content|safe }}
-                </div>
-            </div>
-            {% endblock %}
-            """)
-            
-            # Render the template with the proxied content
-            context = Context({
-                'username': username,
-                'content_type': content_type,
-                'proxied_content': content
-            })
-            rendered_html = html_template.render(context)
-            
-            # Return the wrapped content as HTML
-            return HttpResponse(rendered_html, content_type='text/html')
+    # Get all running histogram servers
+    server_instances = ServerInstance.objects.filter(is_running=True).order_by('port')
+    
+    # If num is provided directly (from URL pattern), use it
+    if num is not None:
+        histogram_num = num
+    else:
+        # Extract histogram number from path (e.g., 'histogram1' -> 1)
+        match = re.match(r'histogram(\d+)', path)
+        if match:
+            histogram_num = int(match.group(1))
         else:
-            # For non-HTML content, stream it as-is
-            django_response = StreamingHttpResponse(
-                streaming_content=response.iter_content(chunk_size=8192),
-                content_type=content_type,
-                status=response.status_code
-            )
-        
-            # Copy relevant headers from the upstream response
-            for header, value in response.headers.items():
-                if header.lower() not in ['content-encoding', 'transfer-encoding', 'content-length']:
-                    django_response[header] = value
-        
-            return django_response
-    
-    except requests.RequestException as e:
-        logger.error(f"Error proxying request: {str(e)}")
-        return HttpResponse(f"Error proxying request: {str(e)}", status=500)
+            # Default to 1 if no specific histogram requested
+            histogram_num = 1
 
-
-@login_required
-def new_view3(request, path=''):
-    username = request.user.username
-    logger.info(f"new_view called with path: '{path}'")
+    # Get the corresponding server instance (1-based index)
     try:
-        # Proxy the request to the service running on port 5459
-        target_url = f'http://localhost:5459/{path}'
-        logger.info(f"Proxying request to: {target_url}")
-        
-        response = requests.get(target_url, timeout=5)
-        response.raise_for_status()  # Raise an exception for bad status codes
-        
-        content_type = response.headers.get('Content-Type', '')
-        
-        # If the content is not HTML, return it as-is
-        if 'text/html' not in content_type:
-            return HttpResponse(response.content, content_type=content_type)
-        
-        # For HTML content, wrap it in our template
-        html_template = Template("""
-        {% extends 'histogram.html' %}
-        {% block content %}
-        <style>
-          
-                    
-        </style>
-       
-       <div id="proxied-content-box">
-            <div id="proxied-content">
-                {{ proxied_content|safe }}
-            </div>
-        </div>
-        {% endblock %}
-        """)
-        
-        # Render the template with the proxied content
-        context = Context({
-            'username': username,
-            'content_type': content_type,
-            'proxied_content': response.content.decode('utf-8', errors='replace')
-        })
-        rendered_html = html_template.render(context)
-        
-        # Return the wrapped content as HTML
-        return HttpResponse(rendered_html, content_type='text/html')
+        server = server_instances[histogram_num - 1]
+        BASE_URL = f'https://localhost:{server.port}'
+    except IndexError:
+        return HttpResponse(f"Histogram {histogram_num} not found", status=404)
+
+    AUTH_KEY = 'c2Vjb25kX2tleQ=='  # This should match the auth_key in ServerManager
     
-    except requests.RequestException as e:
-        if '.map' in path:  # If it's a source map file
-            logger.warning(f"Source map file not found: {path}")
-            return HttpResponse(status=404)
-        logger.error(f"Error proxying request: {str(e)}")
-        return JsonResponse({"error": "Failed to proxy request", "details": str(e)}, status=500)
+    try:
+        session = requests.Session()
+        
+        # Map of file extensions to MIME types
+        mime_types = {
+            '.css': 'text/css',
+            '.js': 'application/javascript',
+            '.png': 'image/png',
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.gif': 'image/gif',
+            '.svg': 'image/svg+xml',
+            '.ico': 'image/x-icon',
+            '.woff': 'font/woff',
+            '.woff2': 'font/woff2',
+            '.ttf': 'font/ttf',
+            '.eot': 'application/vnd.ms-fontobject'
+        }
+
+        # Get file extension if it exists
+        file_extension = os.path.splitext(path)[1].lower() if path else ''
+        is_static_file = file_extension in mime_types
+
+        # Step 1: Initial authentication request
+        auth_url = f'{BASE_URL}?key={AUTH_KEY}'
+        headers = {
+            'Host': f'localhost:{server.port}',
+            'User-Agent': 'Mozilla/5.0',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Connection': 'keep-alive',
+            'X-Forwarded-For': '127.0.0.1',
+            'X-Real-IP': '127.0.0.1'
+        }
+
+        logger.info(f"Making auth request to: {auth_url}")
+        auth_response = session.get(
+            auth_url,
+            headers=headers,
+            timeout=10,
+            verify=False,
+            allow_redirects=False
+        )
+        
+        logger.info(f"Auth response status: {auth_response.status_code}")
+        logger.info(f"Auth response headers: {dict(auth_response.headers)}")
+
+        if auth_response.status_code == 302:
+            auth_cookies = session.cookies.get_dict()
+            logger.info(f"Received cookies: {auth_cookies}")
+
+            # Step 2: Follow redirect with cookies
+            redirect_url = auth_response.headers.get('Location', '/')
+            if not redirect_url.startswith('http'):
+                redirect_url = f'{BASE_URL}{redirect_url}'
+
+            if 'csrf_token' in auth_cookies:
+                headers['X-CSRF-Token'] = auth_cookies['csrf_token']
+            
+            cookie_header = '; '.join([f"{k}={v}" for k, v in auth_cookies.items()])
+            headers['Cookie'] = cookie_header
+
+            # Make the actual content request
+            target_url = f'{BASE_URL}/{path}' if path else redirect_url
+            logger.info(f"Making content request to: {target_url}")
+            
+            response = session.get(
+                target_url,
+                headers=headers,
+                cookies=auth_cookies,
+                timeout=30,
+                verify=False,
+                stream=True
+            )
+            
+            logger.info(f"Content response status: {response.status_code}")
+            
+            if response.status_code == 200:
+                if is_static_file:
+                    return HttpResponse(
+                        response.content,
+                        content_type=mime_types[file_extension]
+                    )
+
+                content = response.text
+                # Update WebSocket URLs to use our proxy
+                content = content.replace(
+                    f'ws://{BASE_URL.replace("https://", "")}',
+                    f'ws://{request.get_host()}/histogramgeneral{histogram_num}'
+                )
+                content = content.replace(
+                    BASE_URL,
+                    f'https://{request.get_host()}/histogramgeneral{histogram_num}'
+                )
+
+                # Get all available histogram servers for the navigation
+                histogram_servers = [
+                    {'number': i+1, 'port': s.port} 
+                    for i, s in enumerate(server_instances)
+                ]
+
+                django_response = render(request, 'histogramgeneral.html', {
+                    'username': username,
+                    'proxied_content': content,
+                    'histogram_servers': histogram_servers,
+                    'current_histogram': str(histogram_num)
+                })
+
+                for name, value in auth_cookies.items():
+                    django_response.set_cookie(
+                        name,
+                        value,
+                        path='/',
+                        secure=False,
+                        httponly=True,
+                        samesite='Lax'
+                    )
+
+                return django_response
+            else:
+                raise Exception(f"Content request failed with status {response.status_code}")
+        else:
+            raise Exception(f"Authentication failed with status {auth_response.status_code}")
+
+    except Exception as e:
+        logger.exception("Proxy error")
+        error_details = {
+            "error": "Proxy error",
+            "details": str(e),
+            "path": path,
+            "auth_status": getattr(auth_response, 'status_code', None) if 'auth_response' in locals() else None,
+            "auth_headers": dict(auth_response.headers) if 'auth_response' in locals() else None,
+            "auth_cookies": session.cookies.get_dict() if 'session' in locals() else {},
+            "content_status": getattr(response, 'status_code', None) if 'response' in locals() else None
+        }
+        return JsonResponse(error_details, status=500)
 
 
-# ... rest of the file ...
+def new_view3(request, path='', num=None):
+    username = request.user.username
+    logger.info(f"new_view called with path: '{path}', num: {num}")
+
+    # Get all running histogram servers
+    server_instances = ServerInstance.objects.filter(is_running=True).order_by('port')
+    
+    # If num is provided directly (from URL pattern), use it
+    if num is not None:
+        histogram_num = num
+    else:
+        # Extract histogram number from path (e.g., 'histogram1' -> 1)
+        match = re.match(r'histogram(\d+)', path)
+        if match:
+            histogram_num = int(match.group(1))
+        else:
+            # Default to 1 if no specific histogram requested
+            histogram_num = 1
+
+    # Get the corresponding server instance (1-based index)
+    try:
+        server = server_instances[histogram_num - 1]
+        BASE_URL = f'https://localhost:{server.port}'
+    except IndexError:
+        return HttpResponse(f"Histogram {histogram_num} not found", status=404)
+
+    AUTH_KEY = 'Zmlyc3Rfa2V5'  # This should match the auth_key in ServerManager
+    
+    try:
+        session = requests.Session()
+        
+        # Map of file extensions to MIME types
+        mime_types = {
+            '.css': 'text/css',
+            '.js': 'application/javascript',
+            '.png': 'image/png',
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.gif': 'image/gif',
+            '.svg': 'image/svg+xml',
+            '.ico': 'image/x-icon',
+            '.woff': 'font/woff',
+            '.woff2': 'font/woff2',
+            '.ttf': 'font/ttf',
+            '.eot': 'application/vnd.ms-fontobject'
+        }
+
+        # Get file extension if it exists
+        file_extension = os.path.splitext(path)[1].lower() if path else ''
+        is_static_file = file_extension in mime_types
+
+        # Step 1: Initial authentication request
+        auth_url = f'{BASE_URL}?key={AUTH_KEY}'
+        headers = {
+            'Host': f'localhost:{server.port}',
+            'User-Agent': 'Mozilla/5.0',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Connection': 'keep-alive',
+            'X-Forwarded-For': '127.0.0.1',
+            'X-Real-IP': '127.0.0.1'
+        }
+
+        logger.info(f"Making auth request to: {auth_url}")
+        auth_response = session.get(
+            auth_url,
+            headers=headers,
+            timeout=10,
+            verify=False,
+            allow_redirects=False
+        )
+        
+        logger.info(f"Auth response status: {auth_response.status_code}")
+        logger.info(f"Auth response headers: {dict(auth_response.headers)}")
+
+        if auth_response.status_code == 302:
+            auth_cookies = session.cookies.get_dict()
+            logger.info(f"Received cookies: {auth_cookies}")
+
+            # Step 2: Follow redirect with cookies
+            redirect_url = auth_response.headers.get('Location', '/')
+            if not redirect_url.startswith('http'):
+                redirect_url = f'{BASE_URL}{redirect_url}'
+
+            if 'csrf_token' in auth_cookies:
+                headers['X-CSRF-Token'] = auth_cookies['csrf_token']
+            
+            cookie_header = '; '.join([f"{k}={v}" for k, v in auth_cookies.items()])
+            headers['Cookie'] = cookie_header
+
+            # Make the actual content request
+            target_url = f'{BASE_URL}/{path}' if path else redirect_url
+            logger.info(f"Making content request to: {target_url}")
+            
+            response = session.get(
+                target_url,
+                headers=headers,
+                cookies=auth_cookies,
+                timeout=30,
+                verify=False,
+                stream=True
+            )
+            
+            logger.info(f"Content response status: {response.status_code}")
+            
+            if response.status_code == 200:
+                if is_static_file:
+                    return HttpResponse(
+                        response.content,
+                        content_type=mime_types[file_extension]
+                    )
+
+                content = response.text
+                # Update WebSocket URLs to use our proxy
+                content = content.replace(
+                    f'ws://{BASE_URL.replace("https://", "")}',
+                    f'ws://{request.get_host()}/oodanalyzer{histogram_num}'
+                )
+                content = content.replace(
+                    BASE_URL,
+                    f'https://{request.get_host()}/oodanalyzer{histogram_num}'
+                )
+
+                # Get all available histogram servers for the navigation
+                histogram_servers = [
+                    {'number': i+1, 'port': s.port} 
+                    for i, s in enumerate(server_instances)
+                ]
+
+                django_response = render(request, 'oodanalyzer.html', {
+                    'username': username,
+                    'proxied_content': content,
+                    'histogram_servers': histogram_servers,
+                    'current_histogram': str(histogram_num)
+                })
+
+                for name, value in auth_cookies.items():
+                    django_response.set_cookie(
+                        name,
+                        value,
+                        path='/',
+                        secure=False,
+                        httponly=True,
+                        samesite='Lax'
+                    )
+
+                return django_response
+            else:
+                raise Exception(f"Content request failed with status {response.status_code}")
+        else:
+            raise Exception(f"Authentication failed with status {auth_response.status_code}")
+
+    except Exception as e:
+        logger.exception("Proxy error")
+        error_details = {
+            "error": "Proxy error",
+            "details": str(e),
+            "path": path,
+            "auth_status": getattr(auth_response, 'status_code', None) if 'auth_response' in locals() else None,
+            "auth_headers": dict(auth_response.headers) if 'auth_response' in locals() else None,
+            "auth_cookies": session.cookies.get_dict() if 'session' in locals() else {},
+            "content_status": getattr(response, 'status_code', None) if 'response' in locals() else None
+        }
+        return JsonResponse(error_details, status=500)
+
+
 
 
 

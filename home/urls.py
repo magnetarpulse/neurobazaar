@@ -22,8 +22,16 @@ urlpatterns = [
     path('api/servers/<str:server_type>/stop/<int:port>', views.stop_server, name='stop_server'),
     path('api/servers/status/', views.get_server_status, name='server_status'),
     
-    path('new/', views.new_view, name='new_view'),
-    re_path(r'^new/(?P<path>.*)$', views.new_view, name='new_proxy'),
+    # Basic histogram routes
+    path('histogram<int:num>/', views.new_view, name='histogram'),
+    re_path(r'^histogram\d+/(?P<path>.*)$', views.new_view, name='histogram_proxy'),
+    path('histogram/', views.new_view, name='default_histogram'),
+    
+    # General histogram routes
+    path('histogramgeneral<int:num>/', views.new_view2, name='histogram_general'),
+    re_path(r'^histogramgeneral\d+/(?P<path>.*)$', views.new_view2, name='histogram_general_proxy'),
+    path('histogramgeneral/', views.new_view2, name='default_histogram_general'),
+    
     path('new2/', views.new_view2, name='new_view2'),
     re_path(r'^new2/(?P<path>.*)$', views.new_view2, name='new_proxy2'),
     path('dashboard/', views.dashboard, name='dashboard'),

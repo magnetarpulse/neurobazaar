@@ -270,13 +270,15 @@
             .then(response => response.json())
             .then(data => {
                 let totalServers = 0;
+                let histogramCount = 0;  // Counter for histogram servers
                 
                 // Update basic servers
                 const basicList = document.getElementById('basic-server-list');
                 basicList.innerHTML = '';
                 data.basic.forEach(server => {
                     totalServers++;
-                    basicList.innerHTML += createServerItem(server, 'basic');
+                    histogramCount++;  // Increment histogram counter
+                    basicList.innerHTML += createServerItem(server, 'basic', histogramCount);
                 });
 
                 // Update general servers
@@ -284,7 +286,8 @@
                 generalList.innerHTML = '';
                 data.general.forEach(server => {
                     totalServers++;
-                    generalList.innerHTML += createServerItem(server, 'general');
+                    histogramCount++;  // Increment histogram counter
+                    generalList.innerHTML += createServerItem(server, 'general', histogramCount);
                 });
 
                 // Update analyzer servers
@@ -292,7 +295,7 @@
                 analyzerList.innerHTML = '';
                 data.analyzer.forEach(server => {
                     totalServers++;
-                    analyzerList.innerHTML += createServerItem(server, 'analyzer');
+                    analyzerList.innerHTML += createServerItem(server, 'analyzer', null);
                 });
 
                 // Update active servers count
@@ -301,8 +304,26 @@
             .catch(error => console.error('Error:', error));
     }
 
-    function createServerItem(server, type) {
-        const serverUrl = `http://${server.ip}:${server.port}`;
+    function createServerItem(server, type, histogramNumber) {
+        // For basic/general type servers, use the histogram URL format
+        const isBasicHistogram = type === 'basic';
+        const isGeneralHistogram = type === 'general';
+        const isHistogramServer = isBasicHistogram || isGeneralHistogram;
+        
+        // Use appropriate URL format based on server type
+        const serverUrl = isHistogramServer 
+            ? isBasicHistogram 
+                ? `/histogram${histogramNumber}`
+                : `/histogramgeneral${histogramNumber}`
+            : `http://${server.ip}:${server.port}`;
+        
+        // Display URL for the link
+        const displayUrl = isHistogramServer 
+            ? isBasicHistogram
+                ? `localhost:8000/histogram${histogramNumber}`
+                : `localhost:8000/histogramgeneral${histogramNumber}`
+            : `${server.ip}:${server.port}`;
+
         return `
             <div class="server-item">
                 <div class="server-info">
@@ -315,7 +336,7 @@
                     </span>
                             ${server.status === 'Running' ? `
                                 <a href="${serverUrl}" target="_blank" class="text-decoration-none">
-                                    <small class="text-primary"><i class="fas fa-external-link-alt me-1"></i>${serverUrl}</small>
+                                    <small class="text-primary"><i class="fas fa-external-link-alt me-1"></i>${displayUrl}</small>
                                 </a>
                             ` : ''}
                         </div>

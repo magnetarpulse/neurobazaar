@@ -14,10 +14,17 @@ from home.wildcard import MultiPortWebSocketProxy
 django_asgi_app = get_asgi_application()
 
 websocket_urlpatterns = [
-    re_path(r"^ws/(?P<port>\d+)/?$", MultiPortWebSocketProxy.as_asgi()),  # Generic WebSocket route for any port
-    re_path(r"^new/ws/?$", MultiPortWebSocketProxy.as_asgi(), {'route': 'new'}),
-    re_path(r"^new2/ws/?$", MultiPortWebSocketProxy.as_asgi(), {'route': 'new2'}),
-    re_path(r"^new3/ws/?$", MultiPortWebSocketProxy.as_asgi(), {'route': 'new3'})
+    # Basic histogram WebSocket routes
+    re_path(r"^histogram\d+/ws/?$", MultiPortWebSocketProxy.as_asgi()),
+    
+    # General histogram WebSocket routes
+    re_path(r"^histogramgeneral\d+/ws/?$", MultiPortWebSocketProxy.as_asgi()),
+    
+    # OoD analyzer WebSocket routes
+    re_path(r"^oodanalyzer\d+/ws/?$", MultiPortWebSocketProxy.as_asgi()),
+    
+    # Generic WebSocket routes
+    re_path(r"^ws/(?P<port>\d+)/?$", MultiPortWebSocketProxy.as_asgi()),
 ]
 
 application = ProtocolTypeRouter({

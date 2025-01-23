@@ -836,32 +836,64 @@ def start_server(request, server_type):
         return JsonResponse({'error': 'Server manager not initialized'}, status=500)
     
     try:
-        if server_type == 'basic':
-            manager.start_new_basic_server()
-        elif server_type == 'general':
-            manager.start_new_general_server()
-        elif server_type == 'ood':
-            manager.start_new_ood_server()
-        else:
+        # Map server_type to route prefix and normalized type
+        type_mapping = {
+            'basic': {'route_prefix': 'histogram', 'server_type': 'basic'},
+            'general': {'route_prefix': 'histogramgeneral', 'server_type': 'general'},
+            'ood': {'route_prefix': 'analyzer', 'server_type': 'analyzer'},
+            'analyzer': {'route_prefix': 'analyzer', 'server_type': 'analyzer'}
+        }
+        
+        if server_type not in type_mapping:
             return JsonResponse({'error': 'Invalid server type'}, status=400)
+            
+        mapped_type = type_mapping[server_type]
+        normalized_type = mapped_type['server_type']
+        route_prefix = mapped_type['route_prefix']
+            
+        # Start the appropriate server
+        if normalized_type == 'basic':
+            manager.start_new_basic_server()
+        elif normalized_type == 'general':
+            manager.start_new_general_server()
+        elif normalized_type == 'analyzer':
+            manager.start_new_ood_server()
+        
+        # Get the port that was just used
+        port = manager.next_port - 1
         
         # Save server instance to database
         server_instance = ServerInstance.objects.create(
-            server_type=server_type,
-            port=manager.next_port - 1,  # The port that was just used
+            server_type=normalized_type,
+            port=port,
             ip='localhost',
-            is_running=True
+            is_running=True,
+            started_at=timezone.now()
         )
         
-        # Create corresponding UpstreamServer entry with correct route
-        UpstreamServer.objects.update_or_create(
+        # Find the next available number for this route type
+        existing_count = UpstreamServer.objects.filter(
+            route__startswith=route_prefix
+        ).count()
+        
+        route = f"{route_prefix}{existing_count + 1}"
+        display_name = f"{normalized_type.title()} Server {existing_count + 1}"
+        
+        upstream_server = UpstreamServer.objects.create(
             ip=server_instance.ip,
             port=server_instance.port,
-            defaults={'route': server_type}  # Use server_type as the route
+            route=route,
+            display_name=display_name
         )
         
-        return JsonResponse({'status': 'success', 'port': server_instance.port})
+        return JsonResponse({
+            'status': 'success',
+            'port': port,
+            'route': route,
+            'display_name': display_name
+        })
     except Exception as e:
+        logger.error(f"Error starting {server_type} server: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
 
 @login_required
@@ -873,17 +905,29 @@ def stop_server(request, server_type, port):
         return JsonResponse({'error': 'Server manager not initialized'}, status=500)
     
     try:
-        if server_type == 'basic':
-            manager.stop_basic_server(port)
-        elif server_type == 'general':
-            manager.stop_general_server(port)
-        elif server_type == 'ood':
-            manager.stop_ood_server(port)
-        else:
+        # Map server_type to normalized type
+        type_mapping = {
+            'basic': 'basic',
+            'general': 'general',
+            'ood': 'analyzer',
+            'analyzer': 'analyzer'
+        }
+        
+        if server_type not in type_mapping:
             return JsonResponse({'error': 'Invalid server type'}, status=400)
         
+        normalized_type = type_mapping[server_type]
+        
+        # Stop the appropriate server
+        if normalized_type == 'basic':
+            manager.stop_basic_server(port)
+        elif normalized_type == 'general':
+            manager.stop_general_server(port)
+        elif normalized_type == 'analyzer':
+            manager.stop_ood_server(port)
+        
         # Get the server instance before deleting it to get its IP
-        server_instance = ServerInstance.objects.get(port=port, server_type=server_type)
+        server_instance = ServerInstance.objects.get(port=port, server_type=normalized_type)
         
         # Delete the corresponding UpstreamServer entry
         UpstreamServer.objects.filter(ip=server_instance.ip, port=port).delete()
@@ -893,35 +937,66 @@ def stop_server(request, server_type, port):
         
         return JsonResponse({'status': 'success'})
     except Exception as e:
+        logger.error(f"Error stopping {server_type} server: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
 
 @login_required
 def get_server_status(request):
-    manager = server_manager_proxy.get_manager()
-    if manager is None:
-        return JsonResponse({'error': 'Server manager not initialized'}, status=500)
-    
     try:
-        # Get status from database
+        # Get all running server instances
         server_instances = ServerInstance.objects.filter(is_running=True)
         
+        # Initialize status dictionary with empty lists for each server type
         status = {
             'basic': [],
             'general': [],
-            'ood': []
+            'ood': []  # Changed from 'analyzer' to 'ood' for frontend display
         }
         
+        # Map server types to display types
+        type_mapping = {
+            'basic': 'basic',
+            'general': 'general',
+            'analyzer': 'ood'  # Map 'analyzer' to 'ood' for frontend
+        }
+        
+        # Get corresponding UpstreamServer entries for each server instance
         for instance in server_instances:
-            status[instance.server_type].append({
-                'port': instance.port,
-                'ip': instance.ip,
-                'status': 'Running' if instance.is_running else 'Stopped',
-                'started_at': instance.started_at.isoformat()
-            })
-            
+            try:
+                upstream = UpstreamServer.objects.get(ip=instance.ip, port=instance.port)
+                display_type = type_mapping.get(instance.server_type, instance.server_type)
+                
+                status[display_type].append({
+                    'port': instance.port,
+                    'ip': instance.ip,
+                    'status': 'Running',
+                    'started_at': instance.started_at.isoformat() if instance.started_at else None,
+                    'route': upstream.route,
+                    'display_name': upstream.display_name
+                })
+            except UpstreamServer.DoesNotExist:
+                # If no upstream server entry exists, still include the server instance
+                display_type = type_mapping.get(instance.server_type, instance.server_type)
+                status[display_type].append({
+                    'port': instance.port,
+                    'ip': instance.ip,
+                    'status': 'Running',
+                    'started_at': instance.started_at.isoformat() if instance.started_at else None,
+                    'route': None,
+                    'display_name': f"{instance.server_type.title()} Server"
+                })
+        
         return JsonResponse(status)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        logger.error(f"Error in get_server_status: {str(e)}")
+        return JsonResponse({
+            'error': str(e),
+            'status': {
+                'basic': [],
+                'general': [],
+                'ood': []  # Changed from 'analyzer' to 'ood'
+            }
+        }, status=500)
 
 
 # ... rest of the file ...
@@ -938,28 +1013,24 @@ def new_view(request, path='', num=None):
     logger.info(f"new_view called with path: '{path}', num: {num}")
 
     # Get all running histogram servers
-    server_instances = ServerInstance.objects.filter(is_running=True).order_by('port')
+    server_instances = ServerInstance.objects.filter(server_type='basic', is_running=True).order_by('port')
     
     # If num is provided directly (from URL pattern), use it
     if num is not None:
         histogram_num = num
     else:
-        # Extract histogram number from path (e.g., 'histogram1' -> 1)
-        match = re.match(r'histogram(\d+)', path)
-        if match:
-            histogram_num = int(match.group(1))
-        else:
-            # Default to 1 if no specific histogram requested
-            histogram_num = 1
+        # Extract histogram number from path
+        match = re.search(r'histogram(\d+)', path)
+        histogram_num = int(match.group(1)) if match else 1
 
     # Get the corresponding server instance (1-based index)
     try:
-        server = server_instances[histogram_num - 1]
+        server = server_instances[0]  # Always use first server for this type
         BASE_URL = f'https://localhost:{server.port}'
     except IndexError:
-        return HttpResponse(f"Histogram {histogram_num} not found", status=404)
+        return HttpResponse(f"Basic Histogram server not found", status=404)
 
-    AUTH_KEY = 'Zmlyc3Rfa2V5'  # This should match the auth_key in ServerManager
+    AUTH_KEY = 'Zmlyc3Rfa2V5'  # First key for basic histogram
     
     try:
         session = requests.Session()
@@ -1110,31 +1181,27 @@ import re
 
 def new_view2(request, path='', num=None):
     username = request.user.username
-    logger.info(f"new_view called with path: '{path}', num: {num}")
+    logger.info(f"new_view2 called with path: '{path}', num: {num}")
 
-    # Get all running histogram servers
-    server_instances = ServerInstance.objects.filter(is_running=True).order_by('port')
+    # Get all running general histogram servers
+    server_instances = ServerInstance.objects.filter(server_type='general', is_running=True).order_by('port')
     
     # If num is provided directly (from URL pattern), use it
     if num is not None:
         histogram_num = num
     else:
-        # Extract histogram number from path (e.g., 'histogram1' -> 1)
-        match = re.match(r'histogram(\d+)', path)
-        if match:
-            histogram_num = int(match.group(1))
-        else:
-            # Default to 1 if no specific histogram requested
-            histogram_num = 1
+        # Extract histogram number from path
+        match = re.search(r'histogramgeneral(\d+)', path)
+        histogram_num = int(match.group(1)) if match else 1
 
     # Get the corresponding server instance (1-based index)
     try:
-        server = server_instances[histogram_num - 1]
+        server = server_instances[0]  # Always use first server for this type
         BASE_URL = f'https://localhost:{server.port}'
     except IndexError:
-        return HttpResponse(f"Histogram {histogram_num} not found", status=404)
+        return HttpResponse(f"General Histogram server not found", status=404)
 
-    AUTH_KEY = 'c2Vjb25kX2tleQ=='  # This should match the auth_key in ServerManager
+    AUTH_KEY = 'c2Vjb25kX2tleQ=='  # Second key for general histogram
     
     try:
         session = requests.Session()
@@ -1276,31 +1343,28 @@ def new_view2(request, path='', num=None):
 
 def new_view3(request, path='', num=None):
     username = request.user.username
-    logger.info(f"new_view called with path: '{path}', num: {num}")
+    logger.info(f"new_view3 called with path: '{path}', num: {num}")
 
-    # Get all running histogram servers
-    server_instances = ServerInstance.objects.filter(is_running=True).order_by('port')
+    # Get all running analyzer servers
+    server_instances = ServerInstance.objects.filter(server_type='analyzer', is_running=True).order_by('port')
     
     # If num is provided directly (from URL pattern), use it
     if num is not None:
-        histogram_num = num
+        analyzer_num = num
     else:
-        # Extract histogram number from path (e.g., 'histogram1' -> 1)
-        match = re.match(r'histogram(\d+)', path)
-        if match:
-            histogram_num = int(match.group(1))
-        else:
-            # Default to 1 if no specific histogram requested
-            histogram_num = 1
+        # Extract analyzer number from path
+        match = re.search(r'oodanalyzer(\d+)', path)
+        analyzer_num = int(match.group(1)) if match else 1
 
     # Get the corresponding server instance (1-based index)
     try:
-        server = server_instances[histogram_num - 1]
+        server = server_instances[0]  # Always use first server for this type
         BASE_URL = f'https://localhost:{server.port}'
     except IndexError:
-        return HttpResponse(f"Histogram {histogram_num} not found", status=404)
+        return HttpResponse(f"OOD Analyzer server not found", status=404)
 
-    AUTH_KEY = 'a2V5'  # This should match the auth_key in ServerManager
+    AUTH_KEY = 'a2V5'  # Third key for analyzer
+    SESSION_PREFIX = 'analyzer_'  # Unique prefix for analyzer sessions
     
     try:
         session = requests.Session()
@@ -1325,7 +1389,7 @@ def new_view3(request, path='', num=None):
         file_extension = os.path.splitext(path)[1].lower() if path else ''
         is_static_file = file_extension in mime_types
 
-        # Step 1: Initial authentication request
+        # Step 1: Initial authentication request with unique analyzer headers
         auth_url = f'{BASE_URL}?key={AUTH_KEY}'
         headers = {
             'Host': f'localhost:{server.port}',
@@ -1334,10 +1398,11 @@ def new_view3(request, path='', num=None):
             'Accept-Language': 'en-US,en;q=0.5',
             'Connection': 'keep-alive',
             'X-Forwarded-For': '127.0.0.1',
-            'X-Real-IP': '127.0.0.1'
+            'X-Real-IP': '127.0.0.1',
+            'X-Analyzer-Request': 'true'  # Unique header for analyzer requests
         }
 
-        logger.info(f"Making auth request to: {auth_url}")
+        logger.info(f"Making analyzer auth request to: {auth_url}")
         auth_response = session.get(
             auth_url,
             headers=headers,
@@ -1346,12 +1411,12 @@ def new_view3(request, path='', num=None):
             allow_redirects=False
         )
         
-        logger.info(f"Auth response status: {auth_response.status_code}")
-        logger.info(f"Auth response headers: {dict(auth_response.headers)}")
+        logger.info(f"Analyzer auth response status: {auth_response.status_code}")
+        logger.info(f"Analyzer auth response headers: {dict(auth_response.headers)}")
 
         if auth_response.status_code == 302:
             auth_cookies = session.cookies.get_dict()
-            logger.info(f"Received cookies: {auth_cookies}")
+            logger.info(f"Received analyzer cookies: {auth_cookies}")
 
             # Step 2: Follow redirect with cookies
             redirect_url = auth_response.headers.get('Location', '/')
@@ -1361,12 +1426,14 @@ def new_view3(request, path='', num=None):
             if 'csrf_token' in auth_cookies:
                 headers['X-CSRF-Token'] = auth_cookies['csrf_token']
             
-            cookie_header = '; '.join([f"{k}={v}" for k, v in auth_cookies.items()])
+            # Add session prefix to cookies to avoid conflicts
+            prefixed_cookies = {f"{SESSION_PREFIX}{k}": v for k, v in auth_cookies.items()}
+            cookie_header = '; '.join([f"{k}={v}" for k, v in prefixed_cookies.items()])
             headers['Cookie'] = cookie_header
 
             # Make the actual content request
             target_url = f'{BASE_URL}/{path}' if path else redirect_url
-            logger.info(f"Making content request to: {target_url}")
+            logger.info(f"Making analyzer content request to: {target_url}")
             
             response = session.get(
                 target_url,
@@ -1377,7 +1444,7 @@ def new_view3(request, path='', num=None):
                 stream=True
             )
             
-            logger.info(f"Content response status: {response.status_code}")
+            logger.info(f"Analyzer content response status: {response.status_code}")
             
             if response.status_code == 200:
                 if is_static_file:
@@ -1387,18 +1454,18 @@ def new_view3(request, path='', num=None):
                     )
 
                 content = response.text
-                # Update WebSocket URLs to use our proxy
+                # Update WebSocket URLs to use our proxy with unique analyzer path
                 content = content.replace(
                     f'ws://{BASE_URL.replace("https://", "")}',
-                    f'ws://{request.get_host()}/oodanalyzer{histogram_num}'
+                    f'ws://{request.get_host()}/oodanalyzer{analyzer_num}'
                 )
                 content = content.replace(
                     BASE_URL,
-                    f'https://{request.get_host()}/oodanalyzer{histogram_num}'
+                    f'https://{request.get_host()}/oodanalyzer{analyzer_num}'
                 )
 
-                # Get all available histogram servers for the navigation
-                histogram_servers = [
+                # Get all available analyzer servers for the navigation
+                analyzer_servers = [
                     {'number': i+1, 'port': s.port} 
                     for i, s in enumerate(server_instances)
                 ]
@@ -1406,15 +1473,16 @@ def new_view3(request, path='', num=None):
                 django_response = render(request, 'oodanalyzer.html', {
                     'username': username,
                     'proxied_content': content,
-                    'histogram_servers': histogram_servers,
-                    'current_histogram': str(histogram_num)
+                    'analyzer_servers': analyzer_servers,
+                    'current_analyzer': str(analyzer_num)
                 })
 
+                # Set cookies with unique analyzer prefix
                 for name, value in auth_cookies.items():
                     django_response.set_cookie(
-                        name,
+                        f"{SESSION_PREFIX}{name}",
                         value,
-                        path='/',
+                        path='/oodanalyzer',  # Scope cookies to analyzer paths only
                         secure=False,
                         httponly=True,
                         samesite='Lax'
@@ -1422,14 +1490,14 @@ def new_view3(request, path='', num=None):
 
                 return django_response
             else:
-                raise Exception(f"Content request failed with status {response.status_code}")
+                raise Exception(f"Analyzer content request failed with status {response.status_code}")
         else:
-            raise Exception(f"Authentication failed with status {auth_response.status_code}")
+            raise Exception(f"Analyzer authentication failed with status {auth_response.status_code}")
 
     except Exception as e:
-        logger.exception("Proxy error")
+        logger.exception("Analyzer proxy error")
         error_details = {
-            "error": "Proxy error",
+            "error": "Analyzer proxy error",
             "details": str(e),
             "path": path,
             "auth_status": getattr(auth_response, 'status_code', None) if 'auth_response' in locals() else None,

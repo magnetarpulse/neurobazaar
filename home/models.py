@@ -49,6 +49,15 @@ class Collections(models.Model):
 
 class UpstreamServer(models.Model):
     ROUTE_CHOICES = [
+        ('histogram1', 'Histogram 1'),
+        ('histogram2', 'Histogram 2'),
+        ('histogram3', 'Histogram 3'),
+        ('histogramgeneral1', 'General Histogram 1'),
+        ('histogramgeneral2', 'General Histogram 2'),
+        ('histogramgeneral3', 'General Histogram 3'),
+        ('analyzer1', 'Analyzer 1'),
+        ('analyzer2', 'Analyzer 2'),
+        ('analyzer3', 'Analyzer 3'),
         ('basic', 'Basic Histogram'),
         ('general', 'General Histogram'),
         ('ood', 'OOD Analyzer')
@@ -56,7 +65,7 @@ class UpstreamServer(models.Model):
     
     ip = models.CharField(max_length=255)
     port = models.IntegerField()
-    route = models.CharField(max_length=50, choices=ROUTE_CHOICES)
+    route = models.CharField(max_length=50, choices=ROUTE_CHOICES, help_text="Select the route for this server")
     display_name = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
 
@@ -64,9 +73,12 @@ class UpstreamServer(models.Model):
         unique_together = ('ip', 'port')
         verbose_name = 'Upstream Server'
         verbose_name_plural = 'Upstream Servers'
+        indexes = [
+            models.Index(fields=['route']),
+        ]
 
     def __str__(self):
-        return f"{self.display_name} ({self.ip}:{self.port})"
+        return f"{self.display_name} ({self.ip}:{self.port}) - {self.route}"
 
 class ServerInstance(models.Model):
     SERVER_TYPE_CHOICES = [

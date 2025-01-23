@@ -8,6 +8,7 @@ from django.apps import apps
 from asgiref.sync import sync_to_async
 from home.models import UpstreamServer, ServerInstance
 from urllib.parse import parse_qs
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -16,37 +17,70 @@ class MultiPortWebSocketProxy(AsyncWebsocketConsumer):
         await self.accept()
         self.upstream_connections = {}
         
-        # Extract section type from the URL path
+        # Extract route from the URL path
         path = self.scope['path']
-        self.section_type = None
-        if 'histogram' in path and 'general' not in path:
-            self.section_type = 'basic'
-        elif 'histogramgeneral' in path:
-            self.section_type = 'general'
-        elif 'oodanalyzer' in path:
-            self.section_type = 'ood'
+        
+        # Try to match new format (histogram1, analyzer1, histogramgeneral2, etc.)
+        route_match = re.search(r'(histogram|histogramgeneral|analyzer)\d+', path)
+        if route_match:
+            self.section_type = route_match.group(0)  # This will get 'histogram1', 'histogramgeneral2', etc.
+        else:
+            # Try to match old format (basic, general, ood)
+            if 'histogram' in path and 'general' not in path:
+                self.section_type = 'basic'
+            elif 'histogramgeneral' in path:
+                self.section_type = 'general'
+            elif 'oodanalyzer' in path:
+                self.section_type = 'ood'
+            else:
+                self.section_type = None
+        
+        logger.info(f"Connecting to section type: {self.section_type}")
             
         # Get cookies from query string
         query_string = self.scope['query_string'].decode()
         cookies = parse_qs(query_string).get('cookies', [None])[0]
         
         if cookies:
-            # Parse the cookies string and extract the ones for this section
-            cookie_dict = {}
+            # Parse the cookies string and organize by server type
+            self.cookies = {}
             for cookie in cookies.split(';'):
                 if '=' in cookie:
                     name, value = cookie.strip().split('=', 1)
-                    # Only use cookies for the current section
-                    if self.section_type == 'basic' and name.startswith('basic_'):
-                        cookie_dict[name[6:]] = value  # Remove 'basic_' prefix
-                    elif self.section_type == 'general' and name.startswith('general_'):
-                        cookie_dict[name[8:]] = value  # Remove 'general_' prefix
-                    elif self.section_type == 'ood' and name.startswith('ood_'):
-                        cookie_dict[name[4:]] = value  # Remove 'ood_' prefix
-            
-            self.cookies = cookie_dict
+                    # First try to match the exact route prefix
+                    route_specific_match = False
+                    for route_prefix in ['histogram', 'histogramgeneral', 'analyzer']:
+                        if name.startswith(f"{self.section_type}_"):
+                            if self.section_type not in self.cookies:
+                                self.cookies[self.section_type] = {}
+                            cookie_name = name[len(self.section_type) + 1:]  # +1 for the underscore
+                            self.cookies[self.section_type][cookie_name] = value
+                            route_specific_match = True
+                            break
+                    
+                    # If no route-specific match, try the old format prefixes
+                    if not route_specific_match:
+                        if name.startswith('basic_') and (self.section_type == 'basic' or 'histogram' in self.section_type):
+                            if self.section_type not in self.cookies:
+                                self.cookies[self.section_type] = {}
+                            self.cookies[self.section_type][name[6:]] = value
+                        elif name.startswith('general_') and (self.section_type == 'general' or 'histogramgeneral' in self.section_type):
+                            if self.section_type not in self.cookies:
+                                self.cookies[self.section_type] = {}
+                            self.cookies[self.section_type][name[8:]] = value
+                        elif name.startswith('ood_') and (self.section_type == 'ood' or 'analyzer' in self.section_type):
+                            if self.section_type not in self.cookies:
+                                self.cookies[self.section_type] = {}
+                            self.cookies[self.section_type][name[4:]] = value
+                        else:
+                            # Store the cookie as is if it doesn't match any prefix
+                            if self.section_type not in self.cookies:
+                                self.cookies[self.section_type] = {}
+                            self.cookies[self.section_type][name] = value
         else:
             self.cookies = {}
+            
+        logger.info(f"Processed cookies for section {self.section_type}: {self.cookies}")
 
         # Get the port from URL if provided
         port = self.scope['url_route']['kwargs'].get('port')
@@ -55,12 +89,19 @@ class MultiPortWebSocketProxy(AsyncWebsocketConsumer):
             # Direct port connection
             server_instance = await self.get_server_instance(port)
             if server_instance:
-                await self.connect_to_upstream(server_instance.ip, server_instance.port)
+                await self.connect_to_upstream(server_instance.ip, server_instance.port, server_instance.server_type)
         else:
-            # Route-based connection
-            upstream_servers = await self.get_upstream_servers(self.section_type)
-            for server in upstream_servers:
-                await self.connect_to_upstream(server.ip, server.port)
+            # Route-based connection using the exact route from the URL
+            if self.section_type:
+                logger.info(f"Looking for upstream servers with route: {self.section_type}")
+                upstream_servers = await self.get_upstream_servers(self.section_type)
+                if not upstream_servers:
+                    logger.error(f"No upstream servers found for route: {self.section_type}")
+                for server in upstream_servers:
+                    logger.info(f"Connecting to upstream server: {server.ip}:{server.port} for route {server.route}")
+                    await self.connect_to_upstream(server.ip, server.port, server.route)
+            else:
+                logger.error(f"No valid route found in URL path: {path}")
 
     @sync_to_async
     def get_server_instance(self, port):
@@ -74,7 +115,7 @@ class MultiPortWebSocketProxy(AsyncWebsocketConsumer):
     def get_upstream_servers(self, route):
         return list(UpstreamServer.objects.filter(route=route))
 
-    async def connect_to_upstream(self, ip, port):
+    async def connect_to_upstream(self, ip, port, server_type):
         try:
             ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
             ssl_context.check_hostname = False
@@ -87,12 +128,13 @@ class MultiPortWebSocketProxy(AsyncWebsocketConsumer):
                 'close_timeout': 5,
             }
             
-            # Add headers only if cookies exist
-            if self.cookies:
-                cookie_str = '; '.join([f"{k}={v}" for k, v in self.cookies.items()])
+            # Add headers only if cookies exist for this server type
+            if self.cookies and server_type in self.cookies:
+                cookie_str = '; '.join([f"{k}={v}" for k, v in self.cookies[server_type].items()])
                 connect_kwargs['header'] = [
                     ('Cookie', cookie_str)
                 ]
+                logger.info(f"Using cookies for {server_type}: {cookie_str}")
             
             ws = await websockets.connect(
                 f'wss://{ip}:{port}/ws',

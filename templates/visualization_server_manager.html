@@ -98,8 +98,6 @@
                     </div>
                 </div>
             </div>
-
-           
         </div>
     </div>
 </section>
@@ -270,16 +268,13 @@
             .then(response => response.json())
             .then(data => {
                 let totalServers = 0;
-                let histogramCount = 0;  // Counter for histogram servers
-                let oodCount = 0;  // Counter for OOD servers
                 
                 // Update basic servers
                 const basicList = document.getElementById('basic-server-list');
                 basicList.innerHTML = '';
                 data.basic.forEach(server => {
                     totalServers++;
-                    histogramCount++;  // Increment histogram counter
-                    basicList.innerHTML += createServerItem(server, 'basic', histogramCount);
+                    basicList.innerHTML += createServerItem(server, 'basic', extractNumber(server.route));
                 });
 
                 // Update general servers
@@ -287,8 +282,7 @@
                 generalList.innerHTML = '';
                 data.general.forEach(server => {
                     totalServers++;
-                    histogramCount++;  // Increment histogram counter
-                    generalList.innerHTML += createServerItem(server, 'general', histogramCount);
+                    generalList.innerHTML += createServerItem(server, 'general', extractNumber(server.route));
                 });
 
                 // Update OOD servers
@@ -296,14 +290,19 @@
                 oodList.innerHTML = '';
                 data.ood.forEach(server => {
                     totalServers++;
-                    oodCount++;  // Increment OOD counter
-                    oodList.innerHTML += createServerItem(server, 'ood', oodCount);
+                    oodList.innerHTML += createServerItem(server, 'ood', extractNumber(server.route));
                 });
 
                 // Update active servers count
                 document.getElementById('active-servers').textContent = totalServers;
             })
             .catch(error => console.error('Error:', error));
+    }
+
+    function extractNumber(route) {
+        if (!route) return 1;
+        const match = route.match(/\d+$/);
+        return match ? parseInt(match[0]) : 1;
     }
 
     function createServerItem(server, type, number) {
@@ -334,8 +333,8 @@
                         <div class="d-flex align-items-center">
                             <span class="me-2">${server.ip}:${server.port}</span>
                             <span class="badge ${server.status === 'Running' ? 'bg-success' : 'bg-danger'} me-2">
-                        ${server.status}
-                    </span>
+                                ${server.status}
+                            </span>
                             ${server.status === 'Running' ? `
                                 <a href="${serverUrl}" target="_blank" class="text-decoration-none">
                                     <small class="text-primary"><i class="fas fa-external-link-alt me-1"></i>${displayUrl}</small>
@@ -348,7 +347,7 @@
                 <div class="server-actions">
                     <button class="btn btn-danger btn-sm" onclick="stopServer('${type}', ${server.port})">
                         <i class="fas fa-stop me-1"></i>Stop
-                        </button>
+                    </button>
                 </div>
             </div>
         `;

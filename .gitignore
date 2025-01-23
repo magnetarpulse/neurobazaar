@@ -1,4 +1,6 @@
 .venv
+.ssl/
+.ssl/*
 .ssl
 **/__pycache__/
 db.sqlite3

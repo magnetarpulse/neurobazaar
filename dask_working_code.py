@@ -364,16 +364,19 @@ class BaseOoDHistogram:
                 final_dicom_images = {}
                 max_slices = {}
                 log_loss_values = {}
+                list_all =[]
 
                 for item in mappings:
                     nodule_id = item[0]  # Nodule ID
                     dicom = f"http://{SERVER_IP}:{PORT}{settings.MEDIA_URL}dicom_images/{item[3]}.png"
                     img = f"http://{SERVER_IP}:{PORT}{settings.MEDIA_URL}lidc_pixConvImg/{nodule_id}.png"
 
-                    final_dicom_images[nodule_id] = dicom
-                    max_slices[nodule_id] = img
+                    final_dicom_images[str(nodule_id)] = dicom
+                    max_slices[str(nodule_id)] = img
                     #log_loss_values.append(float(item[4]))  # Ensure sorted 
-                    log_loss_values[nodule_id] = float(item[4])  # Ensure sorted order
+                    log_loss_values[str(nodule_id)] = float(item[4])  # Ensure sorted order
+                    list_all.append([nodule_id, dicom, img, float(item[4])])
+
                     
 
                 # Prepare items to be added to state
@@ -383,6 +386,7 @@ class BaseOoDHistogram:
                     "dicom_imgs": final_dicom_images,
                     "log_loss": log_loss_values,
                     "download": mappings,
+                    "new": list_all
                 }
 
                 self.state.data_items.append(items)
@@ -436,15 +440,13 @@ class BaseOoDHistogram:
                     ]
 
                     
-                    
-                    #print(f"Remaining OoD Scores: {[item[4] for item in rem_mappings]}")
-                    # Sort by OoD score (ascending)
                     rem_mappings.sort(key=lambda x: x[4])
 
                     # Create empty lists and dictionaries
                     rem_max_slices = {}
                     rem_final_dicom_images = {}
                     rem_log_loss_values = {}
+                    rem_list_all = []
 
                     # Populate sorted dictionaries
                     for item in rem_mappings:
@@ -458,19 +460,21 @@ class BaseOoDHistogram:
                         #rem_log_loss_values.append(float(item[4]))  # Maintain sorted order
                         rem_log_loss_values[str(nodule_id)] = float(item[4])
 
+                        rem_list_all.append([nodule_id, dicom, img, float(item[4])])
+
                     # Ensure all data structures are sorted in the same order
                     remaining_item = {
                         "range": f"Range = ({float(last_threshold)} , {max_value}]",  # Ensures max_value is included
                         "image_row": rem_max_slices,
                         "dicom_imgs": rem_final_dicom_images,
                         "log_loss": rem_log_loss_values,
-                        "download": rem_mappings
+                        "download": rem_mappings,
+                        "new": rem_list_all
                     }
-                    #print(f"Remaining Item: {rem_log_loss_values}")
-                    #print(f"value: {remaining_item}")
+                    
 
                     self.state.data_items.append(remaining_item)
-                    #print(rem_log_loss_values)
+                    print(rem_list_all)
         self.server.state.dirty("data_items")
         #print(self.state.data_items)
         
@@ -773,16 +777,14 @@ class BaseOoDHistogram:
                         vuetify.VSubheader("Visualization:",style="font-size: 18px;font-weight: bold;color: rgb(0, 71, 171); padding:0; margin:0;")                                                                                                                                                                                                                                           
                         # Matplotlib Figure 
                     with vuetify.VRow(classes="justify-start"):                                                                                                                                      
-                        self.html_figure = matplotlib.Figure(style="position: relative; padding-top: 10px; margin: 0; display: block; align-self: flex-start; justify-content: start;")                                                                                                                                                                                                   
-                        #self.ctrl.update_plot = self.html_figure.update                                                                                                               
+                        self.html_figure = matplotlib.Figure(style="position: relative; padding-top: 10px; margin: 0; display: block; align-self: flex-start; justify-content: start;")                                                                                                                                                                                                                                                                                                                  
                                                                                                                                                              
                     with vuetify.VRow(classes="justify-start"):                                                                                                                                          
                         vuetify.VSubheader("Data View:",style="font-size: 18px;font-weight: bold;color: rgb(0, 71, 171); padding-top:10px")                                                                                                                                                                                                                                                                                      
                                                                                                                                                                                                                                                                                 
                     with vuetify.VRow(classes="justify-start", style="padding:0"):                                                                                                                                          
                         with vuetify.Template(v_for="(item, index) in data_items",key="index"): 
-                            with vuetify.VCol(xs="12", sm="12", md="8", lg="8",xl="9"):                                                                                                                                                                                                                                                                                
-                                #with vuetify.VContainer(style="overflow-x: auto; white-space: nowrap; overflow-y: hidden;"):                                                                                                    
+                            with vuetify.VCol(xs="12", sm="12", md="8", lg="8",xl="9"):                                                                                                                                                                                                                                                                                                                                                                                   
                                         vuetify.VIcon(                                                                                                                            
                                             "mdi-download",                                                                                                                   
                                             color="blue",                                                                                                                     
@@ -794,12 +796,12 @@ class BaseOoDHistogram:
                                             html.Td("{{ item.range }}", classes="pa-4")                                                                                                                                                                                                                                                                                  
                                                                                                                                                                  
                                         with vuetify.VContainer(style="overflow-x: auto; white-space: nowrap; overflow-y: hidden; padding-bottom: 2px; padding:0;",classes="d-flex flex-column flex-md-row"):                                                                                                                                                                                         
-                                                with vuetify.VRow(style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start;",):                                                                                                                                                                                                                                                                                                                                                                                                  
-                                                    with vuetify.Template(v_for="(dicom, imgIndex) in item.dicom_imgs", key="imgIndex"):                                                                                                                                                               
+                                                with vuetify.VRow(style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start;",):                                                                                                                                                                                                                                                                                                                                                                                                     
+                                                    with vuetify.Template(v_for="(entry, i) in item.new", key="i"):                                                                                                                                                            
                                                         with vuetify.VCol(cols="auto", class_="d-inline-block", style="flex: 0 0 auto; padding: 5px; max-width:100%"):                                                                                                                                                               
                                                             vuetify.VCheckbox(
                                                                           color="blue",
-                                                                            change="trigger('checkbox_method',[dicom,imgIndex])",
+                                                                            change="trigger('checkbox_method',[entry[1],entry[0]])",
                                                                             style="padding:0; margin-left:60px",)
                                                             with vuetify.VCard(style="padding-top: 0;padding-left:12px; max-height: 800px;"): 
                                                                 with vuetify.VRow(style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start;padding-top:50px;padding-right:15px",):                                                                                                           
@@ -810,12 +812,12 @@ class BaseOoDHistogram:
                                                                                     outlined=False,  
                                                                                 ):
                                                                                     vuetify.VImg(                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-                                                                                    src=("dicom", lambda name: f"{name}"),                                                                                                                                                                                                                                                                                                                                                   
+                                                                                    src=("entry[1]", lambda name: f"{name}"),                                                                                                                                                                                                                                                                                                                                                   
                                                                                     lazy_src="http://picsum.photos/id/114/150/150",                                                                                                                                                                                                                                                                                                                                           
-                                                                                    alt=("imgIndex", lambda imgIndex: f"Dicom_Img{imgIndex}"),                                                                                                                                                                                                                                                                                                                               
+                                                                                    alt=("entry[0]", lambda imgIndex: f"Dicom_Img{imgIndex}"),                                                                                                                                                                                                                                                                                                                               
                                                                                     style="width: 150px; height: 150px; object-fit: contain;",                                                                                                                                                                                                                                                                                                             
                                                                                       eager=False,                                                                                                                                                                                                                                                                                                                                                                      
-                                                                                    click= "trigger('navigate_to_data_view', [dicom, imgIndex])"                                                                                                                                                                                                                                   
+                                                                                    click= "trigger('navigate_to_data_view', [entry[1], entry[0]])"                                                                                                                                                                                                                                   
                                                                                     ) 
                                                                 with vuetify.VRow(style="display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: flex-start;padding-top:120px;padding-right:15px;",): 
                                                                         with vuetify.VBtn(
@@ -825,14 +827,14 @@ class BaseOoDHistogram:
                                                                             outlined=False,  
                                                                         ):                                                                                                           
                                                                             vuetify.VImg(                                                                                                                                                                                                                                                                                                                                                                                                                                            
-                                                                            src=("item.image_row[imgIndex]", lambda name: f"{name}"),                                                                                                                                                                                                                                                                                                                                                                                            
+                                                                            src=("entry[0]", lambda name: f"{name}"),                                                                                                                                                                                                                                                                                                                                                                                            
                                                                             lazy_src="http://picsum.photos/id/114/150/150",                                                                                                                                                                                                                                                                                                                                                                                                       
-                                                                            alt=("imgIndex", lambda imgIndex: f"Img{imgIndex}"),                                                                                                                                                                                                                                                                                                                                                                                                 
+                                                                            alt=("entry[0]", lambda imgIndex: f"Img{imgIndex}"),                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                             style="width: 150px; height: 150px; object-fit: contain;",                                                                                                                                                                                                                                                                                                        
                                                                             eager=False,                                                                                                                                                                                                                                                                                                                                                             
-                                                                            click= "trigger('navigate_to_data_view', [dicom, imgIndex]);"                                                                                                                                                                                                                                                                                                                                                                                      
+                                                                            click= "trigger('navigate_to_data_view', [entry[1], entry[0]]);"                                                                                                                                                                                                                                                                                                                                                                                      
                                                                         )                                                     
-                                                                vuetify.VCardText("NoduleId:<b>{{imgIndex}}</b><br>OOD:<b>{{item.log_loss[imgIndex]}}</b>",style="font-size: 16px; text-align: center; margin-top: 60px; margin-padding:2px",v_html=True) 
+                                                                vuetify.VCardText("NoduleId:<b>{{entry[0]}}</b><br>OOD:<b>{{entry[3]}}</b>",style="font-size: 16px; text-align: center; margin-top: 60px; margin-padding:2px",v_html=True) 
                                                                                                                                                                               
                                                                                                                                                                                               
                 # Right Column for the dynamic grid tables for configuration and view                                                                                                                                                                                                                                                        

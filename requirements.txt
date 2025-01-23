@@ -7,10 +7,12 @@ polars
 matplotlib
 plotly
 git+https://github.com/HuyNguyenDePaul/trame-server.git@master
+trame
 trame-client
 trame-components
 trame-matplotlib
 trame-plotly
+trame-router
 trame-vtk
 trame-vuetify
 dask[complete]==2024.11.2
@@ -31,3 +33,4 @@ requests
 channels
 daphne
 websockets
+pydicom

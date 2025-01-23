@@ -80,18 +80,23 @@ class MultiPortWebSocketProxy(AsyncWebsocketConsumer):
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
             
-            # Construct headers with cookies
-            headers = {}
+            # Create connection parameters
+            connect_kwargs = {
+                'ssl': ssl_context,
+                'open_timeout': 5,
+                'close_timeout': 5,
+            }
+            
+            # Add headers only if cookies exist
             if self.cookies:
                 cookie_str = '; '.join([f"{k}={v}" for k, v in self.cookies.items()])
-                headers['Cookie'] = cookie_str
+                connect_kwargs['header'] = [
+                    ('Cookie', cookie_str)
+                ]
             
             ws = await websockets.connect(
                 f'wss://{ip}:{port}/ws',
-                open_timeout=5,
-                close_timeout=5,
-                ssl=ssl_context,
-                extra_headers=headers
+                **connect_kwargs
             )
             self.upstream_connections[(ip, port)] = ws
             asyncio.create_task(self.receive_from_upstream(ip, port))

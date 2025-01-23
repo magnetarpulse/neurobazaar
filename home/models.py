@@ -48,9 +48,15 @@ class Collections(models.Model):
     Modified = models.DateField(auto_now=True)
 
 class UpstreamServer(models.Model):
+    ROUTE_CHOICES = [
+        ('basic', 'Basic Histogram'),
+        ('general', 'General Histogram'),
+        ('ood', 'OOD Analyzer')
+    ]
+    
     ip = models.CharField(max_length=255)
     port = models.IntegerField()
-    route = models.CharField(max_length=50)
+    route = models.CharField(max_length=50, choices=ROUTE_CHOICES)
     display_name = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
 

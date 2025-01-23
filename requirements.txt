@@ -17,4 +17,5 @@ trame-vtk
 watchdog
 requests
 pydicom
-django-cors-headers
+dask-histogram
+boost-histogram

@@ -1,4 +1,5 @@
 .venv
+.ssl
 **/__pycache__/
 db.sqlite3
 build

@@ -88,10 +88,31 @@ source .venv/bin/activate
 Install the dependencies/packages on the loaded/activated virtual environment:
 
 ```
+pip install "dask<2025"
 python -m pip install -r requirements.txt
 ```
-
 The media folder should have all the datasets, includes the max_slices folder, LIDC original folder, Max_Slices_OoD.csv, All_slices.csv
+### Export media into media folder
+```
+sudo apt install unzip
+cd media
+unzip lidc_pixConvImg.zip
+```
+
+### Download pre-downloaded dicom images with contors from the link below:
+https://drive.google.com/file/d/1RTzNLH4pwgcV1JaKjSV13eno6T6tBidm/view?usp=sharing
+
+### When downloaded 
+```
+cd media
+unzip dicom_images.zip   
+```
+
+### Make Migrations and migrate
+```
+python manage.py makemigrations
+python manage.py migrate
+```
 
 ### Start the Django Server
 
@@ -102,7 +123,7 @@ python manage.py runserver 0.0.0.0:8000
 ### Start the Trame Server with the python Code
 
 ```
-python ood_interface.py
+python dask_working_code.py
 ```
 
 The browser opens with the localhost:port with the interface running.
@@ -110,7 +131,7 @@ The browser opens with the localhost:port with the interface running.
 ### If required to run on a different machine, run the django server and start the trame server. In the browser:
 
 ```
-http://192.5.87.63:8089/
+http://server_ip:port/
 ```
 
 

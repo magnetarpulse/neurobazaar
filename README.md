@@ -112,8 +112,8 @@ When prompted:
 Start the server to access the Neurobazaar Platform locally:
 ```
 python manage.py runserver
-```# proxydjango
+# proxydjango
 
-4. **Start the Visualization Server**:  
+5. **Start the Visualization Server**:  
 http://localhost:8000/visualization_server_manager
 ```

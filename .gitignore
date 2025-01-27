@@ -22,3 +22,5 @@ data/*
 data/datastore/*
 .git 
 .git/*
+/media/dicom_images/*
+/media/lidc_pixConvImg/*

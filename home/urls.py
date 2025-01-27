@@ -22,6 +22,12 @@ urlpatterns = [
     path('api/servers/<str:server_type>/stop/<int:port>', views.stop_server, name='stop_server'),
     path('api/servers/status/', views.get_server_status, name='server_status'),
     
+    # CSV and Data Explorer endpoints
+    path('data-explorer/', views.data_explorer_main, name='data_explorer_main'),
+    path('api/csv/<uuid:file_uuid>/', views.csv_data, name='csv_data'),
+    path('api/chat/<uuid:file_uuid>/', views.chat_with_data, name='chat_with_data'),
+    path('data-explorer/<uuid:file_uuid>/', views.data_explorer, name='data_explorer'),
+    
     # Basic histogram routes
     path('histogram<int:num>/', views.new_view, name='histogram'),
     re_path(r'^histogram\d+/(?P<path>.*)$', views.new_view, name='histogram_proxy'),

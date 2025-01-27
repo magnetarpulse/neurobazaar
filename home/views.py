@@ -28,6 +28,8 @@ import json
 import tempfile
 from django.core.files import File
 import lz4.frame
+import pandas as pd
+from django.core.paginator import Paginator
 
 # Get the root directory of the project
 cwd = os.getcwd()
@@ -967,8 +969,8 @@ def get_server_status(request):
                 display_type = type_mapping.get(instance.server_type, instance.server_type)
                 
                 status[display_type].append({
-                    'port': instance.port,
-                    'ip': instance.ip,
+                'port': instance.port,
+                'ip': instance.ip,
                     'status': 'Running',
                     'started_at': instance.started_at.isoformat() if instance.started_at else None,
                     'route': upstream.route,
@@ -984,8 +986,8 @@ def get_server_status(request):
                     'started_at': instance.started_at.isoformat() if instance.started_at else None,
                     'route': None,
                     'display_name': f"{instance.server_type.title()} Server"
-                })
-        
+            })
+            
         return JsonResponse(status)
     except Exception as e:
         logger.error(f"Error in get_server_status: {str(e)}")
@@ -1346,7 +1348,7 @@ def new_view3(request, path='', num=None):
     logger.info(f"new_view3 called with path: '{path}', num: {num}")
 
     # Get all running analyzer servers
-    server_instances = ServerInstance.objects.filter(server_type='analyzer', is_running=True).order_by('port')
+    server_instances = ServerInstance.objects.filter(server_type='analyzer').order_by('port')
     
     # If num is provided directly (from URL pattern), use it
     if num is not None:
@@ -1389,110 +1391,130 @@ def new_view3(request, path='', num=None):
         file_extension = os.path.splitext(path)[1].lower() if path else ''
         is_static_file = file_extension in mime_types
 
-        # Step 1: Initial authentication request with unique analyzer headers
-        auth_url = f'{BASE_URL}?key={AUTH_KEY}'
-        headers = {
-            'Host': f'localhost:{server.port}',
-            'User-Agent': 'Mozilla/5.0',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Connection': 'keep-alive',
-            'X-Forwarded-For': '127.0.0.1',
-            'X-Real-IP': '127.0.0.1',
-            'X-Analyzer-Request': 'true'  # Unique header for analyzer requests
-        }
+        # Check if we have existing analyzer cookies
+        has_valid_session = False
+        if request.COOKIES:
+            analyzer_cookies = {k[len(SESSION_PREFIX):]: v for k, v in request.COOKIES.items() if k.startswith(SESSION_PREFIX)}
+            if analyzer_cookies:
+                # Try using existing session
+                headers = {
+                    'Host': f'localhost:{server.port}',
+                    'User-Agent': 'Mozilla/5.0',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.5',
+                    'Connection': 'keep-alive',
+                    'X-Forwarded-For': '127.0.0.1',
+                    'X-Real-IP': '127.0.0.1',
+                    'X-Analyzer-Request': 'true',
+                    'Cookie': '; '.join([f"{k}={v}" for k, v in analyzer_cookies.items()])
+                }
+                
+                # Try a request with existing cookies
+                test_response = session.get(
+                    BASE_URL,
+                    headers=headers,
+                    verify=False,
+                    allow_redirects=False
+                )
+                has_valid_session = test_response.status_code in [200, 302]
+                if has_valid_session:
+                    session.cookies.update(analyzer_cookies)
 
-        logger.info(f"Making analyzer auth request to: {auth_url}")
-        auth_response = session.get(
-            auth_url,
-            headers=headers,
-            timeout=10,
-            verify=False,
-            allow_redirects=False
-        )
-        
-        logger.info(f"Analyzer auth response status: {auth_response.status_code}")
-        logger.info(f"Analyzer auth response headers: {dict(auth_response.headers)}")
+        # If no valid session, authenticate
+        if not has_valid_session:
+            # Step 1: Initial authentication request with unique analyzer headers
+            auth_url = f'{BASE_URL}?key={AUTH_KEY}'
+            headers = {
+                'Host': f'localhost:{server.port}',
+                'User-Agent': 'Mozilla/5.0',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Connection': 'keep-alive',
+                'X-Forwarded-For': '127.0.0.1',
+                'X-Real-IP': '127.0.0.1',
+                'X-Analyzer-Request': 'true'
+            }
 
-        if auth_response.status_code == 302:
-            auth_cookies = session.cookies.get_dict()
-            logger.info(f"Received analyzer cookies: {auth_cookies}")
-
-            # Step 2: Follow redirect with cookies
-            redirect_url = auth_response.headers.get('Location', '/')
-            if not redirect_url.startswith('http'):
-                redirect_url = f'{BASE_URL}{redirect_url}'
-
-            if 'csrf_token' in auth_cookies:
-                headers['X-CSRF-Token'] = auth_cookies['csrf_token']
-            
-            # Add session prefix to cookies to avoid conflicts
-            prefixed_cookies = {f"{SESSION_PREFIX}{k}": v for k, v in auth_cookies.items()}
-            cookie_header = '; '.join([f"{k}={v}" for k, v in prefixed_cookies.items()])
-            headers['Cookie'] = cookie_header
-
-            # Make the actual content request
-            target_url = f'{BASE_URL}/{path}' if path else redirect_url
-            logger.info(f"Making analyzer content request to: {target_url}")
-            
-            response = session.get(
-                target_url,
+            logger.info(f"Making analyzer auth request to: {auth_url}")
+            auth_response = session.get(
+                auth_url,
                 headers=headers,
-                cookies=auth_cookies,
-                timeout=30,
+                timeout=10,
                 verify=False,
-                stream=True
+                allow_redirects=False
             )
             
-            logger.info(f"Analyzer content response status: {response.status_code}")
-            
-            if response.status_code == 200:
-                if is_static_file:
-                    return HttpResponse(
-                        response.content,
-                        content_type=mime_types[file_extension]
-                    )
+            logger.info(f"Analyzer auth response status: {auth_response.status_code}")
+            logger.info(f"Analyzer auth response headers: {dict(auth_response.headers)}")
 
-                content = response.text
-                # Update WebSocket URLs to use our proxy with unique analyzer path
-                content = content.replace(
-                    f'ws://{BASE_URL.replace("https://", "")}',
-                    f'ws://{request.get_host()}/oodanalyzer{analyzer_num}'
+            if auth_response.status_code not in [200, 302]:
+                raise Exception(f"Analyzer authentication failed with status {auth_response.status_code}")
+
+        # Make the content request
+        target_url = f'{BASE_URL}/{path}' if path else BASE_URL
+        logger.info(f"Making analyzer content request to: {target_url}")
+        
+        # Update headers with any new cookies and CSRF token
+        if 'csrf_token' in session.cookies:
+            headers['X-CSRF-Token'] = session.cookies['csrf_token']
+        
+        headers['Cookie'] = '; '.join([f"{k}={v}" for k, v in session.cookies.items()])
+        
+        response = session.get(
+            target_url,
+            headers=headers,
+            timeout=30,
+            verify=False,
+            stream=True
+        )
+        
+        logger.info(f"Analyzer content response status: {response.status_code}")
+        
+        if response.status_code == 200:
+            if is_static_file:
+                return HttpResponse(
+                    response.content,
+                    content_type=mime_types[file_extension]
                 )
-                content = content.replace(
-                    BASE_URL,
-                    f'https://{request.get_host()}/oodanalyzer{analyzer_num}'
+
+            content = response.text
+            # Update WebSocket URLs to use our proxy with unique analyzer path
+            content = content.replace(
+                f'ws://{BASE_URL.replace("https://", "")}',
+                f'ws://{request.get_host()}/oodanalyzer{analyzer_num}'
+            )
+            content = content.replace(
+                BASE_URL,
+                f'https://{request.get_host()}/oodanalyzer{analyzer_num}'
+            )
+
+            # Get all available analyzer servers for the navigation
+            analyzer_servers = [
+                {'number': i+1, 'port': s.port} 
+                for i, s in enumerate(server_instances)
+            ]
+
+            django_response = render(request, 'oodanalyzer.html', {
+                'username': username,
+                'proxied_content': content,
+                'analyzer_servers': analyzer_servers,
+                'current_analyzer': str(analyzer_num)
+            })
+
+            # Set cookies with unique analyzer prefix
+            for name, value in session.cookies.items():
+                django_response.set_cookie(
+                    f"{SESSION_PREFIX}{name}",
+                    value,
+                    path='/oodanalyzer',  # Scope cookies to analyzer paths only
+                    secure=False,
+                    httponly=True,
+                    samesite='Lax'
                 )
 
-                # Get all available analyzer servers for the navigation
-                analyzer_servers = [
-                    {'number': i+1, 'port': s.port} 
-                    for i, s in enumerate(server_instances)
-                ]
-
-                django_response = render(request, 'oodanalyzer.html', {
-                    'username': username,
-                    'proxied_content': content,
-                    'analyzer_servers': analyzer_servers,
-                    'current_analyzer': str(analyzer_num)
-                })
-
-                # Set cookies with unique analyzer prefix
-                for name, value in auth_cookies.items():
-                    django_response.set_cookie(
-                        f"{SESSION_PREFIX}{name}",
-                        value,
-                        path='/oodanalyzer',  # Scope cookies to analyzer paths only
-                        secure=False,
-                        httponly=True,
-                        samesite='Lax'
-                    )
-
-                return django_response
-            else:
-                raise Exception(f"Analyzer content request failed with status {response.status_code}")
+            return django_response
         else:
-            raise Exception(f"Analyzer authentication failed with status {auth_response.status_code}")
+            raise Exception(f"Analyzer content request failed with status {response.status_code}")
 
     except Exception as e:
         logger.exception("Analyzer proxy error")
@@ -1506,6 +1528,220 @@ def new_view3(request, path='', num=None):
             "content_status": getattr(response, 'status_code', None) if 'response' in locals() else None
         }
         return JsonResponse(error_details, status=500)
+
+
+@login_required
+def csv_data(request, file_uuid):
+    try:
+        # Get the file from the database
+        file_obj = Files.objects.get(UUID=file_uuid)
+        
+        # Check if user has access to this file
+        if file_obj.Repository == 'private' and file_obj.Username != request.user:
+            return JsonResponse({'error': 'Access denied'}, status=403)
+        
+        # Get the datastore manager and retrieve the file
+        manager = getDataStoreManager()
+        datastore = manager.getDatastore(str(file_obj.Datastore_UUID.UUID))
+        
+        if not datastore:
+            return JsonResponse({'error': 'Datastore not found'}, status=404)
+        
+        # Get the file path
+        file_path = os.path.join(datastore['path'], str(file_uuid), file_obj.Name)
+        
+        # Get query parameters
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 100))
+        search = request.GET.get('search', '').strip()
+        
+        # Calculate the number of rows to skip
+        skiprows = (page - 1) * limit
+        
+        # First, read only the header
+        headers = pd.read_csv(file_path, nrows=0).columns.tolist()
+        
+        # If searching, we need to load chunks and search through them
+        if search:
+            chunks = []
+            for chunk in pd.read_csv(file_path, chunksize=10000):
+                # Search across all columns
+                mask = chunk.astype(str).apply(lambda x: x.str.contains(search, case=False)).any(axis=1)
+                filtered_chunk = chunk[mask]
+                chunks.append(filtered_chunk)
+                
+                # If we have enough rows for this page, we can stop reading
+                total_rows = sum(len(chunk) for chunk in chunks)
+                if total_rows >= skiprows + limit:
+                    break
+            
+            # Combine all chunks
+            if chunks:
+                df = pd.concat(chunks, ignore_index=True)
+                total_rows = len(df)
+                # Get the rows for current page
+                page_data = df.iloc[skiprows:skiprows + limit]
+            else:
+                total_rows = 0
+                page_data = pd.DataFrame(columns=headers)
+        else:
+            # If not searching, we can use more efficient skiprows and nrows parameters
+            try:
+                # Get total number of rows efficiently
+                total_rows = sum(1 for _ in open(file_path)) - 1  # subtract 1 for header
+                
+                # Read only the required rows
+                page_data = pd.read_csv(
+                    file_path,
+                    skiprows=range(1, skiprows + 1) if skiprows else None,  # skip header + previous rows
+                    nrows=limit,
+                    memory_map=True  # Use memory mapping for large files
+                )
+            except Exception as e:
+                logger.error(f"Error reading CSV file: {str(e)}")
+                return JsonResponse({'error': 'Error reading file'}, status=500)
+        
+        # Convert to dictionary format
+        rows = page_data.to_dict('records')
+        
+        return JsonResponse({
+            'headers': headers,
+            'rows': rows,
+            'total': total_rows
+        })
+        
+    except Files.DoesNotExist:
+        return JsonResponse({'error': 'File not found'}, status=404)
+    except Exception as e:
+        logger.error(f"Error in csv_data view: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+@login_required
+def data_explorer(request, file_uuid):
+    try:
+        # Get the file from the database
+        file_obj = Files.objects.get(UUID=file_uuid)
+        
+        # Check if user has access to this file
+        if file_obj.Repository == 'private' and file_obj.Username != request.user:
+            messages.error(request, 'Access denied')
+            return redirect('datasets')
+        
+        context = {
+            'username': request.user.username,
+            'file': {
+                'uuid': str(file_uuid),
+                'name': file_obj.Name,
+                'description': file_obj.Description
+            }
+        }
+        
+        return render(request, 'data_explorer.html', context)
+        
+    except Files.DoesNotExist:
+        messages.error(request, 'File not found')
+        return redirect('datasets')
+
+@login_required
+def chat_with_data(request, file_uuid):
+    try:
+        # Get the file from the database
+        file_obj = Files.objects.get(UUID=file_uuid)
+        
+        # Check if user has access to this file
+        if file_obj.Repository == 'private' and file_obj.Username != request.user:
+            return JsonResponse({'error': 'Access denied'}, status=403)
+        
+        # Get the datastore manager and retrieve the file
+        manager = getDataStoreManager()
+        datastore = manager.getDatastore(str(file_obj.Datastore_UUID.UUID))
+        
+        if not datastore:
+            return JsonResponse({'error': 'Datastore not found'}, status=404)
+        
+        # Get the file path
+        file_path = os.path.join(datastore['path'], str(file_uuid), file_obj.Name)
+        
+        # Get the question from the request
+        data = json.loads(request.body)
+        question = data.get('question', '').strip()
+        
+        if not question:
+            return JsonResponse({'error': 'No question provided'}, status=400)
+        
+        try:
+            # Read the CSV file
+            df = pd.read_csv(file_path)
+            
+            # Process the question and generate a response
+            # This is where you would integrate the csvGPT logic
+            # For now, we'll return a simple analysis
+            response = analyze_data(df, question)
+            
+            return JsonResponse({
+                'response': response
+            })
+            
+        except Exception as e:
+            logger.error(f"Error processing chat request: {str(e)}")
+            return JsonResponse({'error': 'Error processing request'}, status=500)
+        
+    except Files.DoesNotExist:
+        return JsonResponse({'error': 'File not found'}, status=404)
+    except Exception as e:
+        logger.error(f"Error in chat_with_data view: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+def analyze_data(df, question):
+    """
+    Analyze the dataframe based on the user's question.
+    This is a placeholder for the csvGPT integration.
+    """
+    try:
+        # Basic analysis based on common questions
+        question_lower = question.lower()
+        
+        if 'how many' in question_lower or 'count' in question_lower:
+            return f"The dataset contains {len(df)} rows."
+            
+        if 'columns' in question_lower or 'fields' in question_lower:
+            columns = ', '.join(df.columns.tolist())
+            return f"The dataset contains the following columns: {columns}"
+            
+        if 'missing' in question_lower or 'null' in question_lower:
+            missing_info = df.isnull().sum().to_dict()
+            missing_str = ', '.join([f"{k}: {v}" for k, v in missing_info.items() if v > 0])
+            return f"Missing values in the dataset: {missing_str if missing_str else 'No missing values found.'}"
+            
+        if 'summary' in question_lower or 'describe' in question_lower:
+            numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
+            if len(numeric_cols) > 0:
+                summary = df[numeric_cols].describe().to_dict()
+                return f"Statistical summary of numeric columns: {json.dumps(summary, indent=2)}"
+            else:
+                return "No numeric columns found in the dataset."
+        
+        # Default response
+        return "I can help you analyze this data. Try asking about the number of rows, columns, missing values, or statistical summaries."
+        
+    except Exception as e:
+        logger.error(f"Error analyzing data: {str(e)}")
+        return "Sorry, I encountered an error while analyzing the data."
+
+@login_required
+def data_explorer_main(request):
+    """Main page for the data explorer that lists available CSV files."""
+    # Get all CSV files the user has access to
+    csv_files = Files.objects.filter(
+        collections__user=request.user,
+        file_type__icontains='csv'
+    ).order_by('-created_at')
+    
+    return render(request, 'data_explorer_main.html', {
+        'csv_files': csv_files,
+        'title': 'Data Explorer',
+        'description': 'Explore and analyze your CSV files using AI'
+    })
 
 
 

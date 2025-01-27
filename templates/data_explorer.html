@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+
+{% block title %}Data Explorer{% endblock title %}
+
+{% block body %}
+<!-- Modern Page Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>Data Explorer</h1>
+                <p>Analyze and chat with your CSV data using AI</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="page-section bg-light">
+    <div class="container">
+        <div class="row">
+            <!-- CSV Viewer Section -->
+            <div class="col-md-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Data Visualization</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="csv-table-container">
+                            <table id="csvTable" class="table table-striped table-bordered">
+                                <thead>
+                                    <tr id="csvHeaders"></tr>
+                                </thead>
+                                <tbody id="csvBody"></tbody>
+                            </table>
+                            <div id="loadingSpinner" class="text-center" style="display: none;">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            <div id="scrollObserver"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Chat Section -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Chat with Data</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chat-container" id="chatContainer">
+                            <div class="chat-messages" id="chatMessages">
+                                <div class="system-message">
+                                    Ask questions about your data and I'll help you analyze it.
+                                </div>
+                            </div>
+                            <div class="chat-input-container">
+                                <textarea id="userInput" class="form-control" placeholder="Ask a question about your data..." rows="3"></textarea>
+                                <button id="sendButton" class="btn btn-primary mt-2 w-100">
+                                    <i class="fas fa-paper-plane me-2"></i>Ask AI
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.chat-input-container {
+    padding: 1rem 0 0 0;
+}
+
+.message {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+}
+
+.user-message {
+    background: #e3f2fd;
+    margin-left: 2rem;
+    border-radius: 1rem 1rem 0 1rem;
+}
+
+.ai-message {
+    background: #fff;
+    margin-right: 2rem;
+    border-radius: 1rem 1rem 1rem 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.system-message {
+    background: #f0f0f0;
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.csv-table-container {
+    max-height: 600px;
+    overflow: auto;
+}
+
+#csvTable {
+    margin-bottom: 0;
+}
+
+#csvTable thead th {
+    position: sticky;
+    top: 0;
+    background: #f8f9fa;
+    z-index: 1;
+}
+
+#loadingSpinner {
+    padding: 2rem;
+}
+</style>
+
+<script>
+let currentFileUUID = null;
+let currentPage = 1;
+let isLoading = false;
+let hasMoreData = true;
+const ROWS_PER_PAGE = 100;
+
+// Initialize intersection observer for infinite scroll
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting && hasMoreData && !isLoading) {
+            loadMoreData();
+        }
+    });
+}, { threshold: 0.1 });
+
+function initializeDataExplorer(fileUUID) {
+    currentFileUUID = fileUUID;
+    currentPage = 1;
+    hasMoreData = true;
+    
+    // Clear existing data
+    document.getElementById('csvHeaders').innerHTML = '';
+    document.getElementById('csvBody').innerHTML = '';
+    document.getElementById('chatMessages').innerHTML = `
+        <div class="system-message">
+            Ask questions about your data and I'll help you analyze it.
+        </div>
+    `;
+    
+    // Start observing for infinite scroll
+    observer.observe(document.getElementById('scrollObserver'));
+    
+    // Load initial data
+    loadMoreData();
+}
+
+function loadMoreData() {
+    if (isLoading || !hasMoreData || !currentFileUUID) return;
+    
+    isLoading = true;
+    document.getElementById('loadingSpinner').style.display = 'block';
+    
+    fetch(`/api/csv/${currentFileUUID}/?page=${currentPage}&limit=${ROWS_PER_PAGE}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            // Set headers if first page
+            if (currentPage === 1) {
+                const headerRow = document.getElementById('csvHeaders');
+                headerRow.innerHTML = data.headers.map(header => 
+                    `<th>${header}</th>`
+                ).join('');
+            }
+            
+            // Append rows
+            const tbody = document.getElementById('csvBody');
+            data.rows.forEach(row => {
+                const tr = document.createElement('tr');
+                data.headers.forEach(header => {
+                    const td = document.createElement('td');
+                    td.textContent = row[header] ?? '';
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+            
+            // Update state
+            hasMoreData = data.rows.length === ROWS_PER_PAGE;
+            currentPage++;
+            
+            // Hide loading spinner
+            document.getElementById('loadingSpinner').style.display = 'none';
+            isLoading = false;
+        })
+        .catch(error => {
+            console.error('Error loading CSV data:', error);
+            document.getElementById('loadingSpinner').style.display = 'none';
+            isLoading = false;
+        });
+}
+
+// Handle chat functionality
+document.getElementById('sendButton').addEventListener('click', async () => {
+    const userInput = document.getElementById('userInput');
+    const question = userInput.value.trim();
+    if (!question) return;
+    
+    // Add user message to chat
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.innerHTML += `
+        <div class="message user-message">
+            ${question}
+        </div>
+    `;
+    
+    userInput.value = '';
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Show loading state
+    const loadingMessage = document.createElement('div');
+    loadingMessage.className = 'message ai-message';
+    loadingMessage.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div> Analyzing...';
+    chatMessages.appendChild(loadingMessage);
+    
+    try {
+        const response = await fetch(`/api/chat/${currentFileUUID}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ question })
+        });
+        
+        const data = await response.json();
+        
+        // Replace loading message with AI response
+        loadingMessage.innerHTML = data.response;
+    } catch (error) {
+        loadingMessage.innerHTML = 'Sorry, I encountered an error analyzing your data.';
+    }
+    
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+
+// Helper function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %} 

@@ -100,7 +100,7 @@ unzip lidc_pixConvImg.zip
 ```
 
 ### Download pre-downloaded dicom images with contors from the link below:
-https://drive.google.com/file/d/1RTzNLH4pwgcV1JaKjSV13eno6T6tBidm/view?usp=sharing
+https://drive.google.com/file/d/1QtvgV8sX0h-nxjZNemYMnfnOQcs5K_p_/view?usp=sharing
 
 ### When downloaded 
 ```

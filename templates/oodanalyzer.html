@@ -1,96 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-
-
-    <!-- Proper Bootstrap and jQuery Integration -->
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.bundle.min.js"></script>    
-
-    <!-- In your base.html, inside the <head> tag -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- At the end of your base.html, before the closing </body> tag -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>    
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
-    <!-- Title -->
-    <title>{% block title %}{% endblock title %} | Neurobazaar</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/static/assets/favicon.ico" />
-    
-    <!-- Font Awesome icons (free version) -->
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    
-    <!-- Google fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Core theme CSS -->
-    <link href="/static/css/styles.css" rel="stylesheet" />
-
-    <!-- Bootstrap core JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Your custom scripts -->
-    <script src="/static/js/scripts.js"></script>
-
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% block extra_head %}{% endblock %}
-
+    <title>OOD Analyzer</title>
     <style>
-        /* Isolate our styles to header only */
-        .nb-page-header {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            position: relative;
-            overflow: hidden;
-            margin-top: 50px;
-            padding: 1rem 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            z-index: 1;
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, sans-serif;
         }
-
-        .nb-page-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 60%);
+        .banner {
+            background: linear-gradient(to right, #1a1f2e, #2c3347);
+            color: white;
+            padding: 20px;
+            margin-top: 64px;
         }
-
-        .nb-header-top {
+        .banner-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0;
-            position: relative;
-            z-index: 2;
+            align-items: flex-start;
         }
-
-        .nb-logo-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .nb-logo-container {
+        .logo-container {
             width: 75px;
             height: 75px;
             display: flex;
@@ -100,38 +31,26 @@
             border-radius: 12px;
             padding: 0.35rem;
             transition: transform 0.3s ease;
+            margin-right: 16px;
         }
 
-        .nb-logo-container:hover {
+        .logo-container:hover {
             transform: scale(1.05);
         }
-
-        .nb-header-logo {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+        .banner-text {
+            flex-grow: 1;
         }
-
-        .nb-header-title {
-            color: white;
-        }
-
-        .nb-header-title h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
+        .banner h1 {
             margin: 0;
-            background: linear-gradient(to right, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 24px;
+            font-weight: 600;
         }
-
-        .nb-header-title p {
-            color: #94a3b8;
-            font-size: 0.875rem;
-            margin: 0.25rem 0 0;
+        .banner p {
+            margin: 5px 0 0 0;
+            color: #a0a7b7;
+            font-size: 14px;
         }
-
-        .nb-back-button {
+        .back-button {
             background: rgba(255, 255, 255, 0.1);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -144,137 +63,31 @@
             font-size: 0.875rem;
             transition: all 0.3s ease;
             text-decoration: none;
+            margin-top: 12px;
         }
-
-        .nb-back-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
-            color: white;
-            transform: translateY(-2px);
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
         }
-
-        /* Container for proxied content */
-        #pr-content {
-            margin-top: 2rem;
-        }
-
-        /* Preserve Vuetify button styles */
-        .v-icon.notranslate {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-        }
-
-        .v-icon.v-icon--link {
-            cursor: pointer;
-            outline: none;
-        }
-
-        .v-icon.theme--light.blue--text {
-            color: rgb(8, 24, 168) !important;
-        }
-
-        /* Reset any Bootstrap button styles that might interfere */
-        #pr-content button {
-            all: unset;
-            cursor: pointer;
-        }
-
-        #pr-content button.v-icon {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-size: 30px !important;
-            border: 2px solid blue !important;
-            border-radius: 40% !important;
-            padding: 5px !important;
-            color: rgb(8, 24, 168) !important;
-            box-shadow: none !important;
-            transition: none !important;
-        }
-
-        #pr-content button.v-icon:hover,
-        #pr-content button.v-icon:focus,
-        #pr-content button.v-icon:active {
-            box-shadow: none !important;
-            transform: none !important;
-            outline: none !important;
-            border: 2px solid blue !important;
+        .v-main {
+            padding: 0px 0px 0px 0px;
         }
     </style>
 </head>
-<body
-    id="page-top">
-        <!-- Navigation-->
-
-    {% block content %}
-    <!-- Header Section -->
-    <div class="nb-page-header">
-        <div class="container">
-            <div class="nb-header-top">
-                <div class="nb-logo-section">
-                    <div class="nb-logo-container">
-                        <img src="/static/assets/img/logo-main.png" alt="Neurobazaar Logo" class="nb-header-logo">
-                    </div>
-                    <div class="nb-header-title">
-                        <h1>OOD Analyzer</h1>
-                        <p>Interactive data visualization and analysis</p>
-                    </div>
-                </div>
-                <a href="/visualization_server_manager" class="nb-back-button">
-                    <i class="fas fa-arrow-left"></i>
-                    Back to Dashboard
-                </a>
+<body>
+    <div class="banner">
+        <div class="banner-content">
+            <div class="logo-container">
+                <img src="/static/assets/img/logo-main.png" alt="Neurobazaar" width="48" height="14">
             </div>
+            <div class="banner-text">
+                <h1>OOD Analyzer</h1>
+                <p>Interactive data visualization and analysis</p>
+            </div>
+            <a href="/dashboard" class="back-button">← Back to Dashboard</a>
         </div>
     </div>
-
-    <!-- Proxied Content -->
-            <div id="pr-content">
-                {{ proxied_content|safe }}
+    <div id="pr-content">  
+        {{ proxied_content|safe }}
     </div>
-
-    {% endblock content %}
-
-    <!-- WebSocket Setup -->
-    <script>
-        function setupWebSocket() {
-            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${wsProtocol}//${window.location.host}${window.location.pathname}ws`;
-            const ws = new WebSocket(wsUrl);
-            
-            ws.onopen = function() {
-                console.log('WebSocket connection established');
-                ws.send(JSON.stringify({
-                    type: 'auth',
-                    key: 'key'
-                }));
-            };
-            
-            ws.onmessage = function(event) {
-                console.log('Message received:', event.data);
-                try {
-                    const data = JSON.parse(event.data);
-                } catch (e) {
-                    console.error('Error parsing WebSocket message:', e);
-                }
-            };
-            
-            ws.onerror = function(error) {
-                console.error('WebSocket error:', error);
-            };
-            
-            ws.onclose = function() {
-                console.log('WebSocket connection closed');
-                setTimeout(setupWebSocket, 5000);
-            };
-            
-            return ws;
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            setupWebSocket();
-        });
-    </script>
 </body>
-</html>
+</html> 

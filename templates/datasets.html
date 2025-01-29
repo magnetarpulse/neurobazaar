@@ -57,10 +57,21 @@
                     <input type="hidden" name="form_type" value="dataset_upload">
                     
                     <div class="upload-dropzone">
-                        <input type="file" class="file-input" id="singleFile" name="dataset_file" accept=".csv" required>
-                        <label for="singleFile">
-                            <i class="fas fa-file-csv"></i>
-                            <span>Drag and drop your CSV file or click to browse</span>
+                        <input type="file" class="file-input" id="singleFile" name="dataset_file" accept=".csv,.zip" required>
+                        <label for="singleFile" class="upload-label">
+                            <div class="upload-content">
+                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                <span class="upload-text">Drag and drop your CSV or ZIP file or click to browse</span>
+                                <div class="selected-file" style="display: none;">
+                                    <div class="file-info">
+                                        <i class="fas fa-file-alt me-2"></i>
+                                        <span class="file-name"></span>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-link text-danger remove-file">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </label>
             </div>
 
@@ -328,18 +339,20 @@
     }
 
     .tab-btn {
-        background: none;
-        border: none;
-        padding: 0.5rem 1.25rem;
-        border-radius: 8px;
-        color: #64748b;
+        height: 40px;
+        min-width: 120px;
+        font-size: 0.875rem;
         font-weight: 500;
-        display: flex;
+        border-radius: 8px;
+        background: none;
+        border: 1px solid transparent;
+        padding: 0 1.25rem;
+        color: #64748b;
+        display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 0.5rem;
         transition: all 0.2s ease;
-        white-space: nowrap;
-        font-size: 0.9rem;
     }
 
     .tab-btn:hover {
@@ -350,6 +363,11 @@
     .tab-btn.active {
         background: #dbeafe;
         color: #3b82f6;
+        border-color: #93c5fd;
+    }
+
+    .tab-btn i {
+        font-size: 1rem;
     }
 
     .upload-card {
@@ -381,7 +399,8 @@
         transition: all 0.2s ease;
     }
 
-    .upload-dropzone:hover {
+    .upload-dropzone:hover,
+    .upload-dropzone.drag-active {
         border-color: #3b82f6;
         background: #f8fafc;
     }
@@ -425,12 +444,18 @@
 
     .upload-btn {
         width: 100%;
-        padding: 0.75rem;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
+        height: 44px;
+        font-size: 1rem;
+        background-color: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+
+    .upload-btn:hover {
+        background-color: #2563eb;
+        transform: translateY(-1px);
     }
 
     /* File display styling */
@@ -491,14 +516,20 @@
     }
 
     .file-footer {
-        border-top: 1px solid #eee;
-        padding-top: 0.75rem;
+        border-top: 1px solid #e5e7eb;
+        padding-top: 1rem;
+        margin-top: 1rem;
     }
 
     .file-actions {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    .file-actions form {
+        margin: 0;
     }
 
     .file-stats {
@@ -610,6 +641,158 @@
     #scrollObserver {
         height: 10px;
     }
+
+    .upload-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .upload-icon {
+        font-size: 2.5rem;
+        color: #64748b;
+        transition: color 0.2s ease;
+    }
+
+    .upload-dropzone:hover .upload-icon {
+        color: #3b82f6;
+    }
+
+    .selected-file {
+        background: rgba(59, 130, 246, 0.1);
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 1rem;
+    }
+
+    .file-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #2563eb;
+        font-weight: 500;
+    }
+
+    .file-name {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .remove-file {
+        padding: 0.25rem;
+        font-size: 0.9rem;
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+    }
+
+    .remove-file:hover {
+        opacity: 1;
+        text-decoration: none;
+    }
+
+    /* Button styling */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        border: none;
+        height: 36px;
+        min-width: 36px;
+    }
+
+    .btn i {
+        font-size: 1rem;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.813rem;
+        height: 32px;
+        min-width: 32px;
+    }
+
+    .file-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    .file-actions form {
+        margin: 0;
+    }
+
+    /* Button colors */
+    .btn-primary {
+        background-color: #3b82f6;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #2563eb;
+        transform: translateY(-1px);
+    }
+
+    .btn-success {
+        background-color: #10b981;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background-color: #059669;
+        transform: translateY(-1px);
+    }
+
+    .btn-info {
+        background-color: #0ea5e9;
+        color: white;
+    }
+
+    .btn-info:hover {
+        background-color: #0284c7;
+        transform: translateY(-1px);
+    }
+
+    .btn-danger {
+        background-color: #ef4444;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background-color: #dc2626;
+        transform: translateY(-1px);
+    }
+
+    /* Upload button specific styling */
+    .upload-btn {
+        width: 100%;
+        height: 44px;
+        font-size: 1rem;
+        background-color: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+
+    .upload-btn:hover {
+        background-color: #2563eb;
+        transform: translateY(-1px);
+    }
 </style>
 
 <!-- Add required libraries -->
@@ -654,8 +837,39 @@
         const timeRemaining = document.querySelector('.time-remaining');
         const dropZone = document.querySelector('.upload-dropzone');
         const fileInput = document.getElementById('singleFile');
+        const uploadText = document.querySelector('.upload-text');
+        const selectedFile = document.querySelector('.selected-file');
+        const fileName = document.querySelector('.file-name');
+        const removeButton = document.querySelector('.remove-file');
+        const defaultText = 'Drag and drop your CSV or ZIP file or click to browse';
 
-        // Add drag and drop event handlers
+        function updateFileName(file) {
+            if (file) {
+                fileName.textContent = file.name;
+                selectedFile.style.display = 'flex';
+                uploadText.style.display = 'none';
+            } else {
+                uploadText.style.display = 'block';
+                selectedFile.style.display = 'none';
+                uploadText.textContent = defaultText;
+            }
+        }
+
+        // Handle file selection
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const fileType = file.name.toLowerCase().split('.').pop();
+                if (['csv', 'zip'].includes(fileType)) {
+                    updateFileName(file);
+                } else {
+                    alert('Please upload only CSV or ZIP files');
+                    fileInput.value = '';
+                }
+            }
+        });
+
+        // Handle drag and drop
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropZone.addEventListener(eventName, preventDefaults, false);
         });
@@ -674,28 +888,36 @@
         });
 
         function highlight(e) {
-            dropZone.classList.add('border-primary');
-            dropZone.style.backgroundColor = '#f0f9ff';
+            dropZone.classList.add('drag-active');
         }
 
         function unhighlight(e) {
-            dropZone.classList.remove('border-primary');
-            dropZone.style.backgroundColor = '';
+            dropZone.classList.remove('drag-active');
         }
 
         dropZone.addEventListener('drop', handleDrop, false);
 
         function handleDrop(e) {
             const dt = e.dataTransfer;
-            const files = dt.files;
+            const file = dt.files[0];
             
-            if (files.length > 0) {
-                fileInput.files = files;
-                // Trigger change event to update UI
-                const event = new Event('change');
-                fileInput.dispatchEvent(event);
+            if (file) {
+                const fileType = file.name.toLowerCase().split('.').pop();
+                if (['csv', 'zip'].includes(fileType)) {
+                    fileInput.files = dt.files;
+                    updateFileName(file);
+                } else {
+                    alert('Please upload only CSV or ZIP files');
+                }
             }
         }
+
+        // Handle remove button click
+        removeButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            fileInput.value = '';
+            updateFileName(null);
+        });
 
         const CHUNK_SIZE = 1024 * 1024 * 2; // 2MB chunks for better performance
         let startTime;

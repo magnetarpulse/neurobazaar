@@ -1,12 +1,9 @@
 # Core libraries for data processing                                                                                                      #
 import os                                                                                                                                                                                                                                                                                                                                                 
-from matplotlib import ticker
-import mpld3
 import numpy as np # type: ignore                                                                                                                                                             
 import pandas as pd # type: ignore                                                                                                                                                            
 import matplotlib.pyplot as plt  # type: ignore                                                                                                                                               
-from matplotlib.patches import FancyArrowPatch # type: ignore
-from matplotlib.ticker import FuncFormatter, LogLocator, LogFormatter  
+from matplotlib.patches import FancyArrowPatch # type: ignore  
 from trame.widgets.matplotlib import Figure                                                                                                                               
 import pydicom # type: ignore                                                                                                                                                                 
 #from PIL import Image # type: ignore 
@@ -75,20 +72,16 @@ class BaseOoDHistogram:
         self.state.data_items = []
         self.state.image_list=[]                                                                                                                                                                                                                                                                                                                
         self.state.image_paths=[]                                                                                                                                                             
-        self.state.final_path=[]                                                                                                                                                              
-        self.state.collection_images=[]                                                                                                                                                       
-        #self.state.pixel_array=[]                                                                                                                                                             
+        self.state.final_path=[]                                                                                                                                                                                                                                                                                                                     
         self.state.ood = ""
         self.state.selected_nodule ="" 
         self.state.image_items={}                                                                                                                                                             
         self.state.image_details=[] 
-        self.state.compare_details=[]                                                                                                                                                          
-        #self.state.coords_dict={}                                                                                                                                                             
+        self.state.compare_details=[]                                                                                                                                                                                                                                                                                                                      
         self.state.checkboxed_images=[] 
         self.state.compare_images=[]
         self.df = pd.DataFrame()                                                                                                                                                                                                                                                                                                                             
         self.data = []                                                                                                                                                                        
-
 
         # Tables for UI Layout                   
         self.state.subset_config = [                                                                                                                                                          
@@ -100,8 +93,7 @@ class BaseOoDHistogram:
                                                                                                                                                                                               
         self.table_config = {                                                                                                                                                                        
             "headers": ("subset_config", self.state.subset_config),                                                                                                                           
-            "items": ("subset_items", self.state.subset_items),                                                                                                                               
-            #"search": ("query", ""),                                                                                                                                                          
+            "items": ("subset_items", self.state.subset_items),                                                                                                                                                                                                                                                                                         
             "classes": "elevation-1 ma-4",                                                                                                                                                    
             "multi_sort": True,                                                                                                                                                               
             "dense": True,                                                                                                                                                                    
@@ -126,8 +118,7 @@ class BaseOoDHistogram:
             #"dark": True,
             
         }                       
-
-                                                                                                                                                                   
+                                                                                                                                                            
         if self.csv_path:
             if self.collection_path and self.max_slices:
                 if not ood_column:
@@ -146,11 +137,6 @@ class BaseOoDHistogram:
                 self.item_list = self.df[image_column].tolist()
                 self.nodule_ids = self.df[node_id]
 
-        self.check_collection(self.collection_path)
-        self.mapping(csv_path)
-        #self.create_dict() 
-        #self.original_images(self.state.files)
-        self.check_node_id(self.max_slices, self.csv_path, self.nodule_ids)
         self.register_triggers()
         self.render_ui_layout()
         self.update_range_count()  
@@ -159,7 +145,7 @@ class BaseOoDHistogram:
     # Method to get the figure size (static method).                                                                                                                                          
     # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                                                                                                                                                                                            
     def get_figure_size(self):                                                                                                                                                                
-        return {"figsize": (10, 6), "dpi": 70}  
+        return {"figsize": (10, 6), "dpi": 110}  
 
     # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                      
     # Compute min max for Dask Data                                                                                                                                          
@@ -197,14 +183,12 @@ class BaseOoDHistogram:
         yticklabels = []
         for x in ax.get_yticks():
             x = round(x, 1)
-            print(x)
             if x==0.0 or x == 1.0 or x == 2.0 or x == 3.0 or x == 4.0:
                 yticklabels.append(f'10^{int(x)}')
             else:
                 yticklabels.append('')
         ax.set_yticklabels(yticklabels)
     
-        
         ax.set_xlim(left=0)
         #ax.set_xlim(left=min_bin, right=max_bin)
         
@@ -251,8 +235,7 @@ class BaseOoDHistogram:
         ax.set_title('OoD Scores Distribution', fontsize=19, fontweight='bold', color='black', loc='center')                                               
         ax.set_xlabel('OoD Scores', fontsize=16)                                                                                                                                              
         ax.set_ylabel('Frequency', fontsize=16)  
-        fig.tight_layout()
-        #plt.show()                                                                                                               
+        fig.tight_layout()                                                                                                               
         return fig       
 
     # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                    
@@ -276,7 +259,6 @@ class BaseOoDHistogram:
             self.state.range_item.append(ranges)
         if self.state.subset_items:
             last_threshold = self.state.subset_items[-1]["threshold"]
-            #last_threshold = round(last_threshold, 4) 
             remaining_values = self.data[self.data > last_threshold]
             remaining_range = {
                 "index": len(self.state.subset_items) + 1,
@@ -333,166 +315,72 @@ class BaseOoDHistogram:
             end = subset["threshold"]  
                                                                                                                                                                      
             if start < end:          
-                mask = (self.data > start) & (self.data <= end)
-                filtered_df = self.df[mask]
-
-                filtered_uids = filtered_df[self.state.image_column].tolist()  # SOP UIDs
-                filtered_nodule_ids = filtered_df[self.state.node_id].tolist()  # Nodule IDs
-                filtered_nodule_ids_str = [str(id) for id in filtered_nodule_ids]
-
-                # Get relevant nodule image paths
-                nodule_ids = [
-                    path for path in self.state.collection_images 
-                    if any(str(id) in path for id in filtered_nodule_ids_str)
-                ]
-
-                node_basename = [int(os.path.splitext(os.path.basename(nid))[0]) for nid in nodule_ids]
-
-                base_names_list = []
-                for image in os.listdir(self.state.files):
-                    if image.endswith('.png'):
-                        if any(uid in image for uid in filtered_uids):
-                            image = os.path.splitext(image)[0]
-                            base_names_list.append(image)
-
-                # Filter results by both the node_basename and the filtered DataFrame
-                results = filtered_df[filtered_df[self.state.node_id].isin(node_basename)][
-                    [self.state.node_id, self.state.study_column, self.state.series_column, self.state.image_column, self.state.ood_column]
-                ]
-
-                # List of tuples containing the Nodule IDs, Study, Series, SOP UIDs, and OoD scores
+                filtered_df = self.df[(self.df[self.state.ood_column] > start) & (self.df[self.state.ood_column] <= end)]
                 mappings = [
-                    (row[self.state.node_id],
-                    row[self.state.study_column],
-                    row[self.state.series_column],
-                    row[self.state.image_column],
-                    row[self.state.ood_column]) for _, row in results.iterrows()
-                ]
+                    (
+                        row[self.state.node_id],  # Nodule ID
+                        row[self.state.study_column],
+                        row[self.state.series_column],
+                        row[self.state.image_column],  # SOP UID
+                        row[self.state.ood_column]  # OoD Score
+                    )
+                    for _, row in filtered_df.iterrows()
+                    ]
+                mappings.sort(key=lambda x: x[4]) # Sort results by OoD score (ascending)
 
-                
-                mappings.sort(key=lambda x: x[4]) # Sort by OoD score (ascending)
-
-                # Populate final results in sorted order
-                #final_dicom_images = {}
-                max_slices = {}
-                #log_loss_values = {}
-                list_all =[]
-
+                list_all = []
                 for item in mappings:
-                    nodule_id = item[0]  # Nodule ID
+                    nodule_id = item[0]
                     dicom = f"http://{SERVER_IP}:{PORT}{settings.MEDIA_URL}dicom_images/{item[3]}.png"
                     img = f"http://{SERVER_IP}:{PORT}{settings.MEDIA_URL}lidc_pixConvImg/{nodule_id}.png"
 
-                    #final_dicom_images[str(nodule_id)] = dicom
-                    max_slices[str(nodule_id)] = img
-                    #log_loss_values.append(float(item[4]))  # Ensure sorted 
-                    #log_loss_values[str(nodule_id)] = float(item[4])  # Ensure sorted order
-                    list_all.append([nodule_id, dicom, img, round(float(item[4]),4)])
+                    list_all.append([nodule_id, dicom, img, round(float(item[4]), 4)])
 
-                    
-                # Prepare items to be added to state
                 items = {
                     "name": f"Subset{i + 1}",
                     "range": f"({float(start)} , {float(end)}]",
-                    #"image_row": max_slices,
-                    #"dicom_imgs": final_dicom_images,
-                    #"log_loss": log_loss_values,
                     "download": mappings,
-                    "new": list_all
-                }
+                    "new": list_all  
+                    }
 
-                self.state.data_items.append(items)
+                self.state.data_items.append(items)               
     
-
         if self.state.subset_items:
                 last_threshold = self.state.subset_items[-1]["threshold"]
-                max_value = np.nanmax(self.data)
-                max_value = round(max_value, 4)
+                max_value = round(np.nanmax(self.data),4)
 
                 if last_threshold <= max_value:
-                    # Create the mask that includes max_value as well
-                    remaining_mask = (self.data >= last_threshold) & (self.data <= max_value)
-
-                    # Get the SOP UIDs that match the mask
-                    remaining_uids = self.df[remaining_mask][self.state.image_column].tolist()
-                    remaining_filtered_ids = self.df[remaining_mask][self.state.node_id].tolist()
-                    filtered_remaining_nodule_ids_str = [str(id) for id in remaining_filtered_ids]
-
-                    remaining_nodule_ids = [
-                        path for path in self.state.collection_images
-                        if any(str(id) in path for id in filtered_remaining_nodule_ids_str)
-                    ]
-
-                    rem_node_basename = []
-                    for nodule_id in remaining_nodule_ids:
-                        node_base = os.path.basename(nodule_id)
-                        node_base = os.path.splitext(node_base)[0]
-                        rem_node_basename.append(int(node_base))
-
-                    # DICOM Image SOP UID with filtered UIDs if matched
-                    rem_base_names_list = []
-                    for image in os.listdir(self.state.files):
-                        if image.endswith('.png'):
-                            if any(uid in image for uid in remaining_uids):
-                                image = os.path.splitext(image)[0]
-                                rem_base_names_list.append(image)
-
-                    # Map DICOM images to nodule IDs and OoD scores
-                    rem_results = self.df[remaining_mask][[
-                        self.state.node_id, self.state.study_column, self.state.series_column, 
-                        self.state.image_column, self.state.ood_column
-                    ]]
-
-                    # List of tuples containing the SOP UIDs, Nodule IDs, and respective OoD scores
+                    rem_filtered_df = self.df[(self.df[self.state.ood_column] > last_threshold) & (self.df[self.state.ood_column] <= max_value)]
                     rem_mappings = [
-                        (row[self.state.node_id],
+                    (
+                        row[self.state.node_id],  # Nodule ID
                         row[self.state.study_column],
                         row[self.state.series_column],
-                        row[self.state.image_column],
-                        row[self.state.ood_column]) for _, row in rem_results.iterrows()
+                        row[self.state.image_column],  # SOP UID
+                        row[self.state.ood_column]  # OoD Score
+                    )
+                    for _, row in rem_filtered_df.iterrows()
                     ]
 
-                    
                     rem_mappings.sort(key=lambda x: x[4])
 
-                    # Create empty lists and dictionaries
-                    rem_max_slices = {}
-                    #rem_final_dicom_images = {}
-                    #rem_log_loss_values = {}
                     rem_list_all = []
-
-                    # Populate sorted dictionaries
                     for item in rem_mappings:
-                        nodule_id = item[0]  # Nodule ID
+                        nodule_id = item[0]  
                         dicom = f"http://{SERVER_IP}:{PORT}{settings.MEDIA_URL}dicom_images/{item[3]}.png"
                         img = f"http://{SERVER_IP}:{PORT}{settings.MEDIA_URL}lidc_pixConvImg/{nodule_id}.png"
-
-                        # Map sorted nodule ID to images and log loss
-                        #rem_final_dicom_images[str(nodule_id)] = dicom
-                        rem_max_slices[str(nodule_id)] = img
-                        #rem_log_loss_values.append(float(item[4]))  # Maintain sorted order
-                        #rem_log_loss_values[str(nodule_id)] = float(item[4])
-
                         rem_list_all.append([nodule_id, dicom, img, round(float(item[4]),4)])
-
-                    # Ensure all data structures are sorted in the same order
-                    remaining_item = {
-                        "name": f"Subset{len(self.state.subset_items) + 1} (OoD)",
-                        "range": f"({float(last_threshold)} , {max_value}]",  # Ensures max_value is included
-                        #"image_row": rem_max_slices,
-                        #"dicom_imgs": rem_final_dicom_images,
-                        #"log_loss": rem_log_loss_values,
+                    
+                    remaining_item= {
+                        "name": f"Subset{len(self.state.subset_items) + 1}(OoD)",
+                        "range": f"({float(last_threshold)} , {max_value}]",
                         "download": rem_mappings,
                         "new": rem_list_all
-                    }
-                    
+                        }
 
                     self.state.data_items.append(remaining_item)
-                    #print(rem_list_all)
         self.server.state.dirty("data_items")
-        #print(self.state.data_items)
-        
-                                                                                                                                   
+        #print(self.state.data_items)                                                                                                                   
                                                                             
     # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                   
     # Method to add a subset.                                                                                                                                                                 
@@ -511,7 +399,6 @@ class BaseOoDHistogram:
                 return
         else:
             new_line = self.state.thresholds[0] # First subset, pick the smallest threshold
-        
         
         new_item = {
             "index": len(self.state.subset_items) + 1,
@@ -552,118 +439,7 @@ class BaseOoDHistogram:
         self.update_range_count()                                                                                                                                                         
         self.display_data()                                                                                                                                                               
         self.update_chart()                                                                                                                                                               
-        #(f"Subset at index {index} removed")   
-
-    # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                         
-    # Getting path for each .dcm file                                                                                                                                                         
-    # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
-    def check_collection(self, collection_path):                                                                                                                                              
-        if os.path.exists(collection_path):                                                                                                                                                   
-            if os.path.isdir(collection_path):                                                                                                                                                
-                for name in os.listdir(collection_path):                                                                                                                                      
-                    full_path= os.path.join(collection_path, name)                                                                                                                            
-                    if os.path.isdir(full_path):                                                                                                                                              
-                        self.check_collection(full_path)                                                                                                                                      
-                    else:                                                                                                                                                                     
-                        if full_path.endswith('.dcm'):                                                                                                                                        
-                            self.state.image_paths.append(full_path) 
-        #print(self.state.image_paths)
-                            
-    #-------------------------------------------------------------------------------------------------                                                                                                                                                                           
-    # Mapping records from .csv to the collection folder                                                                                                                                      
-    # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-    def mapping(self,csv_path):                                                                                                                                                   
-        if not os.path.isfile(csv_path):                                                                                                                                                      
-            print(f"CSV file does not exist at the path: {csv_path}")                                                                                                                         
-            return                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-        studies = self.df[self.state.study_column].values                                                                                                                                                    
-        series = self.df[self.state.series_column].values                                                                                                                                                     
-        image_sop= self.df[self.state.image_column ].values                                                                                                                                                      
-                                                                                                                                                                                              
-        for dcm_path in self.state.image_paths:                                                                                                                                               
-            parts=dcm_path.split(os.sep)                                                                                                                                                                                                                                                                                                                                          
-            if len(parts)>=3:                                                                                                                                                                 
-                dcm_file=os.path.basename(dcm_path)                                                                                                                                           
-                if dcm_file.endswith(".dcm"):                                                                                                                                                 
-                    dcm_file = os.path.splitext(dcm_file)[0]                                                                                                                                  
-                second_folder=parts[-2]                                                                                                                                                       
-                first_folder = parts[-3]                                                                                                                                                                                                                                                                                                                                   
-                for _, (study_uid, series_uid, file_uid) in enumerate(zip(studies, series, image_sop)):                                                                                                                                                                                                                                                                 
-                    if study_uid == first_folder and series_uid == second_folder and file_uid == dcm_file:                                                                                                                                                                                                                                                             
-                        #path = f"{study_uid}/{series_uid}/{file_uid}.dcm"                                                                                                                    
-                        self.state.final_path.append(dcm_path)      
-
-    # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                         
-    # Create dictionary for ImageSOPUid and coordinates                                                                                                                                       
-    # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                                   
-    def create_dict(self):                                                                                                                                                                    
-        for i in self.df.index:                                                                                                                                                               
-            sop_uid = self.df.loc[i, self.state.image_column]  # Get the 'imageSOP_UID'                                                                                                                
-            coords = self.df.loc[i, 'coords']        # Get the 'coords'                                                                                                                       
-            self.state.coords_dict[sop_uid] = coords # Add the SOP UID and coordinates to the dictionary                                                                                                                                                                                                                                                                                    
-        self.server.state.dirty("coords_dict")
-
-    # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                         
-    # Displaying Pixel Array for original images from Collection                                                                                                                              
-    # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
-    def original_images(self,files):  
-        coords_dict = {}
-        for i in self.df.index:                                                                                                                                                               
-            sop_uid = self.df.loc[i, self.state.image_column]                                                                                                                  
-            coords = self.df.loc[i, 'coords']                                                                                                                         
-            coords_dict[sop_uid] = coords # Add the SOP UID and coordinates to the dictionary                                                                                                                                                                                                                                                                                    
-        
-        if not os.path.exists(files):                                                                                                                                                  
-            os.makedirs(files)                                                                                                                                                                                                                                                                                                                                                 
-        for path in self.state.final_path:                                                                                                                                                    
-            meta_data_path = pydicom.dcmread(f"{path}")                                                                                                                                       
-            pixel_array = meta_data_path.pixel_array                                                                                                                                          
-            #img = Image.fromarray(pixel_array)                                                                                                                                                
-            #self.state.pixel_array.append(pixel_array)                                                                                                                                                                                                                                                                                                                                
-            base_name= os.path.splitext(path)[0]                                                                                                                                              
-            base_name= base_name.split('/').pop()                                                                                                                                             
-            filename = base_name + ".png"  # Use original filename with .png extension                                                                                                                                                                                                                                                                                                      
-            output_path = os.path.join(files, filename)                                                                                                                                
-                                                                                                                                                                                              
-            if os.path.exists(output_path):                                                                                                                                                   
-                print(f"Skipping: {filename} (already exists)")                                                                                                                               
-                continue                          
-	        
-            for key, value in coords_dict.items():                                                                                                                                 
-                if key == base_name:                                                                                                                                                          
-                    coords=value                                                                                                                                                              
-                    x_coords = []                                                                                                                                                             
-                    y_coords = []                                                                                                                                                             
-                    for point in coords.split("|"):                                                                                                                                           
-                        if point.strip():  # Ensure the point is not empty                                                                                                                    
-                            x, y = map(int, point.split(";"))                                                                                                                                 
-                            x_coords.append(x)                                                                                                                                                
-                            y_coords.append(y)                                                                                                                                                                                                                                                                                                                    
-                            plt.imshow(pixel_array, cmap="gray")                                                                                                                              
-                            plt.plot(x_coords, y_coords, color="red", linewidth=1)  # Overlay the contours on the image                                                                                                                                                                                                                                                     
-                            plt.axis("off")  # Remove axes                                                                                                                                    
-                            plt.savefig(output_path, bbox_inches="tight", pad_inches=0)                                                                                                                                                                                                                                                                                                     
-                            plt.close()    
-
-    # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                         
-    # Mapping Max_slices collection with csv file                                                                                                                                             
-    # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                     
-    def check_node_id(self,img_collection,csv_path,node_id):                                                                                                                                  
-        if os.path.exists(img_collection):                                                                                                                                                    
-            if os.path.exists(csv_path):                                                                                                                                                      
-                if os.path.isdir(img_collection):                                                                                                                                             
-                    for file in os.listdir(img_collection):                                                                                                                                   
-                        file_path= os.path.join(img_collection, file)                                                                                                                         
-                        if os.path.isdir(file_path):                                                                                                                                          
-                            self.check_node_id(file_path,csv_path,node_id)                                                                                                                    
-                        else:                                                                                                                                                                 
-                            png_file=os.path.basename(file_path)                                                                                                                              
-                            if png_file.endswith('.jpeg') or png_file.endswith('.png') or png_file.endswith('.jpg'):                                                                                                                                                                                                                                                                       
-                                img_name = os.path.splitext(png_file)[0]                                                                                                                      
-                                for i in node_id:                                                                                                                                             
-                                    if img_name==str(i):                                                                                                                                      
-                                        self.state.collection_images.append(file_path) 
-                                        break                                                                                                                             
+        #(f"Subset at index {index} removed")                                                                                                                                    
 
     # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                   
     # Refresh the Layout                                                                                                                                                                      
@@ -807,11 +583,11 @@ class BaseOoDHistogram:
                     with vuetify.VRow(classes="justify-start"):                                                                                                                                          
                         vuetify.VSubheader("Threshold View:",style="font-size: 20px;font-weight: bold;color: rgb(8, 24, 168);") 
                         vuetify.VSpacer()                                                                                                                                                                                                                                                
-                        '''with vuetify.VBtn(color="#0000FF", click=self.refresh_data, size=20,):                                                                                                                                                                                                                                                                                  
+                        with vuetify.VBtn(color="#0000FF", click=self.refresh_data, size=20,):                                                                                                                                                                                                                                                                                  
                             vuetify.VIcon("mdi-refresh",                                                                                                                          
                             color="white",                                                                                                                            
                             size=35,                                                                                                                                  
-                            classes="d-flex align-center justify-center",)'''
+                            classes="d-flex align-center justify-center",)
 
                     with vuetify.VRow(classes="justify-start"):                                                                                                           
                         with vuetify.VRow(classes="text-h4 font-weight-bold",):
@@ -884,7 +660,7 @@ class BaseOoDHistogram:
                         vuetify.VIcon(                                                                                                                            
                         "mdi-download",                                                                                                                   
                         color="blue",                                                                                                                     
-                        click="utils.download('Subset_'+(index + 1)+'.csv','Nodule ID , Study Instance UID, Series Instance UID, Image SOP UID, Log Loss\\n'+item['download'].join('\\n'), 'text/csv')",                                                                                                                      
+                        click="utils.download('Subset_'+(index + 1)+'.csv','Nodule ID , Study Instance UID, Series Instance UID, Image SOP UID, OoD Score\\n'+item['download'].join('\\n'), 'text/csv')",                                                                                                                      
                         size=31, 
                         style="border: 2px solid blue; border-radius: 30%; padding: 2px; color: rgb(8, 24, 168);margin-top:5px;margin-bottom: 5px;",)                                                                                                                
                                                                                                                                                                                                                                                   
@@ -981,11 +757,7 @@ class BaseOoDHistogram:
                                                         alt=("Selected Max Slice Image"),
                                                         style="width: 280px; height: 280px; object-fit: contain; padding: 5px; display: block; margin: 0 auto;",  # Ensures the image is centered
                                                         eager=False,
-                                                    )
-
-
-
-                                         
+                                                    )      
 
                             # Right Column (Table)
                             with vuetify.VCol(xs="12", sm="12", md="9", lg="7", xl="7"):
@@ -1004,8 +776,7 @@ class BaseOoDHistogram:
                                                     with html.Tr():
                                                         html.Td(children=["{{ value.Property }}"], classes="font-weight-bold", style="font-size: 20px;")
                                                         html.Td(children=["{{ value.Value }}"], style="font-size: 18px;")
-                    
-            
+
         # Compare Images route                                                                                                                                                                                                                                                                                                                             
         with RouterViewLayout(self.server, "/compare/", style="width: 100%; padding-bottom: 20px; margin: 0;"):   
             with vuetify.VRow():                                                                                                                                                                                                                                                                                                                         
@@ -1080,33 +851,7 @@ class BaseOoDHistogram:
         #with SinglePageWithDrawerLayout(self.server) as layout:                                                                                                                              
         with SinglePageLayout(self.server) as layout:                                                                                                                                         
             layout.title.set_text(self.server.name)                                                                                                                                                                                                                                                                
-            # Drawer for navigation                                                                                                                                                           
-            '''with layout.drawer:                                                                                                                                                            
-                    layout.drawer.style = "background-color: #f0f0f0; max-height: 400;"                                                                                                                                                                                       
-                    with vuetify.VList(shaped=True, dense=True, style="max-width: 100%;"):                                                                                                                                                                                    
-                            #vuetify.VIcon("mdi-refresh", color="black", size="20px", classes="d-flex align-center justify-center",padding="2px", click=self.refresh_drawer)                                                                                                                                                                                  
-                            vuetify.VSubheader("Routes", style="font-size: 18px;color: black;")                                                                                                                                                                              
-                                                                                                                                                                                              
-                            # Define navigation links for routing                                                                                                                             
-                                                                                                                                                                                              
-                            with vuetify.VListItem(to="/"):                                                                                                                                   
-                                vuetify.VIcon("mdi-home",color= "#00008B", size= "20px",classes="d-flex align-center justify-center",padding="2px")                                                                                                                       
-                                with vuetify.VListItemContent():                                                                                                                          
-                                    vuetify.VListItemTitle("Home",style="font-size: 20px;padding: 2px;")                                                                                                                                                                  
-                                                                                                                                                                                              
-                            if self.state.data_view_visible:                                                                                                                                  
-                                #self.server.state.dirty("data_view_visible")                                                                                                                 
-                                with vuetify.VListItem(to="/data/None/None"):                                                                                                                 
-                                    vuetify.VIcon("mdi-database",color= "#00008B", size= "20px",classes="d-flex align-center justify-center",padding="2px")                                                                                                                   
-                                    with vuetify.VListItemContent():                                                                                                                          
-                                        vuetify.VListItemTitle("Data View",style="font-size: 20px;padding: 2px;")       
-
-                            if self.state.compare_view_visible:                                                                                                                               
-                                with vuetify.VListItem(to="/compare"):                                                                                                                        
-                                    vuetify.VIcon("mdi-compare",color= "#00008B", size= "20px",classes="d-flex align-center justify-center",padding="2px")                                                                                                                    
-                                    with vuetify.VListItemContent():                                                                                                                          
-                                        vuetify.VListItemTitle("Compare Images",style="font-size: 20px;padding: 2px;")'''                                                                                                                                                     
-                                                                                                                                                                                              
+                             
         # Main content area                                                                                                                                                               
             with layout.content:                                                                                                                                                              
                 with vuetify.VContainer(fluid=True, style="padding-left: 0px;"):                                                                                                                
@@ -1120,9 +865,8 @@ class BaseOoDHistogram:
     @abstractmethod                                                                                                                                                                           
     def start_server_immediately(self):                                                                                                                                                       
         print(f"Starting Server_Manager at http://localhost:{self.port}/index.html")                                                                                                                                                                                                                                                                                                        
-        #self.server.start(exec_mode="main", port=self.port)                                                                                                                                  
-        self.server.start(host="0.0.0.0", port=self.port, auth_key="key", username = "admin", password = "admin", client_ip = "127.0.0.1", allowed_ips=["75.102.253.4","76.136.2.21"])                                                                                                                        
         # self.server.start(host="0.0.0.0", port=self.port)
+        self.server.start(host="0.0.0.0", port=self.port, auth_key="key", username = "admin", password = "admin", client_ip = "127.0.0.1", allowed_ips=["75.102.253.4","76.136.2.21"])                                                                                                                        
 
     # ---------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                         
     # Method to start a new server (async). To be used in a multi-process environment                                                                                                                                                                                                                                                                                                     

@@ -33,7 +33,7 @@ def main():
     if sys.argv[1:2] == ['runserver']:
         # Default values
         host = '127.0.0.1'
-        port = 8000
+        port = 8002
 
         # Parse host and port if provided
         if len(sys.argv) > 2:

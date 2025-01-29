@@ -17,22 +17,119 @@
 
 <section class="page-section bg-light">
     <div class="container">
-        <div class="row">
-            <!-- CSV Viewer Section -->
+        <!-- CSV Files List Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                        <h5 class="mb-0 text-primary">Your CSV Files</h5>
+                        <div class="btn-group">
+                            <button class="btn btn-soft-primary btn-sm active" onclick="filterFiles('all')">All</button>
+                            <button class="btn btn-soft-primary btn-sm" onclick="filterFiles('public')">Public</button>
+                            <button class="btn btn-soft-primary btn-sm" onclick="filterFiles('private')">Private</button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="border-0 px-4 py-3">File Name</th>
+                                        <th class="border-0 px-4 py-3">Description</th>
+                                        <th class="border-0 px-4 py-3">Created</th>
+                                        <th class="border-0 px-4 py-3">Repository</th>
+                                        <th class="border-0 px-4 py-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for file in public_files %}
+                                    <tr class="file-row" data-repository="public">
+                                        <td class="px-4 py-3">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-file-csv text-primary me-2"></i>
+                                                <span class="fw-medium">{{ file.name }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 text-muted">{{ file.description }}</td>
+                                        <td class="px-4 py-3 text-muted">{{ file.created|date:"M d, Y" }}</td>
+                                        <td class="px-4 py-3">
+                                            <span class="badge bg-success-subtle text-success px-3 py-2">Public</span>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <div class="btn-group">
+                                                <button class="btn btn-primary btn-sm" onclick="viewCSV('{{ file.uuid }}')">
+                                                    <i class="fas fa-table me-1"></i> View
+                                                </button>
+                                                <form method="post" class="d-inline" action="/datasets/">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="download_file" value="{{ file.uuid }}">
+                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                        <i class="fas fa-download me-1"></i> Download
+                                                    </button>
+                                                </form>
+                                                <button class="btn btn-info btn-sm" onclick="chatWithCSV('{{ file.uuid }}')">
+                                                    <i class="fas fa-comments me-1"></i> Chat
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    {% for file in private_files %}
+                                    <tr class="file-row" data-repository="private">
+                                        <td class="px-4 py-3">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-file-csv text-primary me-2"></i>
+                                                <span class="fw-medium">{{ file.name }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 text-muted">{{ file.description }}</td>
+                                        <td class="px-4 py-3 text-muted">{{ file.created|date:"M d, Y" }}</td>
+                                        <td class="px-4 py-3">
+                                            <span class="badge bg-warning-subtle text-warning px-3 py-2">Private</span>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <div class="btn-group">
+                                                <button class="btn btn-primary btn-sm" onclick="viewCSV('{{ file.uuid }}')">
+                                                    <i class="fas fa-table me-1"></i> View
+                                                </button>
+                                                <form method="post" class="d-inline" action="/datasets/">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="download_file" value="{{ file.uuid }}">
+                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                        <i class="fas fa-download me-1"></i> Download
+                                                    </button>
+                                                </form>
+                                                <button class="btn btn-info btn-sm" onclick="chatWithCSV('{{ file.uuid }}')">
+                                                    <i class="fas fa-comments me-1"></i> Chat
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Visualization Section -->
+        <div class="row" id="dataSection" style="display: none;">
             <div class="col-md-8">
                 <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0">Data Visualization</h5>
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 text-primary">Data Visualization</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-0">
                         <div class="csv-table-container">
-                            <table id="csvTable" class="table table-striped table-bordered">
+                            <table id="csvTable" class="table table-striped table-bordered mb-0">
                                 <thead>
                                     <tr id="csvHeaders"></tr>
                                 </thead>
                                 <tbody id="csvBody"></tbody>
                             </table>
-                            <div id="loadingSpinner" class="text-center" style="display: none;">
+                            <div id="loadingSpinner" class="text-center py-4" style="display: none;">
                                 <div class="spinner-border text-primary" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div>
@@ -46,8 +143,8 @@
             <!-- AI Chat Section -->
             <div class="col-md-4">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0">Chat with Data</h5>
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 text-primary">Chat with Data</h5>
                     </div>
                     <div class="card-body">
                         <div class="chat-container" id="chatContainer">
@@ -71,10 +168,84 @@
 </section>
 
 <style>
+/* Modern styling */
+.btn-soft-primary {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border: 1px solid transparent;
+}
+
+.btn-soft-primary:hover {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.btn-soft-primary.active {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.table {
+    font-size: 0.875rem;
+}
+
+.table thead th {
+    font-weight: 600;
+    color: #4b5563;
+    background-color: #f9fafb;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.badge {
+    font-weight: 500;
+    letter-spacing: 0.025em;
+}
+
+.bg-success-subtle {
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+.bg-warning-subtle {
+    background-color: rgba(245, 158, 11, 0.1);
+}
+
+.text-success {
+    color: #10b981 !important;
+}
+
+.text-warning {
+    color: #f59e0b !important;
+}
+
+.fw-medium {
+    font-weight: 500;
+}
+
+.btn-group {
+    gap: 0.5rem;
+}
+
+.btn-group .btn {
+    border-radius: 6px !important;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.813rem;
+    font-weight: 500;
+}
+
 .chat-container {
+    height: 600px;
     display: flex;
     flex-direction: column;
-    height: 600px;
 }
 
 .chat-messages {
@@ -86,56 +257,62 @@
     margin-bottom: 1rem;
 }
 
-.chat-input-container {
-    padding: 1rem 0 0 0;
-}
-
-.message {
-    margin-bottom: 1rem;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-}
-
-.user-message {
-    background: #e3f2fd;
-    margin-left: 2rem;
-    border-radius: 1rem 1rem 0 1rem;
-}
-
-.ai-message {
-    background: #fff;
-    margin-right: 2rem;
-    border-radius: 1rem 1rem 1rem 0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
 .system-message {
     background: #f0f0f0;
     text-align: center;
-    padding: 0.5rem;
+    padding: 0.75rem;
     border-radius: 0.5rem;
     margin-bottom: 1rem;
     font-style: italic;
+    color: #4b5563;
 }
 
 .csv-table-container {
     max-height: 600px;
     overflow: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
 }
 
 #csvTable {
-    margin-bottom: 0;
+    margin: 0;
 }
 
 #csvTable thead th {
     position: sticky;
     top: 0;
-    background: #f8f9fa;
+    background: #f9fafb;
     z-index: 1;
+    padding: 0.75rem 1rem;
 }
 
-#loadingSpinner {
-    padding: 2rem;
+#csvTable td {
+    padding: 0.75rem 1rem;
+    color: #4b5563;
+}
+
+.card {
+    border: none;
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.card-header {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.text-primary {
+    color: #3b82f6 !important;
+}
+
+.form-control {
+    border-color: #e5e7eb;
+    border-radius: 0.5rem;
+}
+
+.form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 </style>
 
@@ -281,6 +458,40 @@ function getCookie(name) {
         }
     }
     return cookieValue;
+}
+
+function filterFiles(repository) {
+    const rows = document.querySelectorAll('.file-row');
+    rows.forEach(row => {
+        if (repository === 'all' || row.dataset.repository === repository) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function viewCSV(fileUUID) {
+    currentFileUUID = fileUUID;
+    document.getElementById('dataSection').style.display = 'flex';
+    document.getElementById('csvHeaders').innerHTML = '';
+    document.getElementById('csvBody').innerHTML = '';
+    currentPage = 1;
+    hasMoreData = true;
+    loadMoreData();
+}
+
+function chatWithCSV(fileUUID) {
+    currentFileUUID = fileUUID;
+    document.getElementById('dataSection').style.display = 'flex';
+    document.getElementById('chatMessages').innerHTML = `
+        <div class="system-message">
+            Ask questions about your data and I'll help you analyze it.
+        </div>
+    `;
+    document.getElementById('userInput').value = '';
+    // Scroll to the data section
+    document.getElementById('dataSection').scrollIntoView({ behavior: 'smooth' });
 }
 </script>
 {% endblock %} 

@@ -24,9 +24,9 @@ urlpatterns = [
     
     # CSV and Data Explorer endpoints
     path('data-explorer/', views.data_explorer_main, name='data_explorer_main'),
+    path('data-explorer/<uuid:file_uuid>/', views.data_explorer, name='data_explorer'),
     path('api/csv/<uuid:file_uuid>/', views.csv_data, name='csv_data'),
     path('api/chat/<uuid:file_uuid>/', views.chat_with_data, name='chat_with_data'),
-    path('data-explorer/<uuid:file_uuid>/', views.data_explorer, name='data_explorer'),
     
     # Basic histogram routes
     path('histogram<int:num>/', views.new_view, name='histogram'),

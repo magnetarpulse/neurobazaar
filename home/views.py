@@ -181,7 +181,33 @@ class DataStoreManager:
         if datastore['type'] == 'filesystem':
             file_path = os.path.join(datastore['path'], dataset_uuid)
             if os.path.exists(file_path):
-                return open(file_path, 'rb')
+                if os.path.isfile(file_path):
+                    return open(file_path, 'rb')
+                else:
+                    # If it's a directory, create a ZIP file
+                    zip_filename = f"{dataset_uuid}.zip"
+                    zip_path = os.path.join('/tmp', zip_filename)
+                    
+                    # Create zip file
+                    shutil.make_archive(zip_path[:-4], 'zip', file_path)
+                    
+                    # Stream the zip file
+                    response = FileResponse(
+                        open(zip_path, 'rb'),
+                        as_attachment=True,
+                        filename=zip_filename
+                    )
+                    response['Content-Length'] = os.path.getsize(zip_path)
+                    
+                    # Schedule zip file cleanup after response is sent
+                    def cleanup_zip(sender, **kwargs):
+                        try:
+                            os.remove(zip_path)
+                        except OSError:
+                            pass
+                    
+                    request.META['cleanup_callback'] = cleanup_zip
+                    return response
             else:
                 raise FileNotFoundError("Dataset not found")
         else:
@@ -686,13 +712,47 @@ def datasets(request):
             dataset = Files.objects.get(UUID=dataset_UUID)
             manager = getDataStoreManager()
             datastore_instance = dataset.Datastore_UUID
-            datastore = manager.getDatastore(str(datastore_instance.UUID))
-            file_obj = datastore.getDataset(str(dataset.UUID))
-            end_time = time.time()
-            fetch_time = end_time - start_time
-            print(f"fetch time: {fetch_time}")
-            response = FileResponse(file_obj, as_attachment=True, filename=dataset.Name)
-            return response
+            
+            # Get the datastore info
+            datastore_info = manager.getDatastore(str(datastore_instance.UUID))
+            
+            if datastore_info['type'] == 'filesystem':
+                file_path = os.path.join(datastore_info['path'], str(dataset.UUID))
+                if os.path.exists(file_path):
+                    if os.path.isfile(file_path):
+                        response = FileResponse(
+                            open(file_path, 'rb'),
+                            as_attachment=True,
+                            filename=dataset.Name
+                        )
+                        response['Content-Length'] = os.path.getsize(file_path)
+                    else:
+                        # If it's a directory, create a ZIP file
+                        zip_filename = f"{dataset.Name}.zip"
+                        zip_path = os.path.join('/tmp', zip_filename)
+                        
+                        # Create zip file
+                        shutil.make_archive(zip_path[:-4], 'zip', file_path)
+                        
+                        # Stream the zip file
+                        response = FileResponse(
+                            open(zip_path, 'rb'),
+                            as_attachment=True,
+                            filename=zip_filename
+                        )
+                        response['Content-Length'] = os.path.getsize(zip_path)
+                        
+                        # Schedule zip file cleanup after response is sent
+                        def cleanup_zip(sender, **kwargs):
+                            try:
+                                os.remove(zip_path)
+                            except OSError:
+                                pass
+                        
+                        request.META['cleanup_callback'] = cleanup_zip
+                    return response
+            else:
+                return HttpResponse("Unsupported datastore type for download", status=400)
 
     # Get all datastores for the upload form
     datastores = Datastores.objects.all()
@@ -1459,7 +1519,7 @@ def new_view3(request, path='', num=None):
             headers['X-CSRF-Token'] = session.cookies['csrf_token']
         
         headers['Cookie'] = '; '.join([f"{k}={v}" for k, v in session.cookies.items()])
-        
+            
         response = session.get(
             target_url,
             headers=headers,
@@ -1469,7 +1529,7 @@ def new_view3(request, path='', num=None):
         )
         
         logger.info(f"Analyzer content response status: {response.status_code}")
-        
+            
         if response.status_code == 200:
             if is_static_file:
                 return HttpResponse(
@@ -1490,9 +1550,9 @@ def new_view3(request, path='', num=None):
 
             # Get all available analyzer servers for the navigation
             analyzer_servers = [
-                {'number': i+1, 'port': s.port} 
-                for i, s in enumerate(server_instances)
-            ]
+                    {'number': i+1, 'port': s.port} 
+                    for i, s in enumerate(server_instances)
+                ]
 
             django_response = render(request, 'oodanalyzer.html', {
                 'username': username,
@@ -1731,17 +1791,44 @@ def analyze_data(df, question):
 @login_required
 def data_explorer_main(request):
     """Main page for the data explorer that lists available CSV files."""
-    # Get all CSV files the user has access to
-    csv_files = Files.objects.filter(
-        collections__user=request.user,
-        file_type__icontains='csv'
-    ).order_by('-created_at')
+    user_instance = request.user
     
-    return render(request, 'data_explorer_main.html', {
-        'csv_files': csv_files,
+    # Get all CSV files the user has access to (filter by .csv extension)
+    public_files = Files.objects.filter(
+        Repository='public',
+        Name__iendswith='.csv'
+    ).order_by('-Created')
+    
+    private_files = Files.objects.filter(
+        Repository='private',
+        Username=user_instance,
+        Name__iendswith='.csv'
+    ).order_by('-Created')
+    
+    # Prepare file information with additional details
+    def prepare_file_info(files_queryset):
+        file_info = []
+        for file in files_queryset:
+            info = {
+                'uuid': str(file.UUID),
+                'name': file.Name,
+                'description': file.Description,
+                'created': file.Created,
+                'username': file.Username.username if file.Username else None,
+                'datastore': file.Datastore_UUID.Name if file.Datastore_UUID else None
+            }
+            file_info.append(info)
+        return file_info
+
+    context = {
+        'username': user_instance.username,
+        'public_files': prepare_file_info(public_files),
+        'private_files': prepare_file_info(private_files),
         'title': 'Data Explorer',
         'description': 'Explore and analyze your CSV files using AI'
-    })
+    }
+    
+    return render(request, 'data_explorer.html', context)
 
 
 

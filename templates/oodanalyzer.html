@@ -53,75 +53,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% block extra_head %}{% endblock %}
 
-    <script>
-        // Function to handle WebSocket connections
-        function setupWebSocket() {
-            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${wsProtocol}//${window.location.host}${window.location.pathname}ws`;
-            
-            const ws = new WebSocket(wsUrl);
-            
-            ws.onopen = function() {
-                console.log('WebSocket connection established');
-                // Send authentication key
-                ws.send(JSON.stringify({
-                    type: 'auth',
-                    key: 'key'  // This should match the auth_key in the server
-                }));
-            };
-            
-            ws.onmessage = function(event) {
-                console.log('Message received:', event.data);
-                // Handle incoming messages
-                try {
-                    const data = JSON.parse(event.data);
-                    // Process the data as needed
-                } catch (e) {
-                    console.error('Error parsing WebSocket message:', e);
-                }
-            };
-            
-            ws.onerror = function(error) {
-                console.error('WebSocket error:', error);
-            };
-            
-            ws.onclose = function() {
-                console.log('WebSocket connection closed');
-                // Attempt to reconnect after a delay
-                setTimeout(setupWebSocket, 5000);
-            };
-            
-            return ws;
-        }
-
-        // Initialize WebSocket when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            setupWebSocket();
-        });
-    </script>
-</head>
-<body
-    id="page-top">
-        <!-- Navigation-->
-       
-    {% block content %}
     <style>
-        body { 
-            padding-top: 0;
-            background-color: #f8fafc;
-        }
-       
-        /* Modern Page Header styles */
-        .page-header {
+        /* Isolate our styles to header only */
+        .nb-page-header {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             position: relative;
             overflow: hidden;
             margin-top: 50px;
             padding: 1rem 0;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 1;
         }
 
-        .page-header::before {
+        .nb-page-header::before {
             content: '';
             position: absolute;
             top: 0;
@@ -129,10 +73,9 @@
             right: 0;
             bottom: 0;
             background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 60%);
-            z-index: 1;
         }
 
-        .header-top {
+        .nb-header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -141,13 +84,13 @@
             z-index: 2;
         }
 
-        .logo-section {
+        .nb-logo-section {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
 
-        .logo-container {
+        .nb-logo-container {
             width: 75px;
             height: 75px;
             display: flex;
@@ -158,26 +101,22 @@
             padding: 0.35rem;
             transition: transform 0.3s ease;
         }
-        .container{
-            width: 100%;
-            height: 100%;
-        }
 
-        .logo-container:hover {
+        .nb-logo-container:hover {
             transform: scale(1.05);
         }
 
-        .header-logo {
+        .nb-header-logo {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
 
-        .header-title {
+        .nb-header-title {
             color: white;
         }
 
-        .header-title h1 {
+        .nb-header-title h1 {
             font-size: 1.5rem;
             font-weight: 600;
             margin: 0;
@@ -186,13 +125,13 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .header-title p {
+        .nb-header-title p {
             color: #94a3b8;
             font-size: 0.875rem;
             margin: 0.25rem 0 0;
         }
 
-        .back-button {
+        .nb-back-button {
             background: rgba(255, 255, 255, 0.1);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -207,155 +146,135 @@
             text-decoration: none;
         }
 
-        .back-button:hover {
+        .nb-back-button:hover {
             background: rgba(255, 255, 255, 0.2);
             border-color: rgba(255, 255, 255, 0.3);
             color: white;
             transform: translateY(-2px);
         }
 
-        .status-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            position: relative;
-            z-index: 2;
-        }
-
-        .status-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .status-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .status-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            background: rgba(59, 130, 246, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: #60a5fa;
-        }
-
-        .status-icon.active {
-            background: rgba(59, 130, 246, 0.3);
-            color: #93c5fd;
-        }
-
-        .status-info h3 {
-            font-size: 0.875rem;
-            color: #94a3b8;
-            margin: 0;
-            font-weight: 500;
-        }
-
-        .status-count {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: white;
-            margin: 0.25rem 0 0;
-            background: linear-gradient(to right, #fff, #93c5fd);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .status-text {
-            font-size: 1.75rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #fff, #93c5fd);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 0.25rem 0 0;
-        }
-
-        /* Update histogram navigation */
-        .histogram-nav {
-            background: white;
-            border-radius: 16px;
-            padding: 1rem;
-            margin: 2rem 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            display: flex;
-            justify-content: center;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
-
-        .histogram-nav a {
-            padding: 0.75rem 1.25rem;
-            border-radius: 12px;
-            text-decoration: none;
-            color: #1e293b;
-            background-color: #f1f5f9;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .histogram-nav a:hover {
-            background-color: #e2e8f0;
-            transform: translateY(-2px);
-        }
-
-        .histogram-nav a.active {
-            background-color: #3b82f6;
-            color: white;
-        }
-
-        #pr-content-box {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
+        /* Container for proxied content */
+        #pr-content {
             margin-top: 2rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Preserve Vuetify button styles */
+        .v-icon.notranslate {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .v-icon.v-icon--link {
+            cursor: pointer;
+            outline: none;
+        }
+
+        .v-icon.theme--light.blue--text {
+            color: rgb(8, 24, 168) !important;
+        }
+
+        /* Reset any Bootstrap button styles that might interfere */
+        #pr-content button {
+            all: unset;
+            cursor: pointer;
+        }
+
+        #pr-content button.v-icon {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 30px !important;
+            border: 2px solid blue !important;
+            border-radius: 40% !important;
+            padding: 5px !important;
+            color: rgb(8, 24, 168) !important;
+            box-shadow: none !important;
+            transition: none !important;
+        }
+
+        #pr-content button.v-icon:hover,
+        #pr-content button.v-icon:focus,
+        #pr-content button.v-icon:active {
+            box-shadow: none !important;
+            transform: none !important;
+            outline: none !important;
+            border: 2px solid blue !important;
         }
     </style>
+</head>
+<body
+    id="page-top">
+        <!-- Navigation-->
 
-    <!-- Modern Page Header -->
-    <div class="page-header">
+    {% block content %}
+    <!-- Header Section -->
+    <div class="nb-page-header">
         <div class="container">
-            <div class="header-top">
-                <div class="logo-section">
-                    <div class="logo-container">
-                        <img src="/static/assets/img/logo-main.png" alt="Neurobazaar Logo" class="header-logo">
+            <div class="nb-header-top">
+                <div class="nb-logo-section">
+                    <div class="nb-logo-container">
+                        <img src="/static/assets/img/logo-main.png" alt="Neurobazaar Logo" class="nb-header-logo">
                     </div>
-                    <div class="header-title">
+                    <div class="nb-header-title">
                         <h1>OOD Analyzer</h1>
                         <p>Interactive data visualization and analysis</p>
                     </div>
                 </div>
-                <a href="/visualization_server_manager" class="back-button">
+                <a href="/visualization_server_manager" class="nb-back-button">
                     <i class="fas fa-arrow-left"></i>
                     Back to Dashboard
                 </a>
             </div>
-
-            
         </div>
     </div>
 
-    <div class="container">
-      
-        <div id="pr-content-box">
+    <!-- Proxied Content -->
             <div id="pr-content">
                 {{ proxied_content|safe }}
-            </div>
-        </div>
     </div>
 
     {% endblock content %}
+
+    <!-- WebSocket Setup -->
+    <script>
+        function setupWebSocket() {
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${wsProtocol}//${window.location.host}${window.location.pathname}ws`;
+            const ws = new WebSocket(wsUrl);
+            
+            ws.onopen = function() {
+                console.log('WebSocket connection established');
+                ws.send(JSON.stringify({
+                    type: 'auth',
+                    key: 'key'
+                }));
+            };
+            
+            ws.onmessage = function(event) {
+                console.log('Message received:', event.data);
+                try {
+                    const data = JSON.parse(event.data);
+                } catch (e) {
+                    console.error('Error parsing WebSocket message:', e);
+                }
+            };
+            
+            ws.onerror = function(error) {
+                console.error('WebSocket error:', error);
+            };
+            
+            ws.onclose = function() {
+                console.log('WebSocket connection closed');
+                setTimeout(setupWebSocket, 5000);
+            };
+            
+            return ws;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setupWebSocket();
+        });
+    </script>
 </body>
 </html>

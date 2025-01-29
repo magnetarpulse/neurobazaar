@@ -24,3 +24,5 @@ data/datastore/*
 .git/*
 /media/dicom_images/*
 /media/lidc_pixConvImg/*
+.env
+test.py

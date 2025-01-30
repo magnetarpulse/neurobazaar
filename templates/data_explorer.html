@@ -118,8 +118,11 @@
         <div class="row" id="dataSection" style="display: none;">
             <div class="col-md-8">
                 <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white py-3">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                         <h5 class="mb-0 text-primary">Data Visualization</h5>
+                        <button class="btn btn-soft-primary btn-sm" onclick="toggleFullScreen()">
+                            <i class="fas fa-expand me-1"></i> Full Screen
+                        </button>
                     </div>
                     <div class="card-body p-0">
                         <div class="csv-table-container">
@@ -150,11 +153,40 @@
                         <div class="chat-container" id="chatContainer">
                             <div class="chat-messages" id="chatMessages">
                                 <div class="system-message">
-                                    Ask questions about your data and I'll help you analyze it.
+                                    Hi! I'm your data analysis assistant. Type "/" to see available commands, or ask me anything about your data.
                                 </div>
                             </div>
                             <div class="chat-input-container">
-                                <textarea id="userInput" class="form-control" placeholder="Ask a question about your data..." rows="3"></textarea>
+                                <div class="command-suggestions" id="commandSuggestions" style="display: none;">
+                                    <div class="command-list">
+                                        <div class="command-category">Available Commands:</div>
+                                        <div class="command-item" data-command="/info" data-description="Get basic information about the dataset">
+                                            <i class="fas fa-info-circle"></i> /info - Dataset Overview
+                                        </div>
+                                        <div class="command-item" data-command="/sample" data-description="View a sample of records">
+                                            <i class="fas fa-table"></i> /sample - Show Sample Data
+                                        </div>
+                                        <div class="command-item" data-command="/stats" data-description="Get statistical summary of numerical columns">
+                                            <i class="fas fa-chart-bar"></i> /stats - Statistical Analysis
+                                        </div>
+                                        <div class="command-item" data-command="/unique" data-description="See unique values in columns">
+                                            <i class="fas fa-fingerprint"></i> /unique - Unique Values
+                                        </div>
+                                        <div class="command-item" data-command="/search" data-description="Search for specific values">
+                                            <i class="fas fa-search"></i> /search - Search Data
+                                        </div>
+                                        <div class="command-item" data-command="/missing" data-description="Analyze missing values">
+                                            <i class="fas fa-question-circle"></i> /missing - Missing Data Analysis
+                                        </div>
+                                        <div class="command-item" data-command="/group" data-description="Group data and show patterns">
+                                            <i class="fas fa-layer-group"></i> /group - Group Analysis
+                                        </div>
+                                        <div class="command-item" data-command="/column" data-description="Get column details">
+                                            <i class="fas fa-columns"></i> /column - Column Information
+                                        </div>
+                                    </div>
+                                </div>
+                                <textarea id="userInput" class="form-control" placeholder="Type / for commands or ask a question..." rows="3"></textarea>
                                 <button id="sendButton" class="btn btn-primary mt-2 w-100">
                                     <i class="fas fa-paper-plane me-2"></i>Ask AI
                                 </button>
@@ -166,6 +198,36 @@
         </div>
     </div>
 </section>
+
+<!-- Full Screen Modal -->
+<div class="modal fade" id="fullScreenModal" tabindex="-1" aria-labelledby="fullScreenModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header bg-white py-3">
+                <h5 class="modal-title text-primary" id="fullScreenModalLabel">Data Visualization</h5>
+                <button type="button" class="btn btn-soft-primary btn-sm" onclick="toggleFullScreen()" data-bs-dismiss="modal">
+                    <i class="fas fa-compress me-1"></i> Exit Full Screen
+                </button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="csv-table-container-fullscreen">
+                    <table id="csvTableFullScreen" class="table table-striped table-bordered mb-0">
+                        <thead>
+                            <tr id="csvHeadersFullScreen"></tr>
+                        </thead>
+                        <tbody id="csvBodyFullScreen"></tbody>
+                    </table>
+                    <div id="loadingSpinnerFullScreen" class="text-center py-4" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <div id="scrollObserverFullScreen"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
 /* Modern styling */
@@ -314,6 +376,178 @@
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
+
+.csv-table-container-fullscreen {
+    height: calc(100vh - 70px);
+    overflow: auto;
+    border: none;
+}
+
+.modal-fullscreen {
+    padding: 0 !important;
+}
+
+.modal-fullscreen .modal-content {
+    min-height: 100vh;
+    border: none;
+    border-radius: 0;
+}
+
+.modal-header {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+#csvTableFullScreen {
+    margin: 0;
+    width: 100%;
+}
+
+#csvTableFullScreen thead th {
+    position: sticky;
+    top: 0;
+    background: #f9fafb;
+    z-index: 1;
+    padding: 0.75rem 1rem;
+}
+
+#csvTableFullScreen td {
+    padding: 0.75rem 1rem;
+    color: #4b5563;
+    white-space: nowrap;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+@media (min-width: 992px) {
+    .modal-fullscreen {
+        max-width: none;
+    }
+}
+
+.quick-commands {
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.quick-commands-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.5rem;
+}
+
+.quick-commands-grid .btn {
+    width: 100%;
+    text-align: center;
+    padding: 0.5rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quick-commands-grid .btn i {
+    font-size: 0.875rem;
+}
+
+.btn-link:hover {
+    color: #3b82f6 !important;
+}
+
+.collapse {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Add styles for command suggestions */
+.command-suggestions {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.command-list {
+    padding: 8px;
+}
+
+.command-category {
+    font-weight: 600;
+    color: #495057;
+    padding: 8px;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 8px;
+}
+
+.command-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #495057;
+    transition: all 0.2s ease;
+}
+
+.command-item:hover {
+    background: #f8f9fa;
+}
+
+.command-item i {
+    width: 20px;
+    text-align: center;
+    color: #6c757d;
+}
+
+.command-item.selected {
+    background: #e9ecef;
+}
+
+.chat-input-container {
+    position: relative;
+}
+
+/* Add styles for analysis results */
+.analysis-result {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.message {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+}
+
+.user-message {
+    background: #e3f2fd;
+    margin-left: 2rem;
+    margin-right: 0;
+}
+
+.ai-message {
+    background: #f8f9fa;
+    margin-right: 2rem;
+    margin-left: 0;
+}
 </style>
 
 <script>
@@ -322,6 +556,7 @@ let currentPage = 1;
 let isLoading = false;
 let hasMoreData = true;
 const ROWS_PER_PAGE = 100;
+let isFullScreen = false;
 
 // Initialize intersection observer for infinite scroll
 const observer = new IntersectionObserver((entries) => {
@@ -358,6 +593,9 @@ function loadMoreData() {
     
     isLoading = true;
     document.getElementById('loadingSpinner').style.display = 'block';
+    if (document.getElementById('loadingSpinnerFullScreen')) {
+        document.getElementById('loadingSpinnerFullScreen').style.display = 'block';
+    }
     
     fetch(`/api/csv/${currentFileUUID}/?page=${currentPage}&limit=${ROWS_PER_PAGE}`)
         .then(response => {
@@ -368,41 +606,149 @@ function loadMoreData() {
             // Set headers if first page
             if (currentPage === 1) {
                 const headerRow = document.getElementById('csvHeaders');
-                headerRow.innerHTML = data.headers.map(header => 
+                const headerRowFullScreen = document.getElementById('csvHeadersFullScreen');
+                const headerHTML = data.headers.map(header => 
                     `<th>${header}</th>`
                 ).join('');
+                
+                headerRow.innerHTML = headerHTML;
+                if (headerRowFullScreen) {
+                    headerRowFullScreen.innerHTML = headerHTML;
+                }
             }
             
-            // Append rows
+            // Append rows to both tables
             const tbody = document.getElementById('csvBody');
-            data.rows.forEach(row => {
+            const tbodyFullScreen = document.getElementById('csvBodyFullScreen');
+            
+            const rowsHTML = data.rows.map(row => {
                 const tr = document.createElement('tr');
                 data.headers.forEach(header => {
                     const td = document.createElement('td');
                     td.textContent = row[header] ?? '';
                     tr.appendChild(td);
                 });
-                tbody.appendChild(tr);
-            });
+                return tr.outerHTML;
+            }).join('');
+            
+            tbody.insertAdjacentHTML('beforeend', rowsHTML);
+            if (tbodyFullScreen) {
+                tbodyFullScreen.insertAdjacentHTML('beforeend', rowsHTML);
+            }
             
             // Update state
             hasMoreData = data.rows.length === ROWS_PER_PAGE;
             currentPage++;
             
-            // Hide loading spinner
+            // Hide loading spinners
             document.getElementById('loadingSpinner').style.display = 'none';
+            if (document.getElementById('loadingSpinnerFullScreen')) {
+                document.getElementById('loadingSpinnerFullScreen').style.display = 'none';
+            }
             isLoading = false;
         })
         .catch(error => {
             console.error('Error loading CSV data:', error);
             document.getElementById('loadingSpinner').style.display = 'none';
+            if (document.getElementById('loadingSpinnerFullScreen')) {
+                document.getElementById('loadingSpinnerFullScreen').style.display = 'none';
+            }
             isLoading = false;
         });
 }
 
 // Handle chat functionality
-document.getElementById('sendButton').addEventListener('click', async () => {
+document.addEventListener('DOMContentLoaded', function() {
     const userInput = document.getElementById('userInput');
+    const commandSuggestions = document.getElementById('commandSuggestions');
+    const sendButton = document.getElementById('sendButton');
+    let selectedCommandIndex = -1;
+
+    const commands = {
+        '/info': 'Tell me about this dataset',
+        '/sample': 'Show me a sample of the data',
+        '/stats': 'What are the key statistics of the numerical columns?',
+        '/unique': 'What unique values do we have in the columns?',
+        '/search': 'I want to search for specific values',
+        '/missing': 'Show me the missing value analysis',
+        '/group': 'Help me group the data and find patterns',
+        '/column': 'Tell me about the columns in this dataset'
+    };
+
+    userInput.addEventListener('input', function(e) {
+        const text = e.target.value;
+        if (text.startsWith('/')) {
+            const searchText = text.toLowerCase();
+            const matchingCommands = Array.from(document.querySelectorAll('.command-item'))
+                .filter(item => item.dataset.command.toLowerCase().includes(searchText));
+
+            if (matchingCommands.length > 0) {
+                commandSuggestions.style.display = 'block';
+                selectedCommandIndex = -1;
+                updateSelectedCommand();
+            } else {
+                commandSuggestions.style.display = 'none';
+            }
+        } else {
+            commandSuggestions.style.display = 'none';
+        }
+    });
+
+    userInput.addEventListener('keydown', function(e) {
+        if (commandSuggestions.style.display === 'block') {
+            const commands = document.querySelectorAll('.command-item');
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedCommandIndex = Math.min(selectedCommandIndex + 1, commands.length - 1);
+                updateSelectedCommand();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedCommandIndex = Math.max(selectedCommandIndex - 1, -1);
+                updateSelectedCommand();
+            } else if (e.key === 'Enter' && selectedCommandIndex >= 0) {
+                e.preventDefault();
+                const selectedCommand = commands[selectedCommandIndex];
+                selectCommand(selectedCommand);
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                if (selectedCommandIndex >= 0) {
+                    const selectedCommand = commands[selectedCommandIndex];
+                    selectCommand(selectedCommand);
+                }
+            } else if (e.key === 'Escape') {
+                commandSuggestions.style.display = 'none';
+            }
+        }
+    });
+
+    document.querySelectorAll('.command-item').forEach(item => {
+        item.addEventListener('click', function() {
+            selectCommand(this);
+        });
+
+        item.addEventListener('mouseover', function() {
+            selectedCommandIndex = Array.from(document.querySelectorAll('.command-item')).indexOf(this);
+            updateSelectedCommand();
+        });
+    });
+
+    function updateSelectedCommand() {
+        document.querySelectorAll('.command-item').forEach((item, index) => {
+            item.classList.toggle('selected', index === selectedCommandIndex);
+        });
+    }
+
+    function selectCommand(commandElement) {
+        const command = commandElement.dataset.command;
+        const description = commandElement.dataset.description;
+        userInput.value = `${command} - ${description}`;
+        commandSuggestions.style.display = 'none';
+        userInput.focus();
+    }
+
+    // Handle sending messages
+    sendButton.addEventListener('click', async function() {
     const question = userInput.value.trim();
     if (!question) return;
     
@@ -424,25 +770,209 @@ document.getElementById('sendButton').addEventListener('click', async () => {
     chatMessages.appendChild(loadingMessage);
     
     try {
-        const response = await fetch(`/api/chat/${currentFileUUID}/`, {
+            // Extract command and parameters
+            let command = null;
+            let params = {};
+            
+            if (question.startsWith('/')) {
+                // Split by first occurrence of ' - ' to separate command and description
+                const [cmdPart, ...descParts] = question.split(' - ');
+                command = cmdPart.substring(1).trim(); // Remove the '/' and trim
+                const description = descParts.join(' - ').trim();
+                
+                // Add specific parameters based on command
+                switch(command) {
+                    case 'sample':
+                        params = { n: 5 }; // Show 5 samples by default
+                        break;
+                    case 'unique':
+                        if (description) {
+                            // Extract column name after "column" keyword
+                            const columnMatch = description.match(/column\s+(\w+)/i);
+                            if (columnMatch) {
+                                params = { column: columnMatch[1] };
+                            }
+                        }
+                        break;
+                    case 'search':
+                        // For search, use everything after the command as the query
+                        if (description) {
+                            params = { query: description };
+                        }
+                        break;
+                    case 'group':
+                        if (description) {
+                            const columnMatch = description.match(/by\s+(\w+)/i);
+                            if (columnMatch) {
+                                params = { column: columnMatch[1] };
+                            }
+                        }
+                        break;
+                    case 'column':
+                        if (description) {
+                            const columnName = description.trim();
+                            params = { column: columnName };
+                        }
+                        break;
+                }
+            }
+
+            console.log('Sending command:', command, 'with params:', params); // Debug log
+
+            const response = await fetch(`/api/analyze/${currentFileUUID}/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken')
             },
-            body: JSON.stringify({ question })
-        });
-        
-        const data = await response.json();
-        
-        // Replace loading message with AI response
-        loadingMessage.innerHTML = data.response;
+                body: JSON.stringify({
+                    command: command,
+                    params: params,
+                    question: question
+                })
+            });
+
+            const result = await response.json();
+            console.log('Received result:', result); // Debug log
+            
+            if (result.success) {
+                loadingMessage.innerHTML = `<pre class="analysis-result">${formatAnalysisResult(result.data)}</pre>`;
+            } else {
+                loadingMessage.innerHTML = `Error: ${result.error}`;
+            }
     } catch (error) {
         loadingMessage.innerHTML = 'Sorry, I encountered an error analyzing your data.';
+            console.error('Error:', error);
     }
     
     chatMessages.scrollTop = chatMessages.scrollHeight;
 });
+});
+
+// Update command suggestions to include example usage
+document.querySelectorAll('.command-item').forEach(item => {
+    const command = item.dataset.command;
+    let description = item.dataset.description;
+    
+    // Add example usage to the description
+    switch(command) {
+        case '/unique':
+            description += '\nExample: /unique - column firstName';
+            break;
+        case '/search':
+            description += '\nExample: /search - Joanna';
+            break;
+        case '/group':
+            description += '\nExample: /group - by country';
+            break;
+        case '/column':
+            description += '\nExample: /column - firstName';
+            break;
+    }
+    
+    item.dataset.description = description;
+});
+
+function formatAnalysisResult(data) {
+    if (!data) return 'No data available';
+    
+    let output = [];
+    
+    // Handle different types of results
+    if (data.total_rows !== undefined) {
+        // Info result
+        output.push(`Dataset Information:`);
+        output.push(`- Total Rows: ${data.total_rows}`);
+        output.push(`- Total Columns: ${data.total_columns}`);
+        output.push(`\nColumn Information:`);
+        for (const [col, info] of Object.entries(data.column_info)) {
+            output.push(`${col}:`);
+            output.push(`  - Type: ${info.dtype}`);
+            output.push(`  - Null Count: ${info.null_count}`);
+            output.push(`  - Unique Values: ${info.unique_count}`);
+        }
+    } else if (data.headers !== undefined && data.rows !== undefined) {
+        // Sample result
+        output.push(`Sample Records:`);
+        output.push(`\nColumns: ${data.headers.join(', ')}`);
+        output.push(`\nRows:`);
+        data.rows.forEach((row, index) => {
+            output.push(`\nRow ${index + 1}:`);
+            data.headers.forEach(header => {
+                output.push(`  ${header}: ${row[header]}`);
+            });
+        });
+    } else if (data.unique_values !== undefined) {
+        // Unique values result for single column
+        output.push(`Unique values for column '${data.column}':`);
+        for (const [value, count] of Object.entries(data.unique_values)) {
+            output.push(`  ${value}: ${count}`);
+        }
+    } else if (data.columns !== undefined) {
+        // Unique values result for all columns
+        output.push('Unique values by column:');
+        for (const [col, values] of Object.entries(data.columns)) {
+            output.push(`\n${col}:`);
+            for (const [value, count] of Object.entries(values)) {
+                output.push(`  ${value}: ${count}`);
+            }
+        }
+    } else if (data.query !== undefined) {
+        // Search result
+        output.push(`Search results for: "${data.query}"`);
+        output.push(`Total matches: ${data.total_matches}`);
+        if (data.matches.length > 0) {
+            output.push('\nMatches found:');
+            data.matches.forEach((match, index) => {
+                output.push(`\nMatch ${index + 1} (in column '${match.column}'):`);
+                output.push(`  Matching value: ${match.value}`);
+                output.push('  Full row data:');
+                for (const [key, value] of Object.entries(match.row_data)) {
+                    output.push(`    ${key}: ${value}`);
+                }
+            });
+        } else {
+            output.push('\nNo matches found.');
+        }
+    } else if (data.correlations !== undefined) {
+        // Stats result
+        output.push(`Statistical Summary:`);
+        for (const [col, stats] of Object.entries(data)) {
+            if (col !== 'correlations') {
+                output.push(`\n${col}:`);
+                for (const [stat, value] of Object.entries(stats)) {
+                    if (typeof value === 'number') {
+                        output.push(`  ${stat}: ${value.toFixed(2)}`);
+                    }
+                }
+            }
+        }
+        if (data.correlations) {
+            output.push(`\nCorrelations:`);
+            for (const [col1, corrs] of Object.entries(data.correlations)) {
+                for (const [col2, value] of Object.entries(corrs)) {
+                    if (col1 < col2) {
+                        output.push(`  ${col1} vs ${col2}: ${value.toFixed(3)}`);
+                    }
+                }
+            }
+        }
+    } else if (typeof data === 'object' && data !== null) {
+        // Generic object formatting with better structure
+        for (const [key, value] of Object.entries(data)) {
+            if (typeof value === 'object' && value !== null) {
+                output.push(`${key}:`);
+                for (const [subKey, subValue] of Object.entries(value)) {
+                    output.push(`  ${subKey}: ${subValue}`);
+                }
+            } else {
+                output.push(`${key}: ${value}`);
+            }
+        }
+    }
+    
+    return output.join('\n');
+}
 
 // Helper function to get CSRF token
 function getCookie(name) {
@@ -492,6 +1022,39 @@ function chatWithCSV(fileUUID) {
     document.getElementById('userInput').value = '';
     // Scroll to the data section
     document.getElementById('dataSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+function toggleFullScreen() {
+    const modalElement = document.getElementById('fullScreenModal');
+    const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+    
+    if (!isFullScreen) {
+        // Copy data to full screen table
+        const headers = document.getElementById('csvHeaders').innerHTML;
+        const body = document.getElementById('csvBody').innerHTML;
+        
+        document.getElementById('csvHeadersFullScreen').innerHTML = headers;
+        document.getElementById('csvBodyFullScreen').innerHTML = body;
+        
+        modal.show();
+        isFullScreen = true;
+        
+        // Start observing full screen scroll
+        observer.observe(document.getElementById('scrollObserverFullScreen'));
+    } else {
+        // Copy data back to normal table
+        const headers = document.getElementById('csvHeadersFullScreen').innerHTML;
+        const body = document.getElementById('csvBodyFullScreen').innerHTML;
+        
+        document.getElementById('csvHeaders').innerHTML = headers;
+        document.getElementById('csvBody').innerHTML = body;
+        
+        modal.hide();
+        isFullScreen = false;
+        
+        // Start observing normal scroll
+        observer.observe(document.getElementById('scrollObserver'));
+    }
 }
 </script>
 {% endblock %} 

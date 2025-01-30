@@ -31,6 +31,9 @@ import lz4.frame
 import pandas as pd
 from django.core.paginator import Paginator
 
+# Import our custom modules
+from .data_analysis import DataAnalyzer  # Add this import
+
 # Get the root directory of the project
 cwd = os.getcwd()
 index = cwd.index('neurobazaar')
@@ -1829,6 +1832,59 @@ def data_explorer_main(request):
     }
     
     return render(request, 'data_explorer.html', context)
+
+@require_http_methods(["POST"])
+def analyze_data(request, file_uuid):
+    try:
+        logger.info(f"Analyzing data for file UUID: {file_uuid}")
+        
+        # Get the file metadata
+        file_obj = Files.objects.get(UUID=file_uuid)
+        logger.info(f"Found file: {file_obj.Name}")
+        
+        # Get the datastore manager and retrieve the file path
+        manager = getDataStoreManager()
+        datastore = manager.getDatastore(str(file_obj.Datastore_UUID.UUID))
+        
+        if not datastore:
+            logger.error(f"Datastore not found for UUID: {file_obj.Datastore_UUID.UUID}")
+            return JsonResponse({'success': False, 'error': 'Datastore not found'}, status=404)
+        
+        # Construct the full file path
+        file_path = os.path.join(datastore['path'], str(file_uuid), file_obj.Name)
+        logger.info(f"Constructed file path: {file_path}")
+        
+        if not os.path.exists(file_path):
+            logger.error(f"File not found at path: {file_path}")
+            return JsonResponse({'success': False, 'error': 'File not found'}, status=404)
+        
+        # Load the data
+        logger.info("Loading CSV file...")
+        df = pd.read_csv(file_path)
+        logger.info(f"Loaded CSV with {len(df)} rows and {len(df.columns)} columns")
+        
+        # Parse the request
+        data = json.loads(request.body)
+        command = data.get('command')
+        params = data.get('params', {})
+        logger.info(f"Processing command: {command} with params: {params}")
+        
+        # Initialize analyzer and process command
+        analyzer = DataAnalyzer(df)
+        result = analyzer.process_command(command, params)
+        logger.info("Command processed successfully")
+        
+        return JsonResponse(result)
+        
+    except Files.DoesNotExist:
+        logger.error(f"File not found with UUID: {file_uuid}")
+        return JsonResponse({'success': False, 'error': 'File not found'}, status=404)
+    except json.JSONDecodeError:
+        logger.error("Invalid JSON in request body")
+        return JsonResponse({'success': False, 'error': 'Invalid JSON in request body'}, status=400)
+    except Exception as e:
+        logger.error(f"Error in analyze_data: {str(e)}")
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 
 

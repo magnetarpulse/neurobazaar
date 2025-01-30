@@ -9,16 +9,7 @@
         <div class="header-content">
             <div class="header-title">
                 <h1>Workspaces</h1>
-                <p>Manage your development environments</p>
-            </div>
-            <div class="header-controls">
-                <select id="workspaceDropdown" class="form-select">
-                    <option value="" disabled selected>Select Workspace</option>
-                </select>
-                <button id="addWorkspaceButton" class="btn btn-primary">
-                    <i class="fas fa-plus"></i>
-                    New Workspace
-                </button>
+                <p>Access your active visualization servers</p>
             </div>
         </div>
     </div>
@@ -28,31 +19,51 @@
 <section class="page-section bg-light">
     <div class="container">
         <div class="workspace-manager">
-            <!-- Workspace Controls -->
-            <div class="workspace-controls">
-                <div class="control-group">
-                    <select id="workspaceDropdown" class="workspace-select">
-                        <option value="" disabled selected>Select Workspace</option>
-                    </select>
-                    <button id="addWorkspaceButton" class="btn btn-primary add-workspace-btn">
-                        <i class="fas fa-plus"></i>
-                        New Workspace
-                    </button>
-                </div>
-                <div class="workspace-stats">
-                    <div class="stat-item">
-                        <span class="stat-label">Active Workspaces</span>
-                        <span class="stat-value" id="activeWorkspaces">0</span>
+            <!-- Server Status Overview -->
+            <div class="status-cards">
+                <div class="status-card">
+                    <div class="status-icon active">
+                        <i class="fas fa-server"></i>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Available Slots</span>
-                        <span class="stat-value" id="availableSlots">5</span>
+                    <div class="status-info">
+                        <h3>Active Servers</h3>
+                        <p class="status-count" id="active-servers">0</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Workspace Container -->
-            <div id="workspacesContainer" class="workspaces-container"></div>
+            <!-- Server Lists -->
+            <div class="server-lists">
+                <!-- Standalone Histogram Servers -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Standalone Histogram Servers</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="basic-server-list" class="server-list"></div>
+                    </div>
+                </div>
+
+                <!-- Neurobazaar Histogram Servers -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Neurobazaar Histogram Servers</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="general-server-list" class="server-list"></div>
+                    </div>
+                </div>
+
+                <!-- OoD Analyzer Servers -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">OoD Analyzer Servers</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="ood-server-list" class="server-list"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -99,188 +110,219 @@
         font-size: 1rem;
     }
 
-    .header-controls {
-        display: flex;
+    .status-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1rem;
-        align-items: center;
+        margin-bottom: 1.5rem;
     }
 
-    .form-select {
-        background-color: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: white;
-        min-width: 200px;
-    }
-
-    .form-select option {
-        background: #0f172a;
-        color: white;
-    }
-
-    @media (max-width: 768px) {
-        .header-content {
-            flex-direction: column;
-            text-align: center;
-            gap: 1.5rem;
-        }
-
-        .header-controls {
-            flex-direction: column;
-            width: 100%;
-        }
-
-        .form-select {
-            width: 100%;
-        }
-    }
-
-    /* Modern styling for workspaces */
-    .workspace-manager {
-        padding: 1.5rem 0;
-        max-width: 1000px;
-        margin: 0 auto;
-    }
-
-    .workspace-controls {
+    .status-card {
         background: white;
         border-radius: 12px;
         padding: 1.25rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-    }
-
-    .control-group {
-        display: flex;
-        gap: 0.75rem;
-        margin-bottom: 1rem;
-    }
-
-    .workspace-select {
-        flex: 1;
-        padding: 0.625rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        font-size: 0.95rem;
-        color: #0f172a;
-    }
-
-    .add-workspace-btn {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.625rem 1.25rem;
-        background: #3b82f6;
-        border: none;
-        border-radius: 8px;
-        color: white;
-        font-weight: 500;
-        transition: all 0.2s ease;
+        gap: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
     }
 
-    .add-workspace-btn:hover {
-        background: #2563eb;
-        transform: translateY(-1px);
+    .status-card:hover {
+        transform: translateY(-5px);
     }
 
-    .workspace-stats {
+    .status-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: #f1f5f9;
         display: flex;
-        gap: 1.5rem;
-        padding-top: 0.75rem;
-        border-top: 1px solid #e2e8f0;
-    }
-
-    .stat-item {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .stat-label {
-        font-size: 0.875rem;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
         color: #64748b;
     }
 
-    .stat-value {
+    .status-icon.active {
+        background: #dbeafe;
+        color: #3b82f6;
+    }
+
+    .status-info h3 {
+        font-size: 0.875rem;
+        color: #64748b;
+        margin: 0;
+    }
+
+    .status-count {
         font-size: 1.5rem;
         font-weight: 600;
         color: #0f172a;
+        margin: 0;
     }
 
-    .workspaces-container {
-        display: grid;
-        gap: 1.5rem;
+    .server-lists {
+        margin-top: 2rem;
     }
 
-    .workspace-frame {
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: white;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 1rem 1.25rem;
+    }
+
+    .card-header h5 {
+        color: #0f172a;
+        font-weight: 600;
+    }
+
+    .server-list {
+        min-height: 50px;
+    }
+
+    .server-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        border-radius: 8px;
+        background: #f8fafc;
+        margin-bottom: 0.75rem;
+        transition: transform 0.2s ease;
+    }
+
+    .server-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .server-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .server-status {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .server-status.running {
+        background: #10b981;
+    }
+
+    .server-frame {
         background: white;
         border-radius: 12px;
         overflow: hidden;
         box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
     }
 
-    .workspace-frame iframe {
+    .server-frame iframe {
         width: 100%;
         height: 60vh;
         border: none;
     }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .workspace-manager {
-            padding: 1rem 0;
-        }
-
-        .workspace-controls {
-            padding: 1rem;
-        }
-
-        .workspace-frame iframe {
-            height: 50vh;
-        }
-    }
 </style>
 
 <script>
-$(document).ready(function(){
-    var workspaceCounter = 0;
-    var initialPort = 5459;
+function updateServerList() {
+    fetch('/api/servers/status/')
+        .then(response => response.json())
+        .then(data => {
+            let totalServers = 0;
+            
+            // Update basic servers
+            const basicList = document.getElementById('basic-server-list');
+            basicList.innerHTML = '';
+            data.basic.forEach(server => {
+                totalServers++;
+                basicList.innerHTML += createServerItem(server, 'basic', extractNumber(server.route));
+            });
 
-    function updateStats() {
-        $('#activeWorkspaces').text(workspaceCounter);
-        $('#availableSlots').text(5 - workspaceCounter);
-    }
+            // Update general servers
+            const generalList = document.getElementById('general-server-list');
+            generalList.innerHTML = '';
+            data.general.forEach(server => {
+                totalServers++;
+                generalList.innerHTML += createServerItem(server, 'general', extractNumber(server.route));
+            });
 
-    $('#addWorkspaceButton').click(function(){
-        if (workspaceCounter >= 5) {
-            alert('Maximum of 5 workspaces reached.');
-            return;
-        }
+            // Update OOD servers
+            const oodList = document.getElementById('ood-server-list');
+            oodList.innerHTML = '';
+            data.ood.forEach(server => {
+                totalServers++;
+                oodList.innerHTML += createServerItem(server, 'ood', extractNumber(server.route));
+            });
 
-        workspaceCounter++;
-        updateStats();
+            // Update active servers count
+            document.getElementById('active-servers').textContent = totalServers;
+        })
+        .catch(error => console.error('Error:', error));
+}
 
-        var newWorkspaceId = 'workspace' + workspaceCounter;
-        var portNumber = initialPort + workspaceCounter - 1;
+function extractNumber(route) {
+    if (!route) return 1;
+    const match = route.match(/\d+$/);
+    return match ? parseInt(match[0]) : 1;
+}
 
-        var newWorkspace = $(`
-            <div id="${newWorkspaceId}" class="workspace-frame" style="display:none;">
-                <iframe src="http://localhost:${portNumber}/index.html"></iframe>
+function createServerItem(server, type, number) {
+    // For basic/general type servers, use the histogram URL format
+    const isBasicHistogram = type === 'basic';
+    const isGeneralHistogram = type === 'general';
+    const isOodServer = type === 'ood';
+    
+    // Use appropriate URL format based on server type
+    const serverUrl = isBasicHistogram 
+        ? `/histogram${number}`
+        : isGeneralHistogram
+            ? `/histogramgeneral${number}`
+            : `/oodanalyzer${number}`;
+    
+    // Display URL for the link
+    const displayUrl = isBasicHistogram
+        ? `localhost:8000/histogram${number}`
+        : isGeneralHistogram
+            ? `localhost:8000/histogramgeneral${number}`
+            : `localhost:8000/oodanalyzer${number}`;
+
+    return `
+        <div class="server-item">
+            <div class="server-info">
+                <div class="server-status running"></div>
+                <div>
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">${server.ip}:${server.port}</span>
+                        <span class="badge bg-success me-2">Running</span>
+                        <a href="${serverUrl}" target="_blank" class="text-decoration-none">
+                            <small class="text-primary"><i class="fas fa-external-link-alt me-1"></i>${displayUrl}</small>
+                        </a>
+                    </div>
+                    <small class="text-muted">Started: ${new Date(server.started_at).toLocaleString()}</small>
+                </div>
             </div>
-        `);
+            <div class="server-frame" style="display:none;">
+                <iframe src="${serverUrl}"></iframe>
+            </div>
+        </div>
+    `;
+}
 
-        $('#workspacesContainer').append(newWorkspace);
-        $('#workspaceDropdown').append(`
-            <option value="${newWorkspaceId}">Workspace ${workspaceCounter}</option>
-        `);
-    });
-
-    $('#workspaceDropdown').change(function(){
-        var selectedWorkspace = $(this).val();
-        $('.workspace-frame').hide();
-        $('#' + selectedWorkspace).show();
-    });
-
-    updateStats();
-});
+// Update server list every 5 seconds
+setInterval(updateServerList, 5000);
+// Initial update
+updateServerList();
 </script>
 {% endblock body %}

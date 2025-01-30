@@ -43,7 +43,7 @@ class BaseOoDHistogram:
         global SERVER_IP                                                                                                                                                                      
         SERVER_IP = 'localhost'   # add your server ip address                                                                                                                                                     
         global PORT                                                                                                                                                                           
-        PORT ='8000' 
+        PORT ='8002' 
         self.state.thresholds = [1.0001, 2.0001, 3.0001, 4.0001] 
         self.state.check = False
         self.state.add=True
@@ -583,11 +583,12 @@ class BaseOoDHistogram:
                     with vuetify.VRow(classes="justify-start"):                                                                                                                                          
                         vuetify.VSubheader("Threshold View:",style="font-size: 20px;font-weight: bold;color: rgb(8, 24, 168);") 
                         vuetify.VSpacer()                                                                                                                                                                                                                                                
-                        with vuetify.VBtn(color="#0000FF", click=self.refresh_data, size=20,):                                                                                                                                                                                                                                                                                  
-                            vuetify.VIcon("mdi-refresh",                                                                                                                          
+                        with vuetify.VBtn(color="#0000FF", click=self.refresh_data, size=20, id="my-button-id",):                                                                                                                                                                                                                                                                                  
+                            vuetify.VIcon("mdi-refresh",  
+                            ripple=False,                                                                                                          
                             color="white",                                                                                                                            
                             size=35,                                                                                                                                  
-                            classes="d-flex align-center justify-center",)
+                            classes="d-flex align-center justify-center",id="my-icon-id")
 
                     with vuetify.VRow(classes="justify-start"):                                                                                                           
                         with vuetify.VRow(classes="text-h4 font-weight-bold",):
@@ -598,7 +599,7 @@ class BaseOoDHistogram:
                     
                     with vuetify.VRow(classes="justify-center"):   
                         vuetify.VIcon("mdi-plus",                                                                                                                             
-                        color="blue",                                                                                                                         
+                        color="blue", id="nb-add-icon",                                                                                                                        
                         click= 
                         """
                         if(add) {trigger('add_subset')} 

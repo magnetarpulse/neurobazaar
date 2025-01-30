@@ -17,6 +17,7 @@ from django.urls import include, path, re_path
 from django.contrib import admin
 from channels.routing import ProtocolTypeRouter, URLRouter
 from home.wildcard import MultiPortWebSocketProxy
+from home import views
 
 admin.site.site_header = 'Neurobazaar Administration'
 admin.site.site_title = 'Neurobazaar Administration Portal'
@@ -28,4 +29,5 @@ urlpatterns = [
     re_path(r'^histogram\d+/ws/?$', MultiPortWebSocketProxy.as_asgi()),
     re_path(r'^histogramgeneral\d+/ws/?$', MultiPortWebSocketProxy.as_asgi()),
     re_path(r'^oodanalyzer\d+/ws/?$', MultiPortWebSocketProxy.as_asgi()),
+    path('api/analyze/<str:file_uuid>/', views.analyze_data, name='analyze_data'),
 ]

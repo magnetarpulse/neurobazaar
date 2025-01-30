@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.utils.functional import SimpleLazyObject
 from django.db.models.deletion import ProtectedError
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods
@@ -546,6 +547,10 @@ def datasets(request):
                                 description = request.POST.get('description')
                                 repo = request.POST.get('repo')
                                 datastore_uuid = request.POST.get('datastore')
+                                # Copy datastore_uuid to a new Global variable
+                                global datastore_uuid_global
+                                datastore_uuid_global = datastore_uuid
+                                print("GLOBAL Datastore UUID:", datastore_uuid_global)
                                 
                                 try:
                                     datastore_instance = Datastores.objects.get(UUID=datastore_uuid)
@@ -1887,11 +1892,21 @@ def analyze_data(request, file_uuid):
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 
-
-
-
-
-
-
-
-
+def _response_datasets(request):
+    """
+    When requesting datasets, return a list of available datasets.
+    """
+    print("Getting a request(s)")
+    try:
+        # Retrieve collection metadata from the global variable
+        datastore_instance = Datastores.objects.get(UUID=datastore_uuid_global)
+        # Retrieve the appropriate datastore
+        manager = getDataStoreManager()
+        # Returns a dict {type, path}
+        datastore = manager.getDatastore(str(datastore_instance.UUID))
+        # We need the path
+        datastore_path = datastore['path']
+    finally:
+        pass
+    # Return the path to the datastore
+    return JsonResponse({'path': datastore_path})

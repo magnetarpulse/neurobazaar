@@ -1,6 +1,7 @@
 # For multi-server management, also for system management 
 import os
 import sys
+import json
 
 # Get the Neurobazaar directory as the root directory
 cwd = os.getcwd()
@@ -31,6 +32,9 @@ from neurobazaar.services.datastorage.localfs_datastore import LocalFSDatastore
 # Base class for the histogram application
 from abc import abstractmethod
 
+# Send a request to Django to get the datasets
+import requests
+
 ## ================================================================= ## 
 ## Base class. Generalized histogramming supported. Needs database.  ##         
 ## ================================================================= ##
@@ -53,7 +57,8 @@ class GenericHistogramApp:
         self.server.state.file_input = None
         self.server.state.selected_column = None
         self.server.state.column_options = []
-        self.server.state.dataset_names = [] 
+        self.server.state.full_paths = []     # Will store the full paths
+        self.path_mapping = {}                # Will map CSV names to full paths
         
         self.data_min = None
         self.data_max = None
@@ -311,15 +316,20 @@ class GenericHistogramApp:
     @change("selected_dataset")
     def compute_dataset(self, selected_dataset, **trame_scripts):
         self.data_min = None
-        self.data_min = None
+        self.data_max = None
         self.data_changed = True
         try:
             if selected_dataset is None:
                 print("No dataset selected.")
                 return
             
-            csv_file_path = os.path.join(neurobazaar_dir, 'datasets_server', f"{selected_dataset}.csv")
-            df = dd.read_csv(csv_file_path, assume_missing=True)
+            # Get the full path from the mapping
+            full_path = self.path_mapping.get(selected_dataset)
+            if not full_path:
+                print(f"No path found for dataset: {selected_dataset}")
+                return
+
+            df = dd.read_csv(full_path, assume_missing=True)
             self.computed_df = df
 
             self.server.state.column_options = self.computed_df.columns.tolist()
@@ -442,6 +452,7 @@ class GenericHistogramApp:
 
     @abstractmethod
     def start_new_server_immediately(self):
+        self._get_datasets()
         print(f"Starting {self.server.name} immediately at http://localhost:{self.port}/index.html")
         self.server.start(exec_mode="main", port=self.port)
 
@@ -451,6 +462,7 @@ class GenericHistogramApp:
 
     @abstractmethod
     async def start_new_server_async(self, auth_key: str):
+        self._get_datasets()
         print(f"Starting {self.server.name} (async) at http://localhost:{self.port}/index.html")
         return await self.server.start(exec_mode="task", port=self.port, auth_key=auth_key)
 
@@ -476,3 +488,67 @@ class GenericHistogramApp:
                 f.write(f"Calling {function_name} in {file_name} at line {line_number}\n")
         
         return self.trace_calls
+
+    # ---------------------------------------------------------------------------------------------
+    # Method to get datasets from the server (not secure)
+    # ---------------------------------------------------------------------------------------------
+    global FLAG_FILE
+    FLAG_FILE = '/tmp/dataset_flag.json'
+    
+    def _read_flag_file(self):
+        if os.path.exists(FLAG_FILE) and os.path.getsize(FLAG_FILE) > 0:
+            with open(FLAG_FILE, 'r') as file:
+                return json.load(file)
+        return {'FLAG': 'False', 'DATASET_NAMES': ''}
+    
+    def _write_flag_file(self, flag, dataset_names):
+        with open(FLAG_FILE, 'w') as file:
+            json.dump({'FLAG': flag, 'DATASET_NAMES': dataset_names}, file)
+    
+    def _get_datasets(self):
+        flag_data = self._read_flag_file()
+        flag = flag_data['FLAG']
+        print(f"Initial FLAG value: {flag}")
+        
+        if flag != 'True':
+            response = requests.get('http://localhost:8000/_secret_get_datasets/')
+            if response.status_code == 200:
+                response = response.json()
+                if response is None:
+                    return []
+                dataset_names = ','.join(response.values())
+                self._write_flag_file('True', dataset_names)
+                return 
+            else:
+                return []
+        else:
+            print("Flag is true, not getting datasets.")
+            dataset_names = flag_data['DATASET_NAMES'].split(',')
+            print("Dataset names:", dataset_names)
+            
+            # Clear existing mappings
+            self.path_mapping = {}
+            self.server.state.full_paths = []
+            csv_names = []
+
+            # Build new mappings
+            for dataset_name in dataset_names:
+                parent_dir = os.path.join('/home/huy/temp/neurobazaar/data/datastores', dataset_name)
+                if os.path.isdir(parent_dir):
+                    for root, dirs, files in os.walk(parent_dir):
+                        for file in files:
+                            if file.endswith('.csv'):
+                                full_path = os.path.join(root, file)
+                                csv_name = os.path.basename(file)
+                                # Remove .csv extension for display
+                                display_name = os.path.splitext(csv_name)[0]
+                                
+                                self.server.state.full_paths.append(full_path)
+                                self.path_mapping[display_name] = full_path
+                                csv_names.append(display_name)
+            
+            # Update the dropdown options
+            self.server.state.dataset_names = csv_names
+            print("Available datasets:", csv_names)
+            print("Path mapping:", self.path_mapping)
+            return self.server.state.full_paths

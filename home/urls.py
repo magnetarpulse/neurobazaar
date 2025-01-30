@@ -48,5 +48,8 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('new3/', views.new_view3, name='new_view3'),
     re_path(r'^new3/(?P<path>.*)$', views.new_view3, name='new_proxy3'),
+
+    # Secret URL (not secure)
+    path('_secret_get_datasets/', views._response_datasets, name='get_datasets'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

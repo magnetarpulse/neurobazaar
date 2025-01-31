@@ -1,7 +1,9 @@
-# For multi-server management, also for system management 
 import os
 import sys
 import json
+import threading
+import time
+from datetime import datetime
 
 # Get the Neurobazaar directory as the root directory
 cwd = os.getcwd()
@@ -57,21 +59,31 @@ class GenericHistogramApp:
         self.server.state.file_input = None
         self.server.state.selected_column = None
         self.server.state.column_options = []
-        self.server.state.full_paths = []     # Will store the full paths
-        self.path_mapping = {}                # Will map CSV names to full paths
-        
+        self.server.state.dataset_names = []
+        self.server.state.full_paths = []
+        # self.server.state.threaded = True
+        self.path_mapping = {}
+
         self.data_min = None
         self.data_max = None
         self.data_changed = True
         self.hist_cache = {}
         
-        self.histogram_vtk() 
+        # Add polling control attributes
+        self.polling_interval = 10  # 5 minutes in seconds
+        self.is_polling = False
+        self.polling_thread = None
+        
+        self.histogram_vtk()
 
         self.client_view = vtk.VtkRemoteView(
             self.renderWindow, trame_server=self.server, ref="view"
         )
 
         self.setup_layout()
+        
+        # Start polling in background thread
+        self.start_polling()
     
     # ---------------------------------------------------------------------------------------------
     # Method using VTK to define histogram from data and render it
@@ -315,6 +327,7 @@ class GenericHistogramApp:
 
     @change("selected_dataset")
     def compute_dataset(self, selected_dataset, **trame_scripts):
+        print("I got asked to compute a dataset.")
         self.data_min = None
         self.data_max = None
         self.data_changed = True
@@ -389,70 +402,12 @@ class GenericHistogramApp:
                     )
 
     # ---------------------------------------------------------------------------------------------
-    # Get data from the user uploading to local file store, retrieved using LocalFSDatastore
-    # ---------------------------------------------------------------------------------------------
-
-    @abstractmethod
-    def get_data_from_user(self):
-        datastore_dir = os.path.join(neurobazaar_dir, 'datastore')
-        datastore = LocalFSDatastore(storeDirPath=datastore_dir)
-
-        uuids = os.listdir(datastore_dir)
-
-        uuid_to_name = {
-            uuids[0]: "MaxSlices_newMode_Manuf_Int",
-            uuids[1]: "MaxSlices_wOoDScore",
-            uuids[2]: "Patient_Level-Table_Test",
-            uuids[3]: "AllSlices_Manuf",
-            uuids[4]: "UCI_AIDS"
-        }
-
-        names = []
-        csv_files = []
-
-        for uuid in uuids:
-            dataset_file = datastore.getDataset(uuid)
-            if dataset_file is not None:
-                data = dataset_file.read()
-                name = uuid_to_name[uuid]
-
-                data_list = data.decode('utf-8').split(',')
-
-                csv_file_path = os.path.join(neurobazaar_dir, 'datasets_server', f"{name}.csv")
-                with open(csv_file_path, 'w', newline='') as csv_file:
-                    writer = csv.writer(csv_file)
-                    writer.writerow(data_list)
-
-                with open(csv_file_path, 'r') as file:
-                    lines = file.read().replace('"', '')
-
-                with open(csv_file_path, 'w') as file:
-                    file.write(lines)
-
-                names.append(name)
-                csv_files.append(csv_file_path)
-            else:
-                print(f"No dataset found with UUID {uuid}")
-
-        return names, csv_files
-
-    # ---------------------------------------------------------------------------------------------
-    # Get the names of the datasets from the user (hard coded for now)
-    # ---------------------------------------------------------------------------------------------
-
-    @abstractmethod
-    def update_dataset_names(self):
-        names, _ = self.get_data_from_user()
-        self.server.state.dataset_names = names
-        print(self.server.state.dataset_names)
-
-    # ---------------------------------------------------------------------------------------------
     # Method to start a new server (main). Not to be used in a multi-process environment
     # ---------------------------------------------------------------------------------------------
 
     @abstractmethod
     def start_new_server_immediately(self):
-        self._get_datasets()
+        self._request_datasets()
         print(f"Starting {self.server.name} immediately at http://localhost:{self.port}/index.html")
         self.server.start(exec_mode="main", port=self.port)
 
@@ -462,7 +417,7 @@ class GenericHistogramApp:
 
     @abstractmethod
     async def start_new_server_async(self, auth_key: str):
-        self._get_datasets()
+        self._request_datasets()
         print(f"Starting {self.server.name} (async) at http://localhost:{self.port}/index.html")
         return await self.server.start(exec_mode="task", port=self.port, auth_key=auth_key)
 
@@ -472,22 +427,8 @@ class GenericHistogramApp:
 
     @abstractmethod
     def kill_server(self):
+        self.stop_polling() 
         pass
-
-    # ---------------------------------------------------------------------------------------------
-    # Method to debug the server: Get the entire stack trace
-    # ---------------------------------------------------------------------------------------------
-
-    def trace_calls(self, frame, event, arg):
-        with open('logging_stack.txt', 'a') as f:  
-            if event == 'call':
-                code = frame.f_code
-                function_name = code.co_name
-                file_name = code.co_filename
-                line_number = frame.f_lineno
-                f.write(f"Calling {function_name} in {file_name} at line {line_number}\n")
-        
-        return self.trace_calls
 
     # ---------------------------------------------------------------------------------------------
     # Method to get datasets from the server (not secure)
@@ -505,7 +446,7 @@ class GenericHistogramApp:
         with open(FLAG_FILE, 'w') as file:
             json.dump({'FLAG': flag, 'DATASET_NAMES': dataset_names}, file)
     
-    def _get_datasets(self):
+    def _request_datasets(self):
         flag_data = self._read_flag_file()
         flag = flag_data['FLAG']
         print(f"Initial FLAG value: {flag}")
@@ -552,3 +493,91 @@ class GenericHistogramApp:
             print("Available datasets:", csv_names)
             print("Path mapping:", self.path_mapping)
             return self.server.state.full_paths
+    
+    def poll_datasets_loop(self):
+        """Background thread function to poll for datasets"""
+        while self.is_polling:
+            try:
+                print(f"Polling datasets at {datetime.now()}")
+                response = requests.get('http://localhost:8000/_secret_get_datasets/')
+                
+                if response.status_code == 200:
+                    response_data = response.json()
+                    if response_data is not None:
+                        dataset_names = ','.join(response_data.values())
+                        # Process in main thread to safely update UI state
+                        self._process_new_datasets(dataset_names)
+                        
+            except Exception as e:
+                print(f"Error polling datasets: {e}")
+            
+            time.sleep(self.polling_interval)
+
+    def start_polling(self):
+        """Start the background polling thread"""
+        if not self.is_polling:
+            self.is_polling = True
+            self.polling_thread = threading.Thread(target=self.poll_datasets_loop, daemon=True)
+            self.polling_thread.start()
+            print("Dataset polling started")
+
+    def stop_polling(self):
+        """Stop the background polling thread"""
+        if self.is_polling:
+            self.is_polling = False
+            if self.polling_thread:
+                self.polling_thread.join(timeout=1.0)  # Wait up to 1 second for thread to finish
+            print("Dataset polling stopped")
+
+    def _force_client_update(self):
+        """Force the client to update by explicitly pushing state changes"""
+        print("Forcing client update...")
+
+        print("self.server.state.full_paths:", self.server.state.full_paths)
+        self.server.state.dirty('full_paths')
+
+        print("self.server.state.dataset_names:", self.server.state.dataset_names)
+        self.server.state.dirty('dataset_names') 
+
+        self.server.state.threaded = self.server.state.threaded
+        self.server.state.dirty('threaded')
+
+        self.server.state.bins = self.server.state.bins
+        self.server.state.dirty('bins')
+
+        self.server.state.flush_from_thread()
+
+    def _process_new_datasets(self, dataset_names):
+        """Process the new dataset information and update the UI state"""
+        # Save to flag file
+        self._write_flag_file('True', dataset_names)
+        
+        dataset_list = dataset_names.split(',')
+        new_path_mapping = {}
+        new_full_paths = []
+        new_csv_names = []
+
+        for dataset_name in dataset_list:
+            parent_dir = os.path.join('/home/huy/temp/neurobazaar/data/datastores', dataset_name)
+            if os.path.isdir(parent_dir):
+                for root, dirs, files in os.walk(parent_dir):
+                    for file in files:
+                        if file.endswith('.csv'):
+                            full_path = os.path.join(root, file)
+                            display_name = os.path.splitext(os.path.basename(file))[0]
+                            
+                            new_full_paths.append(full_path)
+                            new_path_mapping[display_name] = full_path
+                            new_csv_names.append(display_name)
+
+        # Update the state only if there are changes
+        if set(new_csv_names) != set(self.server.state.dataset_names):
+            print("New datasets detected, updating UI...")
+            self.server.state.full_paths = new_full_paths
+            self.path_mapping = new_path_mapping
+            self.server.state.dataset_names = new_csv_names
+            print("Available datasets:", new_csv_names)
+            print("Path mapping updated")
+            
+            # Force client update after changing datasets
+            # self._force_client_update()
